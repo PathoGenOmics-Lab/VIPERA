@@ -1,0 +1,9 @@
+# Snakemake
+/.snakemake/
+.snakemake*
+
+# Analysis files
+*.bam
+*.fa
+*.fasta
+/output/
