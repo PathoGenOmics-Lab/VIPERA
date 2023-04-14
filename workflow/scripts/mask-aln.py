@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+
+# ---------------------------------------------------------------------------------------
+# Copyright (C) 2020 EMBL - European Bioinformatics Institute
+# Contact: goldman@ebi.ac.uk, cwalker@ebi.ac.uk
+#
+# This program is free software: you can redistribute it and/or modify it under the terms
+# of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along with this
+# program. If not, see <http://www.gnu.org/licenses/>.
+# ---------------------------------------------------------------------------------------
+
+"""
+MSA reading consumes around 40% of the work load, and the last step
+(masking + writing) consumes around 60%. This last step could
+be parallelized by loading the MSA on a shared-memory array.
+
+Source of inspiration: https://github.com/W-L/ProblematicSites_SARS-CoV2
+Modified by Miguel Alvarez <m.alvarez.herrera@csic.es>
+Date: 2023-03-23
+"""
+
+
+from Bio import SeqIO
+import pandas as pd
+
+
+def read_fasta_keep_name(file):
+    sample_headers = []
+    sample_sequences = []
+    for record in SeqIO.parse(file, "fasta"):
+        sample_headers.append(str(record.description))
+        sample_sequences.append(str(record.seq))
+    return sample_headers, sample_sequences
+
+
+def ref_coords_to_align_coords(ref_align_seq):
+    """
+    Generate a dictionary of reference sequence coordinates mapped to MSA
+    coordinates. Used to update the VCF positions in case the reference
+    sequence contains gaps.
+    """
+    ref_coord_dic = {}
+    ref_align_seq = "".join(ref_align_seq).strip()
+    for i in range(len(ref_align_seq.replace("-",""))):
+        ref_coord_dic[i] = 0
+    seq_count = 0
+    align_count = 0
+    for c in ref_align_seq:
+        if c != "-":
+            ref_coord_dic[seq_count] = align_count
+            seq_count += 1
+            align_count += 1
+        else:
+            align_count += 1
+    return ref_coord_dic
+
+
+def parse_vcf():
+    """
+    Parse a VCF containing positions for masking. Assumes the VCF file is
+    formatted as:
+    github.com/W-L/ProblematicSites_SARS-CoV2/blob/master/problematic_sites_sarsCov2.vcf
+    with a "mask" or "caution" recommendation in column 7.
+    Masked sites are specified with params.
+    """
+    vcf = pd.read_csv(
+        snakemake.config["PROBLEMATIC_VCF"],
+        delim_whitespace=True,
+        comment="#",
+        names=("CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO")
+    )
+    positions = tuple(vcf.loc[vcf.FILTER.isin(snakemake.params.mask_class), "POS"])
+    return positions
+
+
+def main():
+    # parse VCF to get list of sites to mask
+    iffy_sites = parse_vcf()
+
+    # parse existing MSA FASTA file
+    with open(snakemake.input.fasta, "r") as fasta_fi:
+        headers, sequences = read_fasta_keep_name(fasta_fi)
+
+    # get reference sequence
+    with open(snakemake.input.ref_fasta, "r") as fasta_fi:
+        _, ref_sequence = read_fasta_keep_name(fasta_fi)
+        ref_sequence = ref_sequence[0]  # only 1 record -hopefully
+
+    # convert reference sequence coords to corresponding alignment coords
+    ref_coord_dic = ref_coords_to_align_coords(ref_sequence)
+
+    # convert list of iffy sites to corresponding alignment positions
+    # using zero-based indexing
+    # Mask problematic sites from VCF and leading and trailing positions
+    iffy_alignment_sites = tuple(ref_coord_dic[int(i)-1] for i in iffy_sites)
+
+    # using list of iffy alignment sites, mask corresponding positions
+    # in the input MSA
+    # Also: only mask sites with letters - no gaps!
+    if snakemake.params.remove_sites:
+        mask_sub_char = ""
+    else:
+        mask_sub_char = snakemake.params.mask_character
+    f = open(snakemake.output.fasta, "w")
+    for i in range(len(headers)):
+        seq = list(sequences[i])
+        for p in iffy_alignment_sites:
+            if seq[p] != "-":
+                seq[p] = mask_sub_char
+        seq = "".join(seq)
+        f.write(">" + headers[i] + "\n" + seq + "\n")
+    f.close()
+
+
+if __name__ == "__main__":
+    main()

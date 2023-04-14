@@ -1,0 +1,10 @@
+OUTPUT_NAME:
+  "case_study"
+REFSEQ_REFERENCE:
+  "NC_045512.2"
+PROBLEMATIC_VCF:
+  "config/problematic_sites_sarsCov2.vcf"
+TREE_MODEL:
+  "GTR+G+I"
+N_UFBOOT:
+  0

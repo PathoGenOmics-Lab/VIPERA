@@ -1,0 +1,14 @@
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/COV012623.trim.sort.bam
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/COV012630.trim.sort.bam
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/COV012635.trim.sort.bam
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/COV012638.trim.sort.bam
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/COV012640.trim.sort.bam
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/COV012649.trim.sort.bam
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/COV012651.trim.sort.bam
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/COV012661.trim.sort.bam
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/COV012663.trim.sort.bam
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/COV012670.trim.sort.bam
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/COV012672.trim.sort.bam
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/COV012674.trim.sort.bam
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/COV012684.trim.sort.bam
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/COV012716.trim.sort.bam

@@ -1,0 +1,8 @@
+BAM_FOLDER:
+  "data/bam"
+FASTA_FOLDER:
+  "data/fasta"
+METADATA:
+  "data/metadata.csv"
+OUTPUT_DIRECTORY:
+  "output"
