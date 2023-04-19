@@ -1,5 +1,8 @@
 # Case-study-SARS-CoV-2
 
+![](.rulegraph.png)
+
+
 ## Instructions
 To run the pipeline, first fetch the data (you may need to modify the script to include your credentials):
 
@@ -15,9 +18,17 @@ snakemake --use-conda -c8
 
 You may change the `-c` argument to use a different number of CPUs.
 
+
 ## TO DO
 - [ ] get reference with `samtools view -H some.bam` (BAM files may not be aligned to same reference)
 - [ ] calculate BAM stats with samtools and summarize
 - [ ] make a config table with infection groups to do ASR separately
 - [x] do Freyja demixing
 - [ ] summarize Freyja demixing results
+
+
+## Generating a rule graph
+
+```bash
+snakemake --rulegraph | dot -Tpng > .rulegraph.png
+```
