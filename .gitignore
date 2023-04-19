@@ -7,3 +7,6 @@
 *.fa
 *.fasta
 /output/
+
+# MAC
+.DS_Store
