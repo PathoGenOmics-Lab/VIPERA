@@ -37,8 +37,10 @@ ETC_TREE_PARAMS = " ".join(ETC_TREE_PARAMS)
 include: "rules/fetch.smk"
 include: "rules/fasta.smk"
 include: "rules/asr.smk"
+include: "rules/demix.smk"
 
 
 rule all:
     input:
-        OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta"
+        OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
+        OUTDIR/"demixing"/"COV012623"
