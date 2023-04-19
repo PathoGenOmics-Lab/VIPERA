@@ -19,4 +19,5 @@ You may change the `-c` argument to use a different number of CPUs.
 - [ ] get reference with `samtools view -H some.bam` (BAM files may not be aligned to same reference)
 - [ ] calculate BAM stats with samtools and summarize
 - [ ] make a config table with infection groups to do ASR separately
-- [ ] do Freyja demixing and summarize results
+- [x] do Freyja demixing
+- [ ] summarize Freyja demixing results
