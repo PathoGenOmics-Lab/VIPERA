@@ -13,6 +13,11 @@ def iter_lines(file_path):
             yield line.strip()
 
 
+def iter_samples_in_path(path: Path):
+    for file in path.glob("*"):
+        yield file.name.split(".")[0]
+
+
 # Targets
 ## Output
 OUTPUT_NAME = config["OUTPUT_NAME"]
@@ -43,4 +48,4 @@ include: "rules/demix.smk"
 rule all:
     input:
         OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
-        OUTDIR/"demixing"/"COV012623"
+        expand(OUTDIR/"demixing"/"{sample}", sample=iter_samples_in_path(BAM_FOLDER)) 
