@@ -1,7 +1,9 @@
 OUTPUT_NAME:
   "case_study"
-REFSEQ_REFERENCE:
+ALIGNMENT_REFERENCE:
   "NC_045512.2"
+MAPPING_REFERENCES:
+  ["NC_045512.2", "MN908947.3"]
 PROBLEMATIC_VCF:
   "config/problematic_sites_sarsCov2.vcf"
 TREE_MODEL:
