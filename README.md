@@ -25,6 +25,7 @@ You may change the `-c` argument to use a different number of CPUs.
 - [ ] make a config table with infection groups to do ASR separately
 - [x] do Freyja demixing
 - [ ] summarize Freyja demixing results
+- [ ] use just a sample list and a Garnatxa path list to define targets
 
 
 ## Generating a rule graph
