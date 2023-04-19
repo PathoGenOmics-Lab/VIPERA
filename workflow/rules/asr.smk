@@ -15,7 +15,7 @@ rule reconstruct_ancestral_sequence:
         mkdir -p {output.folder}
         iqtree2 \
             {params.etc} -asr \
-            -o {config[REFSEQ_REFERENCE]} -T AUTO --threads-max {threads} -s {input.fasta} \
+            -o {config[ALIGNMENT_REFERENCE]} -T AUTO --threads-max {threads} -s {input.fasta} \
             --seqtype {params.seqtype} -m {config[TREE_MODEL]} --prefix {output.folder}/{params.name}
         """
 
