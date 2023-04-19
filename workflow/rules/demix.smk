@@ -1,4 +1,4 @@
-rule calculate_mixtures:
+rule calculate_bam_variants:
     threads: 1
     conda: "../envs/freyja.yaml"
     shadow: "shallow"
@@ -12,12 +12,17 @@ rule calculate_mixtures:
         folder = directory(OUTDIR/"demixing"/"{sample}")  # TODO: add explicit tsv name
     shell:
         """
+        # Create output folder (why is this a necessary step?)
+        mkdir -p {output.folder}
+
+        echo Calculating variants of sample '{wildcards.sample}'
         freyja variants \
             "{input.bam}" \
-            --variants "{output.folder}/{wildcards.sample}_variants" \
+            --variants "{output.folder}/{wildcards.sample}_variants.tsv" \
             --depths "{output.folder}/{wildcards.sample}_depth.txt" \
             --ref {input.ref_fasta}
 
+        echo Demixing sample '{wildcards.sample}'
         freyja demix \
             "{output.folder}/{wildcards.sample}_variants.tsv" \
             "{output.folder}/{wildcards.sample}_depth.txt" \
