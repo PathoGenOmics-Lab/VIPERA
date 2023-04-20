@@ -32,4 +32,4 @@ rule ancestor_fasta:
     output:
         fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta"
     script:
-        "scripts/ancestor_fasta.py"
+        "../scripts/ancestor_fasta.py"
