@@ -30,3 +30,16 @@ rule calculate_bam_variants:
             --covcut {params.coverage_cutoff} \
             --output "{output.folder}/{wildcards.sample}_demixed.tsv"
         """
+
+
+rule summarise_demixing:
+    threads: 1
+    conda: "../envs/renv.yaml"
+    shadow: "shallow"
+    params:
+        sample_names = [x for x in iter_samples_in_path(BAM_FOLDER)],
+        demix_folder = Path(OUTDIR/"demixing")
+    output:
+        summary_df = OUTDIR/"summary_freyja_demixing.csv"
+    script: 
+        "../scripts/summary_demixing.R"
