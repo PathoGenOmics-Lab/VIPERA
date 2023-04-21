@@ -37,10 +37,9 @@ rule summarise_demixing:
     conda: "../envs/renv.yaml"
     shadow: "shallow"
     params:
-        sample_names = [x for x in iter_samples_in_path(BAM_FOLDER)],
         demix_folder = Path(OUTDIR/"demixing")
     input:
-         expand(OUTDIR/"demixing"/"{sample}", sample=iter_samples_in_path(BAM_FOLDER))
+        directories = expand(OUTDIR/"demixing"/"{sample}", sample=iter_samples_in_path(BAM_FOLDER))
     output:
         summary_df = OUTDIR/"summary_freyja_demixing.csv"
     script: 
