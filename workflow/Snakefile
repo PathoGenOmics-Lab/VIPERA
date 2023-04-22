@@ -55,8 +55,7 @@ include: "rules/vaf.smk"
 
 rule all:
     input:
-        OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
         expand(OUTDIR/"demixing"/"{sample}", sample=iter_samples_in_path(BAM_FOLDER)),
         OUTDIR/"summary_freyja_demixing.csv",
-        OUTDIR/f"{OUTPUT_NAME}.masked.vcf"
+        vaf_file = OUTDIR/f"{OUTPUT_NAME}.masked.annotated.vaf.tsv"
 
