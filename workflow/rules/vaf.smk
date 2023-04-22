@@ -1,24 +1,60 @@
+# pipeline para variant calling de https://github.com/onecodex/sars-cov-2/blob/master/covid19_call_variants.sh 
+# No se porque no es --ploidy 1 
+
 rule snps_to_ancestor:
     threads: 1
     shadow: "shallow"
     conda: "../envs/bcftools.yaml"
+    params:
+        max_depth = 200
     input:
         reference_fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
-        bams = expand("{bam}", bam = iter_files_in_path(BAM_FOLDER))
+        bam = BAM_FOLDER/"{sample}.trim.sort.bam"
+    output:
+        vcf = OUTDIR/"{sample}.vcf"
+    shell:
+        """
+        set +o pipefail
+
+        sed 's/>.*/>MN908947.3/g' {input.reference_fasta} > renamed_reference.fasta
+        
+        ID=`echo {input.bam} | grep -o -E COV[0-9]{{6}}`
+        bcftools mpileup \
+         -Ou -d {params.max_depth} \
+          --no-BAQ \
+          -f renamed_reference.fasta \
+           {input.bam} \
+            | bcftools call \
+            --variants-only \
+            --multiallelic-caller -Ov \
+            | sed 's/$/\t'$ID'/g' > {output.vcf}
+        
+        
+        """
+rule format_vcf:
+    threads:1
+    shadow: "shallow"
+    input:
+        expand(OUTDIR/"{sample}.vcf", sample = iter_samples_in_path(BAM_FOLDER))
     output:
         vcf = OUTDIR/f"{OUTPUT_NAME}.vcf"
     shell:
         """
         set +o pipefail
 
-        sed 's/>.*/>MN908947.3/g' {input.reference_fasta} > renamed_reference.fasta
-        for path in {input.bams}; do 
-            ID=`echo $path | grep -o COV[0-9]{6}`
-            bcftools mpileup -Ou -d 2000 -f renamed_reference.fasta $path  | bcftools call --ploidy 1 -mv -Ov | grep -v "#" | sed 's/MN908947.3/'$ID'/g' > $ID.pre.vcf
+        path=`echo {input} | awk '{{print $1}}'`
+        grep "##" $path | sed 's/\tCOV......//g' > header_1
+        grep "#" $path | grep -v "##" | sed 's/[^\t][^\t]*$/COV/g' > header_2
+        cat header_1 header_2 > header
+        for vcf in {input}; do
+            grep -v "#" $vcf | cat >> body
+            rm $vcf
         done
-        cat *pre.vcf > {output.vcf}
-        """
 
+        cat header body > {output.vcf}
+        rm header
+        exit 0
+        """
 
 rule mask_vcf:
     threads: 1
@@ -31,3 +67,26 @@ rule mask_vcf:
         masked_vcf = OUTDIR/f"{OUTPUT_NAME}.masked.vcf"
     script:
         "../scripts/mask_vcf.py"
+
+rule annotate_vcf:
+    threads: 1
+    conda: "../envs/vcf-annotator.yaml"
+    params:
+        gb = config["ANNOTATION_GB"]
+    input:
+        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.vcf"
+    output:
+        annotated = OUTDIR/f"{OUTPUT_NAME}.masked.annotated.vcf"
+    shell:
+        """
+        vcf-annotator --output {output.annotated} {input.vcf} {params.gb}
+        """
+rule compute_vaf:
+    threads: 1
+    conda: "../envs/renv.yaml"
+    input:
+        vcf = OUTDIR/f"{OUTPUT_NAME}.masked.annotated.vcf"
+    output:
+        vaf_file = OUTDIR/f"{OUTPUT_NAME}.masked.annotated.vaf.tsv"
+    script:
+        "../scripts/vaf_from_vcf.R"

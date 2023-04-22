@@ -10,3 +10,5 @@ TREE_MODEL:
   "GTR+G+I"
 N_UFBOOT:
   0
+ANNOTATION_GB:
+  "config/MN908947.3.gb"
