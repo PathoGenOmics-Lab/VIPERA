@@ -51,6 +51,7 @@ include: "rules/fasta.smk"
 include: "rules/asr.smk"
 include: "rules/demix.smk"
 include: "rules/vaf.smk"
+include: "rules/pangolin.smk"
 
 
 rule all:
@@ -58,5 +59,6 @@ rule all:
         OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
         expand(OUTDIR/"demixing"/"{sample}", sample=iter_samples_in_path(BAM_FOLDER)),
         OUTDIR/"summary_freyja_demixing.csv",
-        OUTDIR/f"{OUTPUT_NAME}.masked.annotated.vaf.tsv"
+        OUTDIR/f"{OUTPUT_NAME}.masked.annotated.vaf.tsv",
+        OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv"
 
