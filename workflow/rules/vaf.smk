@@ -6,7 +6,8 @@ rule snps_to_ancestor:
     shadow: "shallow"
     conda: "../envs/bcftools.yaml"
     params:
-        max_depth = 200
+        max_depth = 400,
+        min_quality = 30
     input:
         reference_fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
         bam = BAM_FOLDER/"{sample}.trim.sort.bam"
@@ -22,6 +23,7 @@ rule snps_to_ancestor:
         bcftools mpileup \
          -Ou -d {params.max_depth} \
           --no-BAQ \
+          -Q {params.min_quality} \
           -f renamed_reference.fasta \
            {input.bam} \
             | bcftools call \
