@@ -1,4 +1,4 @@
-# pipeline para variant calling de https://github.com/onecodex/sars-cov-2/blob/master/covid19_call_variants.sh 
+# pipeline para variant calling de https://github.com/grubaughlab/2022_paper_chronic_infection/blob/main/variant_calls.sh 
 # No se porque no es --ploidy 1 
 
 rule snps_to_ancestor:
@@ -6,8 +6,8 @@ rule snps_to_ancestor:
     shadow: "shallow"
     conda: "../envs/bcftools.yaml"
     params:
-        max_depth = 400,
-        min_quality = 30
+        max_depth = 1000000,
+        min_quality = 0
     input:
         reference_fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
         bam = BAM_FOLDER/"{sample}.trim.sort.bam"
@@ -22,11 +22,17 @@ rule snps_to_ancestor:
         ID=`echo {input.bam} | grep -o -E COV[0-9]{{6}}`
         bcftools mpileup \
          -Ou -d {params.max_depth} \
+         --max-idepth {params.max_depth} \
+         --per-sample-mF \
+         --count-orphans \
           --no-BAQ \
+          --annotate AD,ADF,ADR,DP,SP,AD,ADF,ADR \
           -Q {params.min_quality} \
           -f renamed_reference.fasta \
            {input.bam} \
+           | bcftools +fill-tags - \
             | bcftools call \
+            --prior-freqs AN,AC \
             --variants-only \
             --multiallelic-caller -Ov \
             | sed 's/$/\t'$ID'/g' > {output.vcf}
