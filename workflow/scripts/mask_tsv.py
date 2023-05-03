@@ -24,17 +24,18 @@ def main():
     iffy_sites = parse_vcf()
 
     # open unmasked VCF 
-    f = open(snakemake.input.vcf,"r")
+    f = open(snakemake.input.tsv,"r")
 
     # open masked vcf
-    mv = open(snakemake.output.masked_vcf,"w")
+    mv = open(snakemake.output.masked_tsv,"w")
 
     for line in f:
         
-        if line[0] == "#":
+        if line[0] == "R":
             mv.write(line)
             continue
-        elif line.split("\t")[1] not in iffy_sites:
+        elif int(line.split("\t")[1]) not in iffy_sites:
+
             mv.write(line)
 
     mv.close()
