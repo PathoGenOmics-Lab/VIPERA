@@ -1,9 +1,0 @@
-channels:
-  - bioconda
-  - conda-forge
-dependencies:
-  - vcf-annotator==0.7
-  - python==3.9
-  - biopython==1.81
-  - pyvcf==0.6.8
-  - setuptools<58.0.0
