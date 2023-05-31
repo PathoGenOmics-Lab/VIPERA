@@ -4,3 +4,6 @@ channels:
 dependencies:
   - biopython
   - pandas
+  - typing
+  - numpy
+  - joblib
