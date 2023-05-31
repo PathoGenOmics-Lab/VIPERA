@@ -1,5 +1,4 @@
-# pipeline para variant calling de https://github.com/grubaughlab/2022_paper_chronic_infection/blob/main/variant_calls.sh 
-# No se porque no es --ploidy 1 
+
 
 rule snps_to_ancestor:
     threads: 1
