@@ -53,6 +53,7 @@ include: "rules/demix.smk"
 include: "rules/vaf.smk"
 include: "rules/pangolin.smk"
 include: "rules/distances.smk"
+include: "rules/evolution.smk"
 
 
 rule all:
@@ -62,5 +63,6 @@ rule all:
         OUTDIR/"summary_freyja_demixing.csv",
         OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv",
-        OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv"
+        OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
+        OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv"
 
