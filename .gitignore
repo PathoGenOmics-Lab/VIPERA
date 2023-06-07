@@ -5,8 +5,11 @@
 # Analysis files
 *.bam
 *.fa
-*.fasta
+*/fasta/*.fasta
 /output/
 
 # MAC
 .DS_Store
+
+# report 
+*.html

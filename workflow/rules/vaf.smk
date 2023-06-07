@@ -5,7 +5,7 @@ rule snps_to_ancestor:
     shadow: "shallow"
     conda: "../envs/var_calling.yaml"
     params:
-        max_depth = 1000000,
+        max_depth = 0,
         min_quality = 0,
         ivar_quality = 20,
         ivar_freq = 0.05,
@@ -24,6 +24,8 @@ rule snps_to_ancestor:
         
         ID=`echo {input.bam} | grep -o -E COV[0-9]{{6}}`
         samtools mpileup \
+         -aa \
+         --ignore-overlaps \
          -d {params.max_depth} \
          --count-orphans \
           --no-BAQ \
