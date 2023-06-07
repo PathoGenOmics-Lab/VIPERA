@@ -1,5 +1,5 @@
 rule report:
-    conda: "../envs/renv copy.yaml"
+    conda: "../envs/renv.yaml"
     params:
         id = expand("{sample2}",sample2 = iter_samples_in_path(FASTA_FOLDER)),
         metadata = config["METADATA"],
