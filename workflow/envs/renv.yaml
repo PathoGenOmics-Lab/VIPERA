@@ -5,3 +5,5 @@ dependencies:
   - r-logger
   - r-tidyverse
   - r-ggrepel
+  - r-quarto
+  - r-rmarkdown

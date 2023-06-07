@@ -5,6 +5,7 @@ min_version("6.0")
 
 configfile: "config/config.yaml"
 configfile: "config/targets.yaml"
+configfile: "config/report.yaml"
 
 
 def iter_lines(file_path):
@@ -30,6 +31,8 @@ def iter_samples_in_path(path: Path):
 OUTPUT_NAME = config["OUTPUT_NAME"]
 OUTDIR = Path(config["OUTPUT_DIRECTORY"])
 OUTDIR.mkdir(parents=True, exist_ok=True)
+
+
 ## Data folders
 BAM_FOLDER = Path(config["BAM_FOLDER"])
 FASTA_FOLDER = Path(config["FASTA_FOLDER"])
@@ -54,6 +57,8 @@ include: "rules/vaf.smk"
 include: "rules/pangolin.smk"
 include: "rules/distances.smk"
 include: "rules/evolution.smk"
+include: "rules/report.smk"
+
 
 
 rule all:
@@ -64,5 +69,6 @@ rule all:
         OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv",
         OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
-        OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv"
+        OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv",
+        f"{OUTPUT_NAME}.report.html"
 
