@@ -3,6 +3,6 @@ BAM_FOLDER:
 FASTA_FOLDER:
   "data/fasta"
 METADATA:
-  "data/metadata.csv"
+  "data/report_files/JSF_COV_metadata_master.csv"
 OUTPUT_DIRECTORY:
   "output"
