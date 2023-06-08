@@ -7,7 +7,7 @@ rule report:
         design = config["PLOTS"],
         diversity_alignment = config["DIVERSITY"] ,
         nsp = config["NSP"],
-        rmd = "prueba1.qmd"
+        qmd = "case_study.report.qmd"
 
     input:
         vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
@@ -22,7 +22,7 @@ rule report:
     shell:         
         """
          set +o pipefail
-        Rscript -e 'library(quarto)' -e \"quarto_render(input = '{params.rmd}',\
+        Rscript -e 'library(quarto)' -e \"quarto_render(input = '{params.qmd}',\
                                            output_file = '{output.html}',\
                                            execute_params=list(id='{params.id}',\
                                                        metadata='{params.metadata}',\
