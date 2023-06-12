@@ -147,7 +147,9 @@ b <- data.frame(label = tree2$tip.label)
 
 # Demixing
 
-demix <- read_csv(params$summary_demixing)
+demix <- read_csv(params$summary_demixing) %>%
+  pivot_wider(names_from = "sample", values_from = "abundances", values_fill = 0) %>%
+  pivot_longer(contains("COV"), names_to = "sample", values_to = "abundances") 
 
 maximum_lineage <- demix %>%
   group_by(sample) %>%
@@ -208,7 +210,7 @@ labs = data.frame(date_order = date_order, V2 = seq(1,12,1))
 ```{r echo=FALSE, warning=FALSE}
 demix_plot <- demix %>%
   group_by(lineages) %>%
-  filter(n() >= 2, abundances > 0.05) %>%
+  filter(n() >= 2, max(abundances) > 0.05) %>%
   ungroup() %>%
   arrange(CollectionDate) %>%
   ggplot() + 
@@ -644,14 +646,14 @@ No parece que la diversidad esté siendo influenciada por el Ct
 ## Nº de reads
 
 ```{r echo = FALSE, warning = FALSE, message=FALSE}
-num_reads = data.frame(ID = a$ID, num = c(375166,396399,376301,370742,480290,490394,329273,372976,331437,446022,338982,309402)) 
+num_reads = data.frame(ID = a$ID, num = c(375166,396399,376301,370742,480290,490394,329273,372976,331437,446022,338982,309402)) # TODO: obtener los valores de los archivos
 
 a %>%
   left_join(num_reads) %>%
   ggplot() + 
   aes(num, n) + 
   geom_point() + 
-  geom_smooth(alpha = 0.1, method = "lm") + 
+  geom_smooth(method = "lm",alpha = 0.1) + 
   stat_cor() +
   labs(x = "Nº mapped reads", y = "Nº sitios heterocigotos")
 
