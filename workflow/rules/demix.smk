@@ -9,7 +9,9 @@ rule calculate_bam_variants:
         coverage_cutoff = 30,
         minimum_abundance = 0.0001
     output:
-        folder = directory(OUTDIR/"demixing"/"{sample}")  # TODO: add explicit tsv name
+        folder = directory(OUTDIR/"demixing"/"{sample}/"),  # TODO: add explicit tsv name
+        depth_file = OUTDIR/"demixing"/"{sample}/{sample}_depth.txt",
+        variants_file = OUTDIR/"demixing"/"{sample}/{sample}_variants.tsv"
     shell:
         """
         # Create output folder (why is this a necessary step?)
@@ -18,14 +20,14 @@ rule calculate_bam_variants:
         echo Calculating variants of sample '{wildcards.sample}'
         freyja variants \
             "{input.bam}" \
-            --variants "{output.folder}/{wildcards.sample}_variants.tsv" \
-            --depths "{output.folder}/{wildcards.sample}_depth.txt" \
+            --variants {output.variants_file} \
+            --depths {output.depth_file} \
             --ref {input.ref_fasta}
 
         echo Demixing sample '{wildcards.sample}'
         freyja demix \
-            "{output.folder}/{wildcards.sample}_variants.tsv" \
-            "{output.folder}/{wildcards.sample}_depth.txt" \
+            {output.variants_file} \
+            {output.depth_file} \
             --eps {params.minimum_abundance} \
             --covcut {params.coverage_cutoff} \
             --output "{output.folder}/{wildcards.sample}_demixed.tsv"

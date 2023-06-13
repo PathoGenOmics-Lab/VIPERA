@@ -22,7 +22,6 @@ rule snps_to_ancestor:
 
         sed 's/>.*/>MN908947.3/g' {input.reference_fasta} > renamed_reference.fasta
         
-        ID=`echo {input.bam} | grep -o -E COV[0-9]{{6}}`
         samtools mpileup \
          -aa \
          --ignore-overlaps \
@@ -41,7 +40,7 @@ rule snps_to_ancestor:
            -r renamed_reference.fasta
 
         
-         sed 's/MN908947.3/'$ID'/g' {wildcards.sample}.tsv > {output.tsv}
+         sed 's/MN908947.3/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}
         
         
         """

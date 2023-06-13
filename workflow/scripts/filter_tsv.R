@@ -17,7 +17,7 @@ data <- filter(data, as.logical(PASS))
 # filtrar por más de dos lecturas por cadena
 
 is_deletion <- str_detect(data$ALT, "^[A-Z]", negate = T)
-inBothStrands <- data$ALT_RV > 2 & data$ALT_DP > 2
+inBothStrands <- data$ALT_RV > 2 & data$ALT_DP > 2 & (data$ALT_RV + data$ALT_DP) >= 20
 filter <- is_deletion | inBothStrands
 
 data <- filter(data, filter)
