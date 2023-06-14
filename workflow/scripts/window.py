@@ -18,6 +18,13 @@ SCov2_annotation = {
 "three_prime_UTR" : [29675, 29903]
 }
 
+# Diccionario con relación coordenada --> gen
+coord2gene = { i : "intergenic" for i in range(1, 29903 + 1) } # Init to genomic
+for gene in SCov2_annotation:
+    start, end = SCov2_annotation[gene]
+    for i in range(start, end + 1):
+        coord2gene[i] = gene
+
 
 def cov_list(df):
     
@@ -32,7 +39,7 @@ def get_polimorphic_sites(df):
     
     return lista
 
-def window_calculous(lista,step,genome_size, annotation):
+def window_calculous(lista,step,genome_size, coord):
     
     positions = []
     pct = []
@@ -41,44 +48,22 @@ def window_calculous(lista,step,genome_size, annotation):
     lim_sup = genome_size + 1
     
     for position in range(1,lim_sup):
+
+        gene = coord[position]   
+        genes.append(gene) 
+        num_snp = 0
+
         if position - step not in range(1,lim_sup):
             positions.append(position)
             pct.append(0)
-            
-            gene = 0
-        
-            for key,item in annotation.items():
-                if position in range(item[0],item[1] + 1):
-                    gene = key             
-
-            if gene != 0:
-                genes.append(gene)
-            else: 
-                genes.append("Intergenic")
-            continue
-        
-        
-        
-        
-        
-        num_snp = 0
-        
+             
+   
         for x in lista:
             if x in range(position - step,position + 1):
-                
                 num_snp += 1
                 
                 
         gene = 0
-        
-        for key,item in annotation.items():
-            if position in range(item[0],item[1] + 1):
-                gene = key             
-        
-        if gene != 0:
-            genes.append(gene)
-        else: 
-            genes.append("Intergenic")
             
         frac = num_snp/1000
         
