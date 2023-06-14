@@ -203,3 +203,82 @@ res <- princomp(pca.1[c(2:13)])
 
 autoplot(res, data = pca.1, color = "case") + 
   scale_color_hue(labels = c("Disminuyen", "Aumentan","Random"))
+
+# FIGURA ####
+
+# Anotacion de sars
+
+SCov2_annotation = list(
+  # "SCov2_genome"    = (1, 29903),
+  "five_prime_UTR"  = c(    1:   265),
+  "orf1ab"          = c(  266: 21555),
+  "S"          = c(21563: 25384),
+  "ORF3a"           = c(25393: 26220),
+  "E"          = c(26245: 26472),
+  "M"          = (26523: 27191),
+  "ORF6"            = c(27202: 27387),
+  "ORF7a"           = c(27394: 27759),
+  "ORF8"            = c(27894: 28259),
+  "N"          = c(28274: 29533),
+  "ORF10"           = c(29558: 29674),
+  "three_prime_UTR" = c(29675: 29903))
+
+dic = data.frame(pos = c(1:29903))
+
+gene = c()
+for (pos in c(1:29903)){
+  for (name in names(SCov2_annotation)){
+    annotated = F
+    if (pos %in% SCov2_annotation[[name]] & !annotated){
+      gene <- c(gene,name)
+      annotated = T
+      break
+      
+    } 
+    
+  }
+  if (!annotated ){
+    gene = c(gene,"Intergenic")
+  }
+}
+
+dic["gene"] <- gene
+
+dic <- mutate(dic, gene = case_when(str_detect(gene,"prime") ~ "Intergenic",
+                                    T ~ gene))
+
+# Clasificación de las variantes
+
+vcf <- vcf %>%
+  mutate(SNP_class = case_when(str_detect(SNP,fixed("--")) | str_detect(SNP,fixed("+")) ~ "INDEL",
+                         T ~ "SNP"),
+         Class = case_when(SNP_class == "INDEL" ~ "Intergenic",
+                           is.na(GFF_FEATURE) ~ "Intergenic",
+                           T ~ synonimous),
+         POS = as.numeric(POS)) %>%
+  rowwise() %>%
+  mutate( gene = as.character(dic[dic$pos == POS,"gene"]),
+          indel_len = case_when(SNP_class == "INDEL" & str_detect(SNP,fixed("--")) ~ str_length(strsplit(SNP,"--")[[1]][2]) -1,
+                                SNP_class == "INDEL" & str_detect(SNP,fixed("-+")) ~ str_length(strsplit(SNP,"-+")[[1]][2]) -1),
+          indel_class = case_when(gene == "Intergenic" ~ "Intergenic",
+                                  SNP_class == "INDEL" & indel_len %% 3 == 0 ~ "Inframe",
+                                  SNP_class == "INDEL" & indel_len %% 3 > 0 ~ "Frameshift")) %>%
+  ungroup() %>%
+  mutate(group = case_when(gene == "Intergenic" ~ "Intergenic",
+                           SNP_class == "SNP" ~ Class,
+                           SNP_class == "INDEL" ~ indel_class))
+plot <- vcf %>%
+  filter(ALT_FREQ > 0) %>%
+ggplot() + 
+  aes(x = POS, y = factor(REGION,date_order), shape = factor(SNP_class,c("SNP","INDEL")), color = group, alpha = ALT_FREQ) +
+  geom_point(size = 3) + 
+  geom_col(data = notation, aes(x = len,y = 0.3, fill = factor(gene,rev(names(SCov2_annotation)))), inherit.aes = F, width = 0.3) +
+  scale_fill_manual(values = gene_colors) + 
+  xlim(c(0,29903)) + 
+  scale_color_manual(labels = c("Frameshift","Inframe","Intergenic","Non synonymous","Synonymous"), values = c("#568D63","black","#B27CF9","#AE584A","#0248FD")) + 
+  labs(x = "Genome", y = "Sample", shape = "Variant class", color = "Classification", alpha = "Frequency", fill = "Region") 
+
+plot
+
+ 
+
