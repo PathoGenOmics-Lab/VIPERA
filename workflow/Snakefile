@@ -8,12 +8,6 @@ configfile: "config/targets.yaml"
 configfile: "config/report.yaml"
 
 
-def iter_lines(file_path):
-    with open(file_path) as f:
-        for line in f:
-            yield line.strip()
-
-
 def iter_files(file_type: str):
     for sample_name in config["SAMPLES"].keys():
         yield config["SAMPLES"][sample_name][file_type]
@@ -33,9 +27,6 @@ def get_input_bam(wildcards):
 OUTPUT_NAME = config["OUTPUT_NAME"]
 OUTDIR = Path(config["OUTPUT_DIRECTORY"])
 OUTDIR.mkdir(parents=True, exist_ok=True)
-
-## Metadata table
-METADATA = Path(config["METADATA"])
 
 
 # Tree parameters
