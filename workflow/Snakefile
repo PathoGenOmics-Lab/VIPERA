@@ -60,9 +60,7 @@ include: "rules/evolution.smk"
 include: "rules/report.smk"
 
 
-
 rule all:
     input:
         f"{OUTPUT_NAME}.report.html",
         OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv"
-
