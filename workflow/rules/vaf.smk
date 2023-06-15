@@ -13,7 +13,7 @@ rule snps_to_ancestor:
         reference_fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
         bam = get_input_bam
     output:
-        tsv = OUTDIR/"{sample}.tsv"
+        tsv = temp(OUTDIR/"{sample}.tsv")
     shell:
         """
         set -e
@@ -54,7 +54,6 @@ rule format_tsv:
         grep "^REGION" "$path" > header
         for tsv in {input}; do
             tail -n +2 "$tsv"  >> body
-            rm "$tsv"
         done
         cat header body > "{output.tsv}"
         rm header
