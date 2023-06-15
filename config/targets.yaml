@@ -1,40 +1,40 @@
 SAMPLES:
   COV012623:
     bam: "data/bam/COV012623.trim.sort.bam"
-    fasta: "data/fasta/COV012623.trim.sort.bam"
+    fasta: "data/fasta/COV012623.fa"
   COV012630:
     bam: "data/bam/COV012630.trim.sort.bam"
-    fasta: "data/fasta/COV012630.trim.sort.bam"
+    fasta: "data/fasta/COV012630.fa"
   COV012635:
     bam: "data/bam/COV012635.trim.sort.bam"
-    fasta: "data/fasta/COV012635.trim.sort.bam"
+    fasta: "data/fasta/COV012635.fa"
   COV012638:
     bam: "data/bam/COV012638.trim.sort.bam"
-    fasta: "data/fasta/COV012638.trim.sort.bam"
+    fasta: "data/fasta/COV012638.fa"
   COV012640:
     bam: "data/bam/COV012640.trim.sort.bam"
-    fasta: "data/fasta/COV012640.trim.sort.bam"
+    fasta: "data/fasta/COV012640.fa"
   COV012651:
     bam: "data/bam/COV012651.trim.sort.bam"
-    fasta: "data/fasta/COV012651.trim.sort.bam"
+    fasta: "data/fasta/COV012651.fa"
   COV012661:
     bam: "data/bam/COV012661.trim.sort.bam"
-    fasta: "data/fasta/COV012661.trim.sort.bam"
+    fasta: "data/fasta/COV012661.fa"
   COV012663:
     bam: "data/bam/COV012663.trim.sort.bam"
-    fasta: "data/fasta/COV012663.trim.sort.bam"
+    fasta: "data/fasta/COV012663.fa"
   COV012672:
     bam: "data/bam/COV012672.trim.sort.bam"
-    fasta: "data/fasta/COV012672.trim.sort.bam"
+    fasta: "data/fasta/COV012672.fa"
   COV012674:
     bam: "data/bam/COV012674.trim.sort.bam"
-    fasta: "data/fasta/COV012674.trim.sort.bam"
+    fasta: "data/fasta/COV012674.fa"
   COV012684:
     bam: "data/bam/COV012684.trim.sort.bam"
-    fasta: "data/fasta/COV012684.trim.sort.bam"
+    fasta: "data/fasta/COV012684.fa"
   COV012716:
     bam: "data/bam/COV012716.trim.sort.bam"
-    fasta: "data/fasta/COV012716.trim.sort.bam"
+    fasta: "data/fasta/COV012716.fa"
 METADATA:
   "data/report_files/JSF_COV_metadata_master.csv"
 OUTPUT_DIRECTORY:
