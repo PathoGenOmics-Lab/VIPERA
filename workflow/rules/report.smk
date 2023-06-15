@@ -41,6 +41,8 @@ rule window:
     conda: "../envs/biopython.yaml"
     input:
         vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
+    params:
+        step = 1000
     output:
         window_df = OUTDIR/f"{OUTPUT_NAME}.window.csv",
     script:
