@@ -6,8 +6,8 @@ rule calculate_bam_variants:
         bam = get_input_bam,
         ref_fasta = OUTDIR/"mapping_references.fasta"
     params:
-        coverage_cutoff = 30,
-        minimum_abundance = 0.0001
+        coverage_cutoff = config["DEMIX"]["COV_CUTOFF"],
+        minimum_abundance = config["DEMIX"]["MIN_ABUNDANCE"]
     output:
         folder = directory(OUTDIR/"demixing"/"{sample}/"),  # TODO: add explicit tsv name
         depth_file = OUTDIR/"demixing"/"{sample}/{sample}_depth.txt",
