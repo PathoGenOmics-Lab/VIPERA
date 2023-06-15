@@ -9,7 +9,7 @@ rule calculate_bam_variants:
         coverage_cutoff = config["DEMIX"]["COV_CUTOFF"],
         minimum_abundance = config["DEMIX"]["MIN_ABUNDANCE"]
     output:
-        folder = directory(OUTDIR/"demixing"/"{sample}/"),  # TODO: add explicit tsv name
+        folder = directory(OUTDIR/"demixing"/"{sample}/"),
         depth_file = OUTDIR/"demixing"/"{sample}/{sample}_depth.txt",
         variants_file = OUTDIR/"demixing"/"{sample}/{sample}_variants.tsv"
     shell:
