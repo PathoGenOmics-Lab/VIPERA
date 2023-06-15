@@ -1,5 +1,6 @@
 rule report:
     conda: "../envs/renv.yaml"
+    shadow: "shallow"
     params:
         id = expand("{sample2}",sample2 = iter_samples()),
         metadata = config["METADATA"],
@@ -16,12 +17,12 @@ rule report:
         distancias = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
         N_S = OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv"
     output:
-        html = f"{OUTPUT_NAME}.report.html"
-    shell:         
+        html = OUTDIR/f"{OUTPUT_NAME}.report.html"
+    shell:
         """
-         set +o pipefail
+        set +o pipefail
         Rscript -e 'library(quarto)' -e \"quarto_render(input = '{params.qmd}',\
-                                           output_file = '{output.html}',\
+                                           output_file = 'report.html',\
                                            execute_params=list(id='{params.id}',\
                                                        metadata='{params.metadata}',\
                                                        context_tree = '{params.context_tree}',\
@@ -34,6 +35,7 @@ rule report:
                                                        window = '{input.window}',\
                                                        distancias = '{input.distancias}',\
                                                        N_S = '{input.N_S}'))\"    
+        mv report.html {output.html}
         """
 
 
