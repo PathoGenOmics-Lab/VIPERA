@@ -1,7 +1,7 @@
 rule report:
     conda: "../envs/renv.yaml"
     params:
-        id = expand("{sample2}",sample2 = iter_samples_in_path(FASTA_FOLDER)),
+        id = expand("{sample2}",sample2 = iter_samples()),
         metadata = config["METADATA"],
         context_tree = config["ML_TREE"], 
         design = config["PLOTS"],
@@ -10,7 +10,7 @@ rule report:
         qmd = "case_study.report.qmd"
     input:
         vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
-        depth_files = expand(OUTDIR/"demixing/{sample}/{sample}_depth.txt", sample = iter_samples_in_path(FASTA_FOLDER)),
+        depth_files = expand(OUTDIR/"demixing/{sample}/{sample}_depth.txt", sample = iter_samples()),
         summary_demixing =  OUTDIR/"summary_freyja_demixing.csv",
         window = OUTDIR/f"{OUTPUT_NAME}.window.csv", 
         distancias = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",

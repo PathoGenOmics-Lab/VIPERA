@@ -2,7 +2,7 @@ rule concat_fasta:
     threads: 1
     shadow: "shallow"
     input:
-        iter_files_in_path(FASTA_FOLDER)
+        iter_files("fasta")
     output:
         fasta = OUTDIR/f"{OUTPUT_NAME}.fasta"
     shell:
