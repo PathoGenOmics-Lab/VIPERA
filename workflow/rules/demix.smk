@@ -3,7 +3,7 @@ rule calculate_bam_variants:
     conda: "../envs/freyja.yaml"
     shadow: "shallow"
     input:
-        bam = BAM_FOLDER/"{sample}.trim.sort.bam",
+        bam = get_input_bam,
         ref_fasta = OUTDIR/"mapping_references.fasta"
     params:
         coverage_cutoff = 30,
