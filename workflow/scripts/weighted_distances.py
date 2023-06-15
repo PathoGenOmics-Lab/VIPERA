@@ -116,7 +116,7 @@ def get_matrix(df, cov_list, reference, freq):
         print(f"Calculating distances for sample: {sample}")
         distances = [get_dif_n(df, sample, x, mask_positions, reference, freq) for x in cov_list]
         return distances
-    num_jobs = 4
+    num_jobs = snakemake.threads
     #num_jobs = multiprocessing.cpu_count()  # Obten el numero de nucleos de la CPU
     if len(cov_list) <= effective_n_jobs(num_jobs):
         batch_size = 1  # Establecer batch_size en 1 si el tamanyo de cov_list es menor o igual al numero de trabajos paralelos
