@@ -3,11 +3,11 @@ rule snps_to_ancestor:
     shadow: "shallow"
     conda: "../envs/var_calling.yaml"
     params:
-        max_depth = 0,
-        min_quality = 0,
-        ivar_quality = 20,
-        ivar_freq = 0.05,
-        ivar_depth = 30,
+        max_depth = config["VC"]["MAX_DEPTH"],
+        min_quality = config["VC"]["MIN_QUALITY"],
+        ivar_quality = config["VC"]["IVAR_QUALITY"],
+        ivar_freq = config["VC"]["IVAR_FREQ"],
+        ivar_depth = config["VC"]["IVAR_DEPTH"],
         gff = config["ANNOTATION_GFF"]
     input:
         reference_fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
