@@ -15,14 +15,17 @@ def iter_lines(file_path):
 
 
 def iter_files(file_type: str):
-    for sample_name in config["SAMPLES"]:
-        for file_name in sample["file_type"]:
-            yield file
+    for sample_name in config["SAMPLES"].keys():
+        yield config["SAMPLES"][sample_name][file_type]
 
 
 def iter_samples():
-    for sample_name in config["SAMPLES"]:
+    for sample_name in config["SAMPLES"].keys():
         yield sample_name
+
+
+def get_input_bam(wildcards):
+    return config["SAMPLES"][wildcards.sample]["bam"]
 
 
 # Targets
@@ -31,10 +34,6 @@ OUTPUT_NAME = config["OUTPUT_NAME"]
 OUTDIR = Path(config["OUTPUT_DIRECTORY"])
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
-
-## Data folders
-BAM_FOLDER = Path(config["BAM_FOLDER"])
-FASTA_FOLDER = Path(config["FASTA_FOLDER"])
 ## Metadata table
 METADATA = Path(config["METADATA"])
 

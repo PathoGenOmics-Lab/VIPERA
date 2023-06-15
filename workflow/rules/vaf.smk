@@ -11,7 +11,7 @@ rule snps_to_ancestor:
         gff = config["ANNOTATION_GFF"]
     input:
         reference_fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
-        bam = BAM_FOLDER/"{sample}.trim.sort.bam"
+        bam = get_input_bam
     output:
         tsv = OUTDIR/"{sample}.tsv"
     shell:
