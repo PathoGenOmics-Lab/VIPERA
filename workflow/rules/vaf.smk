@@ -1,5 +1,3 @@
-
-
 rule snps_to_ancestor:
     threads: 1
     shadow: "shallow"
@@ -21,7 +19,7 @@ rule snps_to_ancestor:
         set +o pipefail
 
         sed 's/>.*/>MN908947.3/g' {input.reference_fasta} > renamed_reference.fasta
-        
+
         samtools mpileup \
          -aa \
          --ignore-overlaps \
@@ -38,12 +36,11 @@ rule snps_to_ancestor:
            -m {params.ivar_depth} \
            -g {params.gff} \
            -r renamed_reference.fasta
-
         
-         sed 's/MN908947.3/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}
-        
-        
+        sed 's/MN908947.3/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}
         """
+
+
 rule format_tsv:
     threads:1
     shadow: "shallow"
@@ -53,20 +50,16 @@ rule format_tsv:
         tsv = OUTDIR/f"{OUTPUT_NAME}.tsv"
     shell:
         """
-    
-
         path=`echo {input} | awk '{{print $1}}'`
         grep REGION $path > header
-    
         for tsv in {input}; do
             tail -n +2 $tsv  >> body
             rm $tsv
         done
-
         cat header body > {output.tsv}
         rm header
-        exit 0
         """
+
 
 rule mask_tsv:
     threads: 1
@@ -92,4 +85,3 @@ rule filter_tsv:
         filtered_tsv = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     script:
         "../scripts/filter_tsv.R"
-

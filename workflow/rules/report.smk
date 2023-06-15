@@ -8,7 +8,6 @@ rule report:
         diversity_alignment = config["DIVERSITY"] ,
         nsp = config["NSP"],
         qmd = "case_study.report.qmd"
-
     input:
         vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         depth_files = expand(OUTDIR/"demixing/{sample}/{sample}_depth.txt", sample = iter_samples_in_path(FASTA_FOLDER)),
@@ -16,7 +15,6 @@ rule report:
         window = OUTDIR/f"{OUTPUT_NAME}.window.csv", 
         distancias = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
         N_S = OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv"
-
     output:
         html = f"{OUTPUT_NAME}.report.html"
     shell:         
