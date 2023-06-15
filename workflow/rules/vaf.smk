@@ -16,26 +16,26 @@ rule snps_to_ancestor:
         tsv = OUTDIR/"{sample}.tsv"
     shell:
         """
-        set +o pipefail
+        set -e
 
         sed 's/>.*/>MN908947.3/g' {input.reference_fasta} > renamed_reference.fasta
 
         samtools mpileup \
-         -aa \
-         --ignore-overlaps \
-         -d {params.max_depth} \
-         --count-orphans \
-          --no-BAQ \
-          -Q {params.min_quality} \
-          -f renamed_reference.fasta \
-           {input.bam} \
-           | ivar variants \
-           -p {wildcards.sample} \
-           -q {params.ivar_quality} \
-           -t {params.ivar_freq} \
-           -m {params.ivar_depth} \
-           -g {params.gff} \
-           -r renamed_reference.fasta
+            -aa \
+            --ignore-overlaps \
+            -d {params.max_depth} \
+            --count-orphans \
+            --no-BAQ \
+            -Q {params.min_quality} \
+            -f renamed_reference.fasta \
+            {input.bam} \
+            | ivar variants \
+                -p {wildcards.sample} \
+                -q {params.ivar_quality} \
+                -t {params.ivar_freq} \
+                -m {params.ivar_depth} \
+                -g {params.gff} \
+                -r renamed_reference.fasta
         
         sed 's/MN908947.3/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}
         """
@@ -51,12 +51,12 @@ rule format_tsv:
     shell:
         """
         path=`echo {input} | awk '{{print $1}}'`
-        grep REGION $path > header
+        grep "^REGION" "$path" > header
         for tsv in {input}; do
-            tail -n +2 $tsv  >> body
-            rm $tsv
+            tail -n +2 "$tsv"  >> body
+            rm "$tsv"
         done
-        cat header body > {output.tsv}
+        cat header body > "{output.tsv}"
         rm header
         """
 
