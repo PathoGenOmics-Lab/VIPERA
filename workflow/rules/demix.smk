@@ -41,7 +41,7 @@ rule summarise_demixing:
     params:
         demix_folder = Path(OUTDIR/"demixing")
     input:
-        directories = expand(OUTDIR/"demixing"/"{sample}", sample=iter_samples_in_path(BAM_FOLDER))
+        directories = expand(OUTDIR/"demixing"/"{sample}", sample=iter_samples())
     output:
         summary_df = OUTDIR/"summary_freyja_demixing.csv"
     script: 

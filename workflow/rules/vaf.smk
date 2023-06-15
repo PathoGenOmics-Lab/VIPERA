@@ -45,7 +45,7 @@ rule format_tsv:
     threads:1
     shadow: "shallow"
     input:
-        expand(OUTDIR/"{sample}.tsv", sample = iter_samples_in_path(BAM_FOLDER))
+        expand(OUTDIR/"{sample}.tsv", sample = iter_samples())
     output:
         tsv = OUTDIR/f"{OUTPUT_NAME}.tsv"
     shell:

@@ -14,16 +14,15 @@ def iter_lines(file_path):
             yield line.strip()
 
 
-def iter_files_in_path(path: Path):
-    """Iterates over non-hidden files"""
-    for file in path.glob("*"):
-        if not file.name.startswith("."):
+def iter_files(file_type: str):
+    for sample_name in config["SAMPLES"]:
+        for file_name in sample["file_type"]:
             yield file
 
 
-def iter_samples_in_path(path: Path):
-    for file in iter_files_in_path(path):
-        yield file.name.split(".")[0]
+def iter_samples():
+    for sample_name in config["SAMPLES"]:
+        yield sample_name
 
 
 # Targets
