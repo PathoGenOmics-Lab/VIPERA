@@ -3,13 +3,13 @@ rule calculate_bam_variants:
     conda: "../envs/freyja.yaml"
     shadow: "shallow"
     input:
-        bam = BAM_FOLDER/"{sample}.trim.sort.bam",
+        bam = get_input_bam,
         ref_fasta = OUTDIR/"mapping_references.fasta"
     params:
-        coverage_cutoff = 30,
-        minimum_abundance = 0.0001
+        coverage_cutoff = config["DEMIX"]["COV_CUTOFF"],
+        minimum_abundance = config["DEMIX"]["MIN_ABUNDANCE"]
     output:
-        folder = directory(OUTDIR/"demixing"/"{sample}/"),  # TODO: add explicit tsv name
+        folder = directory(OUTDIR/"demixing"/"{sample}/"),
         depth_file = OUTDIR/"demixing"/"{sample}/{sample}_depth.txt",
         variants_file = OUTDIR/"demixing"/"{sample}/{sample}_variants.tsv"
     shell:
@@ -41,7 +41,7 @@ rule summarise_demixing:
     params:
         demix_folder = Path(OUTDIR/"demixing")
     input:
-        directories = expand(OUTDIR/"demixing"/"{sample}", sample=iter_samples_in_path(BAM_FOLDER))
+        directories = expand(OUTDIR/"demixing"/"{sample}", sample=iter_samples())
     output:
         summary_df = OUTDIR/"summary_freyja_demixing.csv"
     script: 

@@ -1,72 +1,64 @@
-
-
 rule snps_to_ancestor:
     threads: 1
     shadow: "shallow"
     conda: "../envs/var_calling.yaml"
     params:
-        max_depth = 0,
-        min_quality = 0,
-        ivar_quality = 20,
-        ivar_freq = 0.05,
-        ivar_depth = 30,
+        max_depth = config["VC"]["MAX_DEPTH"],
+        min_quality = config["VC"]["MIN_QUALITY"],
+        ivar_quality = config["VC"]["IVAR_QUALITY"],
+        ivar_freq = config["VC"]["IVAR_FREQ"],
+        ivar_depth = config["VC"]["IVAR_DEPTH"],
         gff = config["ANNOTATION_GFF"]
     input:
         reference_fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
-        bam = BAM_FOLDER/"{sample}.trim.sort.bam"
+        bam = get_input_bam
     output:
-        tsv = OUTDIR/"{sample}.tsv"
+        tsv = temp(OUTDIR/"{sample}.tsv")
     shell:
         """
-        set +o pipefail
+        set -e
 
         sed 's/>.*/>MN908947.3/g' {input.reference_fasta} > renamed_reference.fasta
-        
-        samtools mpileup \
-         -aa \
-         --ignore-overlaps \
-         -d {params.max_depth} \
-         --count-orphans \
-          --no-BAQ \
-          -Q {params.min_quality} \
-          -f renamed_reference.fasta \
-           {input.bam} \
-           | ivar variants \
-           -p {wildcards.sample} \
-           -q {params.ivar_quality} \
-           -t {params.ivar_freq} \
-           -m {params.ivar_depth} \
-           -g {params.gff} \
-           -r renamed_reference.fasta
 
+        samtools mpileup \
+            -aa \
+            --ignore-overlaps \
+            -d {params.max_depth} \
+            --count-orphans \
+            --no-BAQ \
+            -Q {params.min_quality} \
+            -f renamed_reference.fasta \
+            {input.bam} \
+            | ivar variants \
+                -p {wildcards.sample} \
+                -q {params.ivar_quality} \
+                -t {params.ivar_freq} \
+                -m {params.ivar_depth} \
+                -g {params.gff} \
+                -r renamed_reference.fasta
         
-         sed 's/MN908947.3/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}
-        
-        
+        sed 's/MN908947.3/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}
         """
+
+
 rule format_tsv:
     threads:1
     shadow: "shallow"
     input:
-        expand(OUTDIR/"{sample}.tsv", sample = iter_samples_in_path(BAM_FOLDER))
+        expand(OUTDIR/"{sample}.tsv", sample = iter_samples())
     output:
         tsv = OUTDIR/f"{OUTPUT_NAME}.tsv"
     shell:
         """
-    
-
         path=`echo {input} | awk '{{print $1}}'`
-        grep REGION $path > header
-    
+        grep "^REGION" "$path" > header
         for tsv in {input}; do
-            tail -n +2 $tsv  >> body
-            rm $tsv
+            tail -n +2 "$tsv"  >> body
         done
-
-        cat header body > {output.tsv}
+        cat header body > "{output.tsv}"
         rm header
-        exit 0
         """
+
 
 rule mask_tsv:
     threads: 1
@@ -92,4 +84,3 @@ rule filter_tsv:
         filtered_tsv = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     script:
         "../scripts/filter_tsv.R"
-
