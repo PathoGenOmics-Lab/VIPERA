@@ -1,14 +1,10 @@
 ML_TREE:
   "data/report_files/ML_tree_freyja_lineajes.contree"
-
 PLOTS:
   "config/design_plots.R"
-
 DIVERSITY:
   "data/report_files/diversity_alignment.fasta"
-
 NSP:
   "data/report_files/nsp_annotation.csv"
-
 FIGUR_DIR:
   "workflow/report/figs/"

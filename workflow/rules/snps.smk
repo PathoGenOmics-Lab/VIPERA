@@ -23,7 +23,7 @@ rule plot_polymorphisms:
         units = "in"
     input:
         table = OUTDIR/f"{OUTPUT_NAME}.polymorphic_sites.csv",
-        metadata = METADATA
+        metadata = config["METADATA"]
     output:
         plot = OUTDIR/f"{OUTPUT_NAME}.polymorphic_sites.pdf"
     script:
