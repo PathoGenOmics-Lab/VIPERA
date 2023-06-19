@@ -19,15 +19,6 @@ snakemake --use-conda -c8
 You may change the `-c` argument to use a different number of CPUs.
 
 
-## TO DO
-- [ ] get reference with `samtools view -H some.bam` (BAM files may not be aligned to same reference)
-- [ ] calculate BAM stats with samtools and summarize
-- [ ] make a config table with infection groups to do ASR separately
-- [x] do Freyja demixing
-- [ ] summarize Freyja demixing results
-- [ ] use just a sample list and a Garnatxa path list to define targets
-
-
 ## Generating a rule graph
 
 ```bash
