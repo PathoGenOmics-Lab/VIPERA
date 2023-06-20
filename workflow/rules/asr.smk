@@ -30,6 +30,6 @@ rule ancestor_fasta:
     input:
         state_file = OUTDIR/"tree"/f"{OUTPUT_NAME}.state"
     output:
-        fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta"
+        fasta = report(OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta")
     script:
         "../scripts/ancestor_fasta.py"
