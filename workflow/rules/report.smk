@@ -17,7 +17,7 @@ rule report:
         distancias = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
         N_S = OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv"
     output:
-        html = OUTDIR/f"{OUTPUT_NAME}.report.html"
+        html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
     shell:
         """
         set +o pipefail
