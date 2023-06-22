@@ -74,3 +74,18 @@ rule freyja_plot:
         fig = report(REPORT_DIR/"freyja.plot.png")
     script:
         "../scripts/report/diversity_plot.R"
+
+
+rule general_NV_description:
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+        nsp = config["NSP"],
+        metadata = config["METADATA"]
+    input:
+        window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
+        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
+    output:
+        fig = report(REPORT_DIR/"NV.description.png")
+    script:
+        "../scripts/report/NV_description.R"
