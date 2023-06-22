@@ -62,3 +62,15 @@ rule diversity:
         fig = report(REPORT_DIR/"div.plot.png")
     script:
         "../scripts/diversity_plot.R"
+
+rule freyja_plot:
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+        metadata = config["METADATA"]
+    input:
+        summary_demixing =  OUTDIR/"summary_freyja_demixing.csv"
+    output:
+        fig = report(REPORT_DIR/"freyja.plot.png")
+    script:
+        "../scripts/diversity_plot.R"

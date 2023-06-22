@@ -36,6 +36,6 @@ SAMPLES:
     bam: "data/bam/COV012716.trim.sort.bam"
     fasta: "data/fasta/COV012716.fa"
 METADATA:
-  "data/report_files/JSF_COV_metadata_master.csv"
+  "data/metadata.csv"
 OUTPUT_DIRECTORY:
   "output"
