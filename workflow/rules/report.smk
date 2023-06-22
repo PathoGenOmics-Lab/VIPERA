@@ -61,7 +61,7 @@ rule diversity:
     output:
         fig = report(REPORT_DIR/"div.plot.png")
     script:
-        "../scripts/diversity_plot.R"
+        "../scripts/report/diversity_plot.R"
 
 rule freyja_plot:
     conda: "../envs/renv.yaml"
@@ -73,4 +73,4 @@ rule freyja_plot:
     output:
         fig = report(REPORT_DIR/"freyja.plot.png")
     script:
-        "../scripts/diversity_plot.R"
+        "../scripts/report/diversity_plot.R"
