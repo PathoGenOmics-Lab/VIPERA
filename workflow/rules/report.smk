@@ -49,3 +49,16 @@ rule window:
         window_df = OUTDIR/f"{OUTPUT_NAME}.window.csv",
     script:
         "../scripts/window.py"
+
+
+rule diversity:
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+        outgroup_aln = config["DIVERSITY"]
+    input:
+        study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta"
+    output:
+        fig = report(REPORT_DIR/"div.plot.png")
+    script:
+        "../scripts/diversity_plot.R"
