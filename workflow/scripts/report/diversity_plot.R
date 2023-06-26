@@ -32,7 +32,7 @@ gene_ex <- gene_ex[names(gene_ex) != "NC_045512.2 Severe acute respiratory syndr
 # valor de diversidad para nuestras muestras
 
 study_aln = read.dna(snakemake@input[["study_fasta"]],format = "fasta", as.matrix = F)
-
+study_aln <- study_aln[names(study_aln) != "NC_045512.2 Severe acute respiratory syndrome coronavirus 2 isolate Wuhan-Hu-1, complete genome"]
 diversity = nuc.div(study_aln)
 
 # BOOTSTRAP #####
