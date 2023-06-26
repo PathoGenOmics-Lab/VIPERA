@@ -83,7 +83,6 @@ dic <- mutate(dic, gene = case_when(str_detect(gene,"prime") | str_detect(gene,"
 
 date_order <- read_csv(snakemake@params[["metadata"]]) %>%
 arrange(CollectionDate) %>%
-filter(ID %in% demix$sample) %>%
 pull(ID) %>%
 unique()
 
@@ -97,7 +96,7 @@ vcf <- vcf %>%
   rowwise() %>%
   mutate(POS = strsplit(SNP,"-")[[1]][2]) %>%
   ungroup()
-
+print("done")
 # Df con las longitudes de los genes 
 
 notation = data.frame(gene = "", len = 0) %>%
@@ -107,7 +106,7 @@ for (name in names(SCov2_annotation)){
     add_row(gene = name, len = length(SCov2_annotation[[name]]))
 }
 
-
+print("done1")
 # Clasificación de las variantes
 
 vcf <- vcf %>%
@@ -144,7 +143,7 @@ npc <- read_csv(snakemake@params[["nsp"]]) %>%
                                       NSP %in% paste("nsp",seq(14,16,1),sep = "") ~ 21552,
                                       T ~ POS_f)) %>%
   filter(NSP != "nsp1")
-
+print("done3")
 
 # PLOTS ####
 # plot variantes en el tiempo 
@@ -159,33 +158,33 @@ ggplot() +
   xlim(c(0,29903)) + 
   scale_color_manual(labels = c("Frameshift","Inframe","Intergenic","Non synonymous","Synonymous"), values = c("#568D63","black","#B27CF9","#AE584A","#0248FD")) + 
   labs(x = "SARS-CoV-2 genome position", y = "Sample", shape = "Variant class", color = "Classification", alpha = "Frequency", fill = "Region") 
-
+print("done4")
 # porcentaje por ventanas
 
 window_plot <- ggplot(window) + 
   aes(x = position, y = fractions, color = gen) + 
   geom_point() +
-  geom_line(aes(group = group), colour = "black", alpha = 0.3) +
+  geom_line(aes(group = 1), colour = "black", alpha = 0.3) +
   scale_y_continuous(label = scales::percent, limits = c(0,max(window$fractions) + 0.005)) + 
   xlim(c(0,29903)) + 
   scale_color_manual(values = gene_colors) +
   labs(y = "Proportion of \n sites with SNV", x = "", color = "Gen")
 
-
+print("done5")
 window_plot_nsp <- window_plot + 
   geom_vline(data = npc, aes(xintercept = summaary_start), color = "red") + 
   geom_vline(data = npc, aes(xintercept = summaary_end), color = "red") + 
   geom_label(data = npc, aes(x = (summaary_start + summaary_end)/2, y = max(window$fractions) + 0.002, label = summary_nsp), inherit.aes = F, size = 5)
 
-
+print("done6")
 figura <-   ggarrange(window_plot_nsp,
           variants,nrow = 3,
           align = "hv" ,
-          legend.grob = get_legend(plot)
+          legend.grob = get_legend(variants)
           , heights = c(2,6), 
           legend = "right")
 
-
+print("done7")
 ggsave(filename = snakemake@output[["fig"]], 
         plot = figura, width=159.2, 
         height=119.4, units="mm", 
