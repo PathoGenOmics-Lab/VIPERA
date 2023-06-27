@@ -13,13 +13,16 @@ params:
   tempest: ""
   SNV: ""
   evo: ""
+  div_value: ""
 ---
 <head>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 </head>
-
+```{r , echo= F,message= F}
+diversity_value = as.numeric(read.csv(params$div_value)[1,1])
+```
 # {style="text-align: justify"}
 
 ## Evidence for chronic infection 
@@ -30,7 +33,9 @@ params:
 
 ### Diversity comparision
 
-![](`r params$diversity`)
+The pi value for the studied samples is ``r diversity_value``
+
+![](`r params$div`)
 
 ### phylogeny and temporal signal
 

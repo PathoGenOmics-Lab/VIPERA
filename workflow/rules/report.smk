@@ -19,7 +19,8 @@ rule diversity:
     input:
         study_fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta"
     output:
-        fig = report(REPORT_DIR/"div.plot.png")
+        fig = report(REPORT_DIR/"div.plot.png"),
+        value = temp("our_diversity.txt")
     script:
         "../scripts/report/diversity_plot.R"
 
@@ -90,7 +91,8 @@ rule report:
         tree = report(REPORT_DIR/"tree.png"),
         temest = report(REPORT_DIR/"temp_est.png"),
         SNV = report(REPORT_DIR/"NV.description.png"),
-        evo = report(REPORT_DIR/"dn_ds.png")
+        evo = report(REPORT_DIR/"dn_ds.png"),
+        value = "our_diversity.txt"
     output:
         html = OUTDIR/f"{OUTPUT_NAME}.report.html"
     shell:
@@ -103,7 +105,8 @@ rule report:
                                                        tree = '{input.tree}',\
                                                        tempest = '{input.temest}',\
                                                        SNV = '{input.SNV}',\
-                                                       evo = '{input.evo}'))\"    
+                                                       evo = '{input.evo}',
+                                                       div_value = '{input.value}'))\"    
         mv report.html {output.html}
         """
 
