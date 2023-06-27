@@ -34,7 +34,7 @@ gene_ex <- gene_ex[names(gene_ex) != "NC_045512.2 Severe acute respiratory syndr
 study_aln = read.dna(snakemake@input[["study_fasta"]],format = "fasta", as.matrix = F)
 study_aln <- study_aln[names(study_aln) != "NC_045512.2 Severe acute respiratory syndrome coronavirus 2 isolate Wuhan-Hu-1, complete genome"]
 diversity = nuc.div(study_aln)
-
+write.table(data.frame(div = diversity), snakemake@output[["value"]], row.names = F)
 # BOOTSTRAP #####
 
 # Función para calcular pi
