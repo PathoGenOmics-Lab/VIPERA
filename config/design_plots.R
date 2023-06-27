@@ -6,7 +6,8 @@ p_load("tidyverse",
        "showtext")
 
 # Ajustes ####
-
+showtext_auto(enable = FALSE)
+showtext_opts(dpi = 200)
 # Tema
 
 font_add_google("Montserrat", "Montserrat")

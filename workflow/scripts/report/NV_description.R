@@ -186,7 +186,7 @@ figura <-   ggarrange(window_plot_nsp,
 
 
 ggsave(filename = snakemake@output[["fig"]], 
-        plot = figura, width=170, 
+        plot = figura, width=250, 
         height=119.4, units="mm", 
         dpi=250)
 

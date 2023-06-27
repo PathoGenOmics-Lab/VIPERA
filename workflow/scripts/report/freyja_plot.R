@@ -53,7 +53,7 @@ demix_plot <- demix %>%
   geom_col() + 
   theme(axis.text.x = element_text(angle = 60, hjust = 1),
         legend.position = "bottom") + 
-  labs(x = "Sample", y = "Relative abundance", color = "Lineage")
+  labs(x = "Sample", y = "Relative abundance", fill = "Lineage")
 
 
 ggsave(filename = snakemake@output[["fig"]], 
