@@ -179,7 +179,7 @@ window_plot_nsp <- window_plot +
 
 figura <-   ggarrange(window_plot_nsp,
           variants,nrow = 3,
-          align = "hv" ,
+          align = "v" ,
           legend.grob = get_legend(variants)
           , heights = c(2,6), 
           legend = "right")
@@ -187,6 +187,6 @@ figura <-   ggarrange(window_plot_nsp,
 
 ggsave(filename = snakemake@output[["fig"]], 
         plot = figura, width=250, 
-        height=119.4, units="mm", 
+        height=240, units="mm", 
         dpi=250)
 
