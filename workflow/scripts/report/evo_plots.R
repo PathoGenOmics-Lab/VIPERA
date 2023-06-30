@@ -61,7 +61,7 @@ plot <- vcf %>%
               geom_point() +
               geom_line() + 
               scale_color_hue(labels = c("dN","dS")) + 
-              labs(y = "", x = "Intervalo de tiempo", color = "Estadístico")
+              labs(y = "", x = "Time since first sample", color = "Parameter")
 
 ggsave(filename = snakemake@output[["plot"]], 
         plot = plot, width=159.2, 

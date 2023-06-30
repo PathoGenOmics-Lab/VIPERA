@@ -49,7 +49,7 @@ demix_plot <- demix %>%
                             T ~ "Other")) %>%
   ggplot() + 
   aes(x = factor(sample,date_order), y = as.numeric(abundances), fill = lin_2) + 
-  scale_fill_manual(values = lineage_colors) + 
+  scale_fill_viridis_d(option = "Mako") + 
   geom_col() + 
   theme(axis.text.x = element_text(angle = 60, hjust = 1),
         legend.position = "bottom") + 

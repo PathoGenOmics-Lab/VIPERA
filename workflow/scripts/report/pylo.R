@@ -51,7 +51,8 @@ tempest <- adephylo::distRoot(tree, "all", method = "patristic") %>% as.data.fra
 # tree
 tree_plot <- ggtree(tree) + 
 geom_tiplab() + 
-geom_treescale() 
+geom_treescale() + 
+geom_rootedge(0.5)
 
 ggsave(filename = snakemake@output[["tree"]], 
         plot = tree_plot, width=159.2, 
