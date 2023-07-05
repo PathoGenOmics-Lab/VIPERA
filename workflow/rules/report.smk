@@ -53,7 +53,7 @@ rule general_NV_description:
 
 
 rule pylo_plots:
-    conda: "../envs/renv.yaml",
+    conda: "../envs/renv.yaml"
     params: 
         design = config["PLOTS"],
         metadata = config["METADATA"]
@@ -67,6 +67,7 @@ rule pylo_plots:
 
 
 rule evo_plots:
+    conda: "../envs/renv.yaml"
     params: 
         design = config["PLOTS"],
         metadata = config["METADATA"]
@@ -77,6 +78,20 @@ rule evo_plots:
         plot = report(REPORT_DIR/"dn_ds.png")
     script:
         "../scripts/report/evo_plots.R"
+
+
+rule snp_plots:
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+        metadata = config["METADATA"],
+    input:
+         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
+    output:
+        pseudovolcano = report(REPORT_DIR/"volcano.png"),
+        snp_panel = report(REPORT_DIR/"panel.png")
+    script:
+        "../scripts/report/snp_plots.R"
 
 
 
@@ -92,7 +107,9 @@ rule report:
         temest = report(REPORT_DIR/"temp_est.png"),
         SNV = report(REPORT_DIR/"NV.description.png"),
         evo = report(REPORT_DIR/"dn_ds.png"),
-        value = "our_diversity.txt"
+        value = "our_diversity.txt",
+        panel = report(REPORT_DIR/"panel.png"),
+        volcano = report(REPORT_DIR/"volcano.png")
     output:
         html = OUTDIR/f"{OUTPUT_NAME}.report.html"
     shell:
@@ -106,7 +123,9 @@ rule report:
                                                        tempest = '{input.temest}',\
                                                        SNV = '{input.SNV}',\
                                                        evo = '{input.evo}',
-                                                       div_value = '{input.value}'))\"    
+                                                       div_value = '{input.value}',
+                                                       panel = '{input.panel}',
+                                                       volcano = '{input.volcano}'))\"    
         mv report.html {output.html}
         """
 
