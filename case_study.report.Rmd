@@ -14,6 +14,8 @@ params:
   SNV: ""
   evo: ""
   div_value: ""
+  panel: ""
+  volcano: ""
 ---
 <head>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,6 +49,14 @@ The pi value for the studied samples is ``r diversity_value``
 ### Description for NV 
 
 ![](`r params$SNV`)
+
+The correlation with time for the SNPs detected is represented in the following plot:
+
+![](`r params$volcano`)
+
+The significant correlated SNPs are swown in detail:
+
+![](`r params$panel`)
 
 ### dn/ds over time
 
