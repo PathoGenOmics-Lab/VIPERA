@@ -37,6 +37,22 @@ tree <- matrix %>%
         nj() %>%
         root("NC_045512.2", resolve.root = TRUE)
 
+fix_negative_edge_length <- function(nj.tree) {
+  edge_infos <- cbind(nj.tree$edge, nj.tree$edge.length) %>% as.data.table
+  colnames(edge_infos) <- c('from', 'to', 'length')
+  nega_froms <- edge_infos[length < 0, sort(unique(from))]
+  nega_froms
+  for (nega_from in nega_froms) {
+    minus_length <- edge_infos[from == nega_from, ][order(length)][1, length]
+    edge_infos[from == nega_from, length := length - minus_length]
+    edge_infos[to == nega_from, length := length + minus_length]
+  }
+  nj.tree$edge.length <- edge_infos$length
+  nj.tree
+}
+
+tree <- fix_negative_edge_length(tree)
+
 tempest <- adephylo::distRoot(tree, "all", method = "patristic") %>% as.data.frame() %>% 
                     rownames_to_column(var = "ID") %>%
                     filter(ID != "NC_045512.2" ) %>%
