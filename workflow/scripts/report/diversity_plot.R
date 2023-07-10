@@ -1,4 +1,5 @@
-# LIBRERIAS #######
+#!/usr/bin/env Rscript
+
 library(pacman)
 p_load("tidyverse",
        "stringi",
@@ -21,31 +22,14 @@ p_load("tidyverse",
        "quarto",
        "showtext")
 
-# DISEÑO DE PLOTS ####
-source(snakemake@params[["design"]])
-
-# Alineamiento de outgroup 
-gene_ex <- read.dna(snakemake@params[["outgroup_aln"]],format = "fasta", as.matrix = F)
-gene_ex <- gene_ex[names(gene_ex) != "NC_045512.2 Severe acute respiratory syndrome coronavirus 2 isolate Wuhan-Hu-1, complete genome"]
-
-
-# valor de diversidad para nuestras muestras
-
-study_aln = read.dna(snakemake@input[["study_fasta"]],format = "fasta", as.matrix = F)
-study_aln <- study_aln[names(study_aln) != "NC_045512.2 Severe acute respiratory syndrome coronavirus 2 isolate Wuhan-Hu-1, complete genome"]
-diversity = nuc.div(study_aln)
-write.table(data.frame(div = diversity), snakemake@output[["value"]], row.names = F)
-# BOOTSTRAP #####
-
-# Función para calcular pi
+# Pi calculation
 nucleotide.diversity <- function(dna_object, record.names, sample.size){
   sample <- sample(record.names, sample.size, replace = F)
   dna_subset <- dna_object[record.names %in% sample]
-  return(nuc.div(dna_subset))
+  nuc.div(dna_subset)
 }
 
-# función para hacer el bootstrapping en paralel
-plan(multisession, workers = 4)
+# Parallel bootstrapping
 boot.nd.parallel <- function(aln, sample.size = 12, reps = 100) {
   record.names <- names(aln)
   future_sapply(
@@ -55,21 +39,61 @@ boot.nd.parallel <- function(aln, sample.size = 12, reps = 100) {
   )
 }
 
+# Plot design
+source(snakemake@params[["design"]])
 
+# Outgroup/context alignment
+gene_ex <- read.dna(snakemake@input[["context_fasta"]], format = "fasta", as.matrix = F)
+gene_ex <- gene_ex[!startsWith(names(gene_ex), snakemake@config[["ALIGNMENT_REFERENCE"]])]
 
-divs <- boot.nd.parallel(gene_ex, 12, 1000)
+# Study alignment
+study_aln <- read.dna(snakemake@input[["study_fasta"]],format = "fasta", as.matrix = F)
+study_aln <- study_aln[!startsWith(names(study_aln), snakemake@config[["ALIGNMENT_REFERENCE"]])]
 
-# figura
-plot <- data.frame(pi = divs) %>%
-  ggplot() + 
-  aes(pi) + 
-  geom_density(aes(x = pi) ,fill = "#2177d4", alpha = 0.7, bw = 0.000001,color = "white" ) + 
-  geom_vline(aes(xintercept = diversity), color = "red") + 
-  labs(x = "π" , y = "Density")
+# Diversity value for our samples
+diversity <- nuc.div(study_aln)
+write.table(data.frame(div = diversity), snakemake@output[["value"]], row.names = F)
 
+# Perform bootstrap
+plan(multisession, workers = snakemake@threads)
+divs <- boot.nd.parallel(gene_ex, length(study_aln), snakemake@params[["bootstrap_reps"]])
+plan(sequential)
 
-ggsave(filename = snakemake@output[["fig"]], 
-        plot = plot, width=159.2, 
-        height=119.4, units="mm", 
-        dpi=250)
-        
+# Test normality
+st <- shapiro.test(divs)
+
+# Calculate p-value (assuming normal distribution)
+standardized.value <- (diversity - mean(divs)) / sd(divs)
+pvalue <- pnorm(standardized.value)
+
+# Plot and save
+p <- data.frame(pi = divs) %>%
+  ggplot() +
+  geom_density(aes(x = pi), fill = "#fcbf49", alpha = 0.7, bw = 0.000001, color = "#eae2b7") +
+  geom_vline(aes(xintercept = diversity), color = "#d62828") +
+  geom_vline(aes(xintercept = mean(divs)), color = "#f77f00") +
+  geom_vline(aes(xintercept = mean(divs) + sd(divs)), color = "#f77f00") +
+  geom_vline(aes(xintercept = mean(divs) - sd(divs)), color = "#f77f00") +
+  labs(x = "π", y = "Density") +
+  ggtitle(
+    "Diversity distribution",
+    paste0(
+      "Study π: ", prettyNum(diversity), "\n",
+      "p = ", prettyNum(pvalue), " (left-tailed)", "\n",
+      "Normal distribution: ", st$p.value >= 0.05, " (p = ", prettyNum(st$p.value), ")", "\n",
+      snakemake@params[["bootstrap_reps"]], "bootstrap reps"
+    )
+  ) +
+  theme(
+    plot.title = element_text(size = 10),
+    plot.subtitle = element_text(size = 8)
+  )
+
+ggsave(
+  filename = snakemake@output[["fig"]],
+  plot = p,
+  width = snakemake@params[["plot_width"]],
+  height = snakemake@params[["plot_height"]],
+  units = "mm",
+  dpi = 250
+)

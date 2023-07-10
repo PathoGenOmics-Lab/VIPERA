@@ -1,4 +1,3 @@
-
 rule window:
     conda: "../envs/biopython.yaml"
     input:
@@ -12,17 +11,22 @@ rule window:
 
 
 rule diversity:
+    threads: 4
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"],
-        outgroup_aln = config["DIVERSITY"]
+        bootstrap_reps = 1000,
+        plot_width = 159.2,
+        plot_height = 119.4
     input:
-        study_fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta"
+        study_fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
+        context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     output:
         fig = report(REPORT_DIR/"div.plot.png"),
         value = temp("our_diversity.txt")
     script:
         "../scripts/report/diversity_plot.R"
+
 
 rule freyja_plot:
     conda: "../envs/renv.yaml"
@@ -94,7 +98,6 @@ rule snp_plots:
         "../scripts/report/snp_plots.R"
 
 
-
 rule report:
     conda: "../envs/renv.yaml"
     shadow: "shallow"
@@ -128,4 +131,3 @@ rule report:
                                                        volcano = '{input.volcano}'))\"    
         mv report.html {output.html}
         """
-
