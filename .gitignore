@@ -13,3 +13,6 @@
 
 # report 
 *.html
+
+# Default credentials
+/config/gisaid.yaml
