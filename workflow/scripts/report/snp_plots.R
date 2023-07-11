@@ -41,9 +41,11 @@ vcf <- vcf %>%
   mutate(SNP = paste(REF,POS,ALT, sep = "-")) %>%
   dplyr::select(SNP,REGION,ALT_FREQ, GFF_FEATURE, synonimous)
 
+IDs <- pull(vcf,REGION) %>%
+  unique()
 vcf <- vcf %>%
   pivot_wider(names_from = REGION, values_from = ALT_FREQ, values_fill = 0) %>%
-  pivot_longer(contains("COV"), names_to = "REGION", values_to = "ALT_FREQ") %>%
+  pivot_longer(IDs, names_to = "REGION", values_to = "ALT_FREQ") %>%
   rowwise() %>%
   mutate(POS = strsplit(SNP,"-")[[1]][2]) %>%
   ungroup() 
@@ -106,15 +108,18 @@ dup <- vcf %>%
 
 subset <- c(sign,dup) %>%
   unique()
+
+length = ceiling(length(subset)/4)*30
+
 panel <- vcf %>%
         filter(SNP %in% subset) %>%
         ggplot(aes(x = interval, y = ALT_FREQ, color = SNP)) + 
         scale_color_viridis_d() + 
         geom_point() + 
         geom_line() + 
-        facet_wrap(vars(POS))
+        facet_wrap(vars(POS), nrow = ceiling(length(subset)/4), ncol = 4)
 
 ggsave(filename = snakemake@output[["snp_panel"]], 
         plot = panel, width=159.2, 
-        height=119.4, units="mm", 
+        height=length, units="mm", 
         dpi=250)
