@@ -47,7 +47,8 @@ rule general_NV_description:
         window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     output:
-        fig = report(REPORT_DIR/"NV.description.png")
+        fig = report(REPORT_DIR/"NV.description.png"),
+        fig_cor = report(REPORT_DIR/"cor_snp_time.png")
     script:
         "../scripts/report/NV_description.R"
 
@@ -112,7 +113,8 @@ rule report:
         value = "our_diversity.txt",
         panel = report(REPORT_DIR/"panel.png"),
         volcano = report(REPORT_DIR/"volcano.png"),
-         tree_ml = report(REPORT_DIR/"tree_ml.png")
+        tree_ml = report(REPORT_DIR/"tree_ml.png"),
+        fig_cor = report(REPORT_DIR/"cor_snp_time.png")
     output:
         html = OUTDIR/f"{OUTPUT_NAME}.report.html"
     shell:
@@ -129,7 +131,8 @@ rule report:
                                                        div_value = '{input.value}',
                                                        panel = '{input.panel}',
                                                        volcano = '{input.volcano}',
-                                                       tree_ml = '{input.tree_ml}'))\"    
+                                                       tree_ml = '{input.tree_ml}',
+                                                       fig_cor_snp = '{input.fig_cor}'))\"    
         mv report.html {output.html}
         """
 
