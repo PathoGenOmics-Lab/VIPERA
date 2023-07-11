@@ -90,12 +90,36 @@ unique()
 
 vcf <- read_delim(snakemake@input[["vcf"]])
 
+# Figura SNPs con el tiempo
+
+figur_SNP_time <- vcf %>%
+                  filter(ALT_FREQ <= 0.95) %>%
+                  left_join(read_csv(snakemake@params[["metadata"]]), by = c("REGION" = "ID")) %>%
+                  group_by(REGION) %>%
+                  summarise(CollectionDate = min(as.Date(CollectionDate)),
+                            n = n()) %>%
+                  ungroup() %>%
+                  ggplot() + 
+                  aes(x = CollectionDate, y = n) +
+                  geom_smooth(method = "lm",fill = "gray95", alpha = 0.6) + 
+                  geom_point() +
+                  stat_cor(geom = "label") + 
+                  labs(x = "Date", y = "Nº of polimorphic sites")
+
+ggsave(filename = snakemake@output[["fig_cor"]], 
+        plot = figur_SNP_time, width=250, 
+        height=119.4, units="mm", 
+        dpi=250)
+
+
+##
 vcf <- vcf %>% 
   mutate(SNP = paste(REF,POS,ALT, sep = "-")) %>%
   dplyr::select(SNP,REGION,ALT_FREQ, GFF_FEATURE, synonimous) %>%
   rowwise() %>%
   mutate(POS = strsplit(SNP,"-")[[1]][2]) %>%
   ungroup()
+
 
 # Df con las longitudes de los genes 
 

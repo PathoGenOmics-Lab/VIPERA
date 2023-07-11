@@ -17,6 +17,7 @@ params:
   panel: ""
   volcano: ""
   tree_ml: ""
+  fig_cor_snp: ""
 ---
 <head>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,6 +52,10 @@ The pi value for the studied samples is ``r diversity_value``
 ## Evolution
 
 ### Description for NV 
+
+The number of polimorphic sites over time:
+
+![](`r params$fig_cor_snp`)
 
 ![](`r params$SNV`)
 
