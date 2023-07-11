@@ -31,7 +31,9 @@ rule align_context:
         name = OUTPUT_NAME
     input:
         ref_fasta = OUTDIR/"reference.fasta",
-        fasta = OUTDIR/"context"/"sequences.fasta"
+        fasta = OUTDIR/"context"/"sequences.fasta" \
+            if ("CONTEXT_FASTA" not in config.keys() or config["CONTEXT_FASTA"] is None) \
+            else config["CONTEXT_FASTA"]
     output:
         folder = directory(OUTDIR/"context"/"nextalign"),
         fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.fasta"
