@@ -1,14 +1,17 @@
 # LIBRERIAS #######
-
 library(tidyverse)
 
 # DISEÑO DE PLOTS ####
 source(snakemake@params[["design"]])
 
-# datos
+# DATOS ####
 
 demix <- read_csv(snakemake@input[["summary_demixing"]])
 
+
+# ANÁLISIS ####
+
+# Muestras a destacar 
 main_lineages <- demix %>%
   group_by(sample) %>%
   top_n(1,abundances) %>%
@@ -23,7 +26,7 @@ filter(ID %in% demix$sample) %>%
 pull(ID) %>%
 unique()
 
-# PLOT #####
+# FIGURA #####
 
 demix_plot <- demix %>%
   mutate(lin_2 = case_when(lineages %in% main_lineages ~ lineages,

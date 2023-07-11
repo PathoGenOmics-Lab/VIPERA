@@ -7,36 +7,39 @@ source(snakemake@params[["design"]])
 
 # DATOS ####
 vcf <- read_delim(snakemake@input[["vcf"]])
+metadata <- read_delim(snakemake@params[["metadata"]])
+N_S_position <- read_delim(snakemake@input[["N_S"]])
 
+# ANÁLISIS ####
+# Modificacion de datos de variantes
 vcf <- vcf %>% 
-  mutate(SNP = paste(REF,POS,ALT, sep = "-")) %>%
+  mutate(SNP = paste(REF,POS,ALT, sep = "-")) %>% # SNP al que da lugar cada variante
   dplyr::select(SNP,REGION,ALT_FREQ, GFF_FEATURE, synonimous) %>%
   rowwise() %>%
-  mutate(POS = strsplit(SNP,"-")[[1]][2]) %>%
+  mutate(POS = strsplit(SNP,"-")[[1]][2]) %>% # Volver a obtener la posición del SNP
   ungroup() 
 
-metadata <- read_delim(snakemake@params[["metadata"]]) %>%
-  mutate(interval = as.numeric(as.Date(CollectionDate) - min(as.Date(CollectionDate)))) %>%
+# Modificar metadatos
+metadata <- metadata %>%
+  mutate(interval = as.numeric(as.Date(CollectionDate) - min(as.Date(CollectionDate)))) %>% # Tiempo en dias entre muestras
   select(ID,interval) %>%
   rename(REGION = ID)
 
+# Combinar bases de datos
 vcf <- left_join(vcf,metadata)
 
 
-N_S_position <- read_delim(snakemake@input[["N_S"]])
-
-# PLOT
+# FIGURA ####
 
 plot <- vcf %>%
-              filter(ALT_FREQ > 0.05) %>%
               group_by(REGION,synonimous) %>%
-              summarise(Freq = sum(ALT_FREQ, na.rm = T)) %>%
+              summarise(Freq = sum(ALT_FREQ, na.rm = T)) %>% # Cácular la frecuencia de mutaciones sinónimas y no sinónimas por genoma
               pivot_wider( names_from = synonimous, values_from = Freq, values_fill = 0 )  %>%
-              transmute(dn = No/sum(N_S_position$S),
-                        ds = yes/sum(N_S_position$S)) %>%
+              transmute(dn = No/sum(N_S_position$S), # Mutaciones no sinónimas por sitio no sinónimo
+                        ds = yes/sum(N_S_position$S)) %>% # Mutaciones sinónimas por sitio no sinónimo
                         ungroup() %>%
               pivot_longer(c("dn","ds"), values_to = "value", names_to = "d") %>%
-              left_join(unique(select(vcf,REGION,interval))) %>%
+              left_join(unique(select(vcf,REGION,interval))) %>% # Recuperar info de tiempo
               ggplot() + 
               aes(x = interval, y = value, color = d) + 
               geom_point() +
