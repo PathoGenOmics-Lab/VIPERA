@@ -58,10 +58,12 @@ rule pylo_plots:
         design = config["PLOTS"],
         metadata = config["METADATA"]
     input: 
-        dist = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv"
+        dist = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
+        ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile"
     output:
         temest = report(REPORT_DIR/"temp_est.png"),
-        tree = report(REPORT_DIR/"tree.png")
+        tree = report(REPORT_DIR/"tree.png"),
+        tree_ml = report(REPORT_DIR/"tree_ml.png")
     script:
         "../scripts/report/pylo.R"
 
@@ -109,7 +111,8 @@ rule report:
         evo = report(REPORT_DIR/"dn_ds.png"),
         value = "our_diversity.txt",
         panel = report(REPORT_DIR/"panel.png"),
-        volcano = report(REPORT_DIR/"volcano.png")
+        volcano = report(REPORT_DIR/"volcano.png"),
+         tree_ml = report(REPORT_DIR/"tree_ml.png")
     output:
         html = OUTDIR/f"{OUTPUT_NAME}.report.html"
     shell:
@@ -125,7 +128,8 @@ rule report:
                                                        evo = '{input.evo}',
                                                        div_value = '{input.value}',
                                                        panel = '{input.panel}',
-                                                       volcano = '{input.volcano}'))\"    
+                                                       volcano = '{input.volcano}',
+                                                       tree_ml = '{input.tree_ml}'))\"    
         mv report.html {output.html}
         """
 

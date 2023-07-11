@@ -16,6 +16,7 @@ params:
   div_value: ""
   panel: ""
   volcano: ""
+  tree_ml: ""
 ---
 <head>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,6 +29,9 @@ diversity_value = as.numeric(read.csv(params$div_value)[1,1])
 # {style="text-align: justify"}
 
 ## Evidence for chronic infection 
+
+Phylogeny with other samples:
+![](`r params$tree_ml`)
 
 ### Freyja output
 

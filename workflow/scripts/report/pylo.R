@@ -91,3 +91,29 @@ ggsave(filename = snakemake@output[["temest"]],
         height=119.4, units="mm", 
         dpi=250)
 
+
+
+# ML tree para el contexto ####
+
+tree <- read.tree(snakemake@input[["ml"]]) %>%
+  root("NC_045512.2", resolve.root = TRUE)
+
+colors <- c()
+for(ID in tree$tip.label){
+  if(ID %in% metadata$ID){
+    colors <- c(colors,"red")
+  } else{
+    colors <- c(colors,"gray80")
+  }
+}
+
+plot <- ggtree(tree) + 
+  geom_tippoint(color = colors) + 
+  geom_treescale() + 
+  geom_rootedge(0.00001)
+
+
+ggsave(filename = snakemake@output[["tree_ml"]], 
+        plot = plot, width=159.2, 
+        height=119.4, units="mm", 
+        dpi=250)
