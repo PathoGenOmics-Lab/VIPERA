@@ -1,25 +1,9 @@
 # LIBRERIAS #######
-library(pacman)
-p_load("tidyverse",
-       "stringi",
-       "flextable",
-       "ggpubr",
-       "ggtree",
-       "ape",
-       "adephylo",
-       "plotly",
-       "ggrepel",
-       "apex",
-       "adegenet",
-       "pegas",
-       "mmod",
-       "poppr",
-       "treeio",
-       "data.table",
-       "future.apply",
-       "scales",
-       "quarto",
-       "showtext")
+library(ape)
+library(pegas)
+library(future.apply)
+library(tidyverse)
+
 
 # DISEÑO DE PLOTS ####
 source(snakemake@params[["design"]])
@@ -57,7 +41,7 @@ boot.nd.parallel <- function(aln, sample.size = 12, reps = 100) {
 
 
 
-divs <- boot.nd.parallel(gene_ex, 12, 1000)
+divs <- boot.nd.parallel(gene_ex, length(names(study_aln)) -1, 1000)
 
 # figura
 plot <- data.frame(pi = divs) %>%
