@@ -64,24 +64,27 @@ st <- shapiro.test(divs)
 
 # Calculate p-value (assuming normal distribution)
 standardized.value <- (diversity - mean(divs)) / sd(divs)
-pvalue <- pnorm(standardized.value)
+pvalue.norm <- pnorm(standardized.value)
+
+# Estimate p-value empirically
+empirical.probs <- ecdf(divs)
+pvalue.emp <- empirical.probs(diversity)
 
 # Plot and save
 p <- data.frame(pi = divs) %>%
   ggplot() +
   geom_density(aes(x = pi), fill = "#fcbf49", alpha = 0.7, bw = 0.000001, color = "#eae2b7") +
   geom_vline(aes(xintercept = diversity), color = "#d62828") +
-  geom_vline(aes(xintercept = mean(divs)), color = "#f77f00") +
-  geom_vline(aes(xintercept = mean(divs) + sd(divs)), color = "#f77f00") +
-  geom_vline(aes(xintercept = mean(divs) - sd(divs)), color = "#f77f00") +
+  stat_function(fun = dnorm, args = list(mean = mean(divs), sd = sd(divs)), color = "#f77f00") +
   labs(x = "π", y = "Density") +
   ggtitle(
     "Diversity distribution",
     paste0(
       "Study π: ", prettyNum(diversity), "\n",
-      "p = ", prettyNum(pvalue), " (left-tailed)", "\n",
-      "Normal distribution: ", st$p.value >= 0.05, " (p = ", prettyNum(st$p.value), ")", "\n",
-      snakemake@params[["bootstrap_reps"]], "bootstrap reps"
+      "eCDF-estimated p =", prettyNum(pvalue.emp), " (left-tailed)", "\n",
+      "Assumed normal p = ", prettyNum(pvalue.norm), " (left-tailed)", "\n",
+      "Normal distribution: ", st$p.value >= 0.05, " (Shapiro-Wilk test, p = ", prettyNum(st$p.value), ")", "\n",
+      snakemake@params[["bootstrap_reps"]], " reps with size=", length(study_aln)
     )
   ) +
   theme(
