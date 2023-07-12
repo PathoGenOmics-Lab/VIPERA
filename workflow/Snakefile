@@ -28,6 +28,9 @@ OUTPUT_NAME = config["OUTPUT_NAME"]
 OUTDIR = Path(config["OUTPUT_DIRECTORY"])
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
+## report
+REPORT_DIR = Path(OUTDIR/"report")
+REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Tree parameters
 ETC_TREE_PARAMS = []

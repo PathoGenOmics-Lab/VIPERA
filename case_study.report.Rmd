@@ -1,0 +1,75 @@
+---
+title: "Case_study-SARS-CoV-2"
+author: "Jordi"
+format: 
+  html: 
+    self-contained: true
+    mainfont: 'Montserrat'
+editor: visual
+params:
+  div: ""
+  freyja: ""
+  tree: ""
+  tempest: ""
+  SNV: ""
+  evo: ""
+  div_value: ""
+  panel: ""
+  volcano: ""
+  tree_ml: ""
+  fig_cor_snp: ""
+---
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+</head>
+```{r , echo= F,message= F}
+diversity_value = as.numeric(read.csv(params$div_value)[1,1])
+```
+# {style="text-align: justify"}
+
+## Evidence for chronic infection 
+
+Phylogeny with other samples:
+![](`r params$tree_ml`)
+
+### Freyja output
+
+![](`r params$freyja`)
+
+### Diversity comparision
+
+The pi value for the studied samples is ``r diversity_value``
+
+![](`r params$div`)
+
+### phylogeny and temporal signal
+
+![](`r params$tree`)
+![](`r params$tempest`)
+
+## Evolution
+
+### Description for NV 
+
+The number of polimorphic sites over time:
+
+![](`r params$fig_cor_snp`)
+
+![](`r params$SNV`)
+
+The correlation with time for the SNPs detected is represented in the following plot:
+
+![](`r params$volcano`)
+
+The significant correlated SNPs are swown in detail:
+
+![](`r params$panel`)
+
+### dn/ds over time
+
+![](`r params$evo`)
+
+
+
