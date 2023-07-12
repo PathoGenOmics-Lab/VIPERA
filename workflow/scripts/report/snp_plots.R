@@ -1,64 +1,53 @@
 # LIBRERIAS #######
-library(pacman)
-p_load("tidyverse",
-       "stringi",
-       "flextable",
-       "ggpubr",
-       "ggtree",
-       "ape",
-       "adephylo",
-       "plotly",
-       "ggrepel",
-       "apex",
-       "adegenet",
-       "pegas",
-       "mmod",
-       "poppr",
-       "treeio",
-       "data.table",
-       "future.apply",
-       "scales",
-       "quarto",
-       "showtext")
+
+library(tidyverse)
+library(stringi)
+library(ggrepel)
+
 
 # DISEÑO DE PLOTS ####
 source(snakemake@params[["design"]])
 
 # DATOS ####
+vcf <- read_delim(snakemake@input[["vcf"]])
+data <- read_csv(snakemake@params[["metadata"]]) %>%
+  filter(ID %in% vcf$REGION) %>%
+  dplyr::select(ID, CollectionDate)
+
+# ANÁLISIS ####
 
 # orden temporal 
-
 date_order <- read_csv(snakemake@params[["metadata"]]) %>%
 arrange(CollectionDate) %>%
 pull(ID) %>%
 unique()
 
-
-
-vcf <- read_delim(snakemake@input[["vcf"]])
-
+# Modificar datos de variantes
 vcf <- vcf %>% 
   mutate(SNP = paste(REF,POS,ALT, sep = "-")) %>%
   dplyr::select(SNP,REGION,ALT_FREQ, GFF_FEATURE, synonimous)
 
+IDs <- pull(vcf,REGION) %>%
+  unique()
+
 vcf <- vcf %>%
-  pivot_wider(names_from = REGION, values_from = ALT_FREQ, values_fill = 0) %>%
-  pivot_longer(contains("COV"), names_to = "REGION", values_to = "ALT_FREQ") %>%
+  pivot_wider(names_from = REGION, values_from = ALT_FREQ, values_fill = 0) %>% # Obtener los 0 en los puntos sin variantes
+  pivot_longer(IDs, names_to = "REGION", values_to = "ALT_FREQ") %>%
   rowwise() %>%
   mutate(POS = strsplit(SNP,"-")[[1]][2]) %>%
   ungroup() 
 
-data <- read_csv(snakemake@params[["metadata"]]) %>%
-  filter(ID %in% vcf$REGION) %>%
-  dplyr::select(ID, CollectionDate)
-
+# Unir datos
 vcf <- left_join(vcf,data, by = c("REGION" = "ID"))
 
+# Tiempo en dias entre muestras
 vcf <- arrange(vcf,CollectionDate) %>%
   mutate(interval = as.numeric(CollectionDate - min(CollectionDate)))
 
+# FIGURAS ####
 ## VOLCANO PLOT ####
 
+# Cálculo de la correlación en el tiempo para cada SNP
 SNPs <- pull(vcf,SNP) %>%
   unique()
 
@@ -90,12 +79,13 @@ ggsave(filename = snakemake@output[["pseudovolcano"]],
         dpi=250)
 
 
-# SNP PANEL ####
-sign <- filter(cor.df, p.value < 0.05) %>%
+## SNP PANEL ####
+
+sign <- filter(cor.df, p.value < 0.05) %>% # SNPs significativamente correlacionados
     pull(snp) %>%
     unique()
 
-dup <- vcf %>%
+dup <- vcf %>% # SNPs que comparten posición
   select(SNP,POS) %>%
   unique() %>%
   group_by(POS) %>%
@@ -106,15 +96,19 @@ dup <- vcf %>%
 
 subset <- c(sign,dup) %>%
   unique()
+
+length = ceiling(length(subset)/4)*40 # Altura del plot para que se vea bién
+
 panel <- vcf %>%
         filter(SNP %in% subset) %>%
         ggplot(aes(x = interval, y = ALT_FREQ, color = SNP)) + 
         scale_color_viridis_d() + 
         geom_point() + 
         geom_line() + 
-        facet_wrap(vars(POS))
+        facet_wrap(vars(POS), nrow = ceiling(length(subset)/4), ncol = 4) + 
+        theme(legend.position = "bottom")
 
 ggsave(filename = snakemake@output[["snp_panel"]], 
         plot = panel, width=159.2, 
-        height=119.4, units="mm", 
+        height=length, units="mm", 
         dpi=250)

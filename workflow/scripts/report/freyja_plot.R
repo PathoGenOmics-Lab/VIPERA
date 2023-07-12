@@ -1,48 +1,32 @@
 # LIBRERIAS #######
-library(pacman)
-p_load("tidyverse",
-       "stringi",
-       "flextable",
-       "ggpubr",
-       "ggtree",
-       "ape",
-       "adephylo",
-       "plotly",
-       "ggrepel",
-       "apex",
-       "adegenet",
-       "pegas",
-       "mmod",
-       "poppr",
-       "treeio",
-       "data.table",
-       "future.apply",
-       "scales",
-       "quarto",
-       "showtext")
+library(tidyverse)
 
 # DISEÑO DE PLOTS ####
 source(snakemake@params[["design"]])
-print("hola")
-# datos
+
+# DATOS ####
 
 demix <- read_csv(snakemake@input[["summary_demixing"]])
-print("done1")
+
+
+# ANÁLISIS ####
+
+# Muestras a destacar 
 main_lineages <- demix %>%
   group_by(sample) %>%
   top_n(1,abundances) %>%
   ungroup() %>%
   pull(lineages) %>%
   unique()
-print("done2")
+
 # date order
 date_order <- read_csv(snakemake@params[["metadata"]]) %>%
 arrange(CollectionDate) %>%
 filter(ID %in% demix$sample) %>%
 pull(ID) %>%
 unique()
-print("done3")
-# PLOT #####
+
+# FIGURA #####
 
 demix_plot <- demix %>%
   mutate(lin_2 = case_when(lineages %in% main_lineages ~ lineages,

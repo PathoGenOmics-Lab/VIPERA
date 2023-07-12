@@ -1,26 +1,10 @@
-#!/usr/bin/env Rscript
+# LIBRERIAS #######
 
-library(pacman)
-p_load("tidyverse",
-       "stringi",
-       "flextable",
-       "ggpubr",
-       "ggtree",
-       "ape",
-       "adephylo",
-       "plotly",
-       "ggrepel",
-       "apex",
-       "adegenet",
-       "pegas",
-       "mmod",
-       "poppr",
-       "treeio",
-       "data.table",
-       "future.apply",
-       "scales",
-       "quarto",
-       "showtext")
+library(ape)
+library(pegas)
+library(future.apply)
+library(tidyverse)
+
 
 # Pi calculation
 nucleotide.diversity <- function(dna_object, record.names, sample.size){

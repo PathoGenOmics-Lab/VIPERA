@@ -3,6 +3,7 @@ title: "Case_study-SARS-CoV-2"
 author: "Jordi"
 format: 
   html: 
+    theme: journal
     self-contained: true
     mainfont: 'Montserrat'
 editor: visual
@@ -16,6 +17,8 @@ params:
   div_value: ""
   panel: ""
   volcano: ""
+  tree_ml: ""
+  fig_cor_snp: ""
 ---
 <head>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,13 +32,16 @@ diversity_value = as.numeric(read.csv(params$div_value)[1,1])
 
 ## Evidence for chronic infection 
 
+Phylogeny with other samples:
+![](`r params$tree_ml`)
+
 ### Freyja output
 
 ![](`r params$freyja`)
 
 ### Diversity comparision
 
-The pi value for the studied samples is ``r diversity_value``
+The pi value for the studied samples is $`r diversity_value`$
 
 ![](`r params$div`)
 
@@ -47,6 +53,10 @@ The pi value for the studied samples is ``r diversity_value``
 ## Evolution
 
 ### Description for NV 
+
+The number of polimorphic sites over time:
+
+![](`r params$fig_cor_snp`)
 
 ![](`r params$SNV`)
 
