@@ -23,7 +23,7 @@ rule diversity:
         context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     output:
         fig = report(REPORT_DIR/"div.plot.png"),
-        value = temp("our_diversity.txt")
+        value = temp(OUTDIR/"our_diversity.txt")
     script:
         "../scripts/report/diversity_plot.R"
 
@@ -113,7 +113,7 @@ rule report:
         temest = report(REPORT_DIR/"temp_est.png"),
         SNV = report(REPORT_DIR/"NV.description.png"),
         evo = report(REPORT_DIR/"dn_ds.png"),
-        value = "our_diversity.txt",
+        value = OUTDIR/"our_diversity.txt",
         panel = report(REPORT_DIR/"panel.png"),
         volcano = report(REPORT_DIR/"volcano.png"),
         tree_ml = report(REPORT_DIR/"tree_ml.png"),
