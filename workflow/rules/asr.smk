@@ -48,7 +48,8 @@ rule ml_context_tree:
         outgroup_aln = CONTEXT_FASTA
     output:
         folder = directory(OUTDIR/"tree_context"),
-        state_file = OUTDIR/"tree_context"/f"{OUTPUT_NAME}.state"
+        state_file = OUTDIR/"tree_context"/f"{OUTPUT_NAME}.state",
+        treefile = OUTDIR/"tree_context"/f"{OUTPUT_NAME}.treefile"
     shell:
         """
         awk '/^>/{{p=seen[$0]++}}!p' {input.fasta} {input.outgroup_aln} > aln.fasta

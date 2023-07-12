@@ -64,7 +64,7 @@ rule pylo_plots:
         metadata = config["METADATA"]
     input: 
         dist = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
-        ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile"
+        ml = OUTDIR/"tree_context"/f"{OUTPUT_NAME}.treefile"
     output:
         temest = report(REPORT_DIR/"temp_est.png"),
         tree = report(REPORT_DIR/"tree.png"),
