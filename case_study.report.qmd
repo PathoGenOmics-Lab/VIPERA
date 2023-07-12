@@ -1,11 +1,22 @@
 ---
-title: "Case_study-SARS-CoV-2"
-author: "Jordi"
+title: "Case-study-SARS-CoV-2" 
+author: "Jordi Sevilla"
+institute: "PathoGenOmics-lab"
+date: last-modified
+date-format: "DD-MM-YYYY"
+title-block-banner: "#27445C"
 format: 
   html: 
-    theme: journal
-    self-contained: true
+    embed-resources: true
+    smooth-scroll: true
+    theme: cosmo
+    fontcolor: black
+    toc: true
+    toc-expand: true
+    toc-location: left
+    toc-title: Summary
     mainfont: 'Montserrat'
+css: config/report.styles.css
 editor: visual
 params:
   div: ""
@@ -19,36 +30,88 @@ params:
   volcano: ""
   tree_ml: ""
   fig_cor_snp: ""
+  stats_lm: ""
+  table: ""
 ---
 <head>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 </head>
-```{r , echo= F,message= F}
+
+```{r , echo= F,message= F, include = F}
+library(gdtools)
+register_gfont(family = "Montserrat")
+library(flextable)
+library(tidyverse)
 diversity_value = as.numeric(read.csv(params$div_value)[1,1])
+stats <- read.csv(params$stats_lm)$value
+
+correlation <- as.numeric(stats[2])
+sub_rate <- as.numeric(stats[1])*365
+sub_rate <- round(sub_rate, digits = 2)
+p_value_lm <- as.numeric(stats[3])
+table <- read.csv(params$table)
+
 ```
 # {style="text-align: justify"}
 
+## Samples summary
+```{r, echo= F,message= F}
+flextable(table) %>%
+set_header_labels(
+  "Sample" = "Sample",
+  "Collection_Date" = "Collection Date",
+  "Lineaje" = "Lineaje"
+) %>%
+bold(i = 1, bold = TRUE, part = "header") %>%
+flextable::align(align = "center") %>% 
+font(fontname = "Montserrat", part = "all") %>%
+autofit()
+```
 ## Evidence for chronic infection 
 
-Phylogeny with other samples:
-![](`r params$tree_ml`)
+
 
 ### Freyja output
+The most probably lineage admixture for each sample has been calculated with software [Freyja](https://github.com/andersen-lab/Freyja).
 
-![](`r params$freyja`)
+![**Figure 1.** Lineage composition of samples according to Freyja. Samples are ordered by collection date.](`r params$freyja`)
 
 ### Diversity comparision
 
-The pi value for the studied samples is $`r diversity_value`$
+The pi value for the studied samples is $`r diversity_value`$.
 
-![](`r params$div`)
+![**Figure 2.** Distribution of nucleotide diversity pi for 1000 randomly selected groups from context sequences. Red line indicates the pi value for the studied samples.](`r params$div`)
 
 ### phylogeny and temporal signal
 
-![](`r params$tree`)
-![](`r params$tempest`)
+A maximum likelihood tree has been adjusted with the context sequences:
+
+![**Figure 3.** Maximum-likelihood tree whith studied and context sequence. Studied sequence are represented in red.](`r params$tree_ml`)
+
+In addition, phylogeny has been reconstructed using genetic variations in samples following the next equation to compute pairwise distance matrix:
+
+$d(M,N)=\sum_{i=1}^{I} \frac{\sum_{j=1}^{J} (M_{ij} -N_{ij})^2}{4 -\sum_{j=1}^{J} (M_{ij} +N_{ij})^2}$
+
+where:
+
+$M$ y $N$: Two sequences.
+
+$i = 1... I :$ Index over polimorphic sites.
+
+$j = 1... J :$ Index over alleles.
+
+$M_{ij}$ : Frequency of allel $j$ in position $i$ for sequence $M$.
+
+
+With the distance matrix, a neighbour-joining tree has been adjusted:
+
+![**Figure 4.** Neighbour-joining tree for studied samples.](`r params$tree`)
+
+With the neighbur-joining tree, partistic distances to root has been correlated with time obtaining a $R^2$ of **`r correlation`** with a p-value of $`r p_value_lm`$. The estimated substitution rate is **`r sub_rate`** substitutions per year.
+
+![**Figure 5.** Partistic distance to root in the neighbour-joining tree against days since first sample. Red line indicates the adjusted linear regression model.](`r params$tempest`)
 
 ## Evolution
 
