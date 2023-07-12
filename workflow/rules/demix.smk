@@ -43,6 +43,6 @@ rule summarise_demixing:
     input:
         directories = expand(OUTDIR/"demixing"/"{sample}", sample=iter_samples())
     output:
-        summary_df = OUTDIR/"summary_freyja_demixing.csv"
+        summary_df = report(OUTDIR/"summary_freyja_demixing.csv")
     script: 
         "../scripts/summary_demixing.R"
