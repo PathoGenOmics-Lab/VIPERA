@@ -50,6 +50,7 @@ include: "rules/pangolin.smk"
 include: "rules/distances.smk"
 include: "rules/evolution.smk"
 include: "rules/report.smk"
+include: "rules/context.smk"
 
 
 rule all:
