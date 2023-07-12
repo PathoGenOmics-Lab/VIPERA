@@ -1,11 +1,11 @@
 rule pangolin_report:
-    threads: 1
+    threads: 8
     conda: "../envs/pangolin.yaml"
     input:
         fastas = OUTDIR/f"{OUTPUT_NAME}.fasta"
     output:
-        report = OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv"
+        report = report(OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv")
     shell:
         """
-        pangolin {input.fastas} --outfile {output.report}
+        pangolin {input.fastas} --outfile {output.report} -t {threads}
         """
