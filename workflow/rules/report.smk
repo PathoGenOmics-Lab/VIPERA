@@ -116,7 +116,7 @@ rule report:
         tree_ml = report(REPORT_DIR/"tree_ml.png"),
         fig_cor = report(REPORT_DIR/"cor_snp_time.png")
     output:
-        html = OUTDIR/f"{OUTPUT_NAME}.report.html"
+        html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
     shell:
         """
         set +o pipefail
