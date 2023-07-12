@@ -28,6 +28,12 @@ OUTPUT_NAME = config["OUTPUT_NAME"]
 OUTDIR = Path(config["OUTPUT_DIRECTORY"])
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
+## Context
+if "CONTEXT_FASTA" not in config.keys() or config["CONTEXT_FASTA"] is None:
+    CONTEXT_FASTA = OUTDIR/"context"/"sequences.fasta"
+else:
+    CONTEXT_FASTA = config["CONTEXT_FASTA"]
+
 ## report
 REPORT_DIR = Path(OUTDIR/"report")
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
