@@ -3,6 +3,7 @@ title: "Case_study-SARS-CoV-2"
 author: "Jordi"
 format: 
   html: 
+    theme: journal
     self-contained: true
     mainfont: 'Montserrat'
 editor: visual
@@ -40,7 +41,7 @@ Phylogeny with other samples:
 
 ### Diversity comparision
 
-The pi value for the studied samples is ``r diversity_value``
+The pi value for the studied samples is $`r diversity_value`$
 
 ![](`r params$div`)
 

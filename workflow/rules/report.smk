@@ -102,7 +102,7 @@ rule report:
     conda: "../envs/renv.yaml"
     shadow: "shallow"
     params:
-        qmd = "case_study.report.Rmd"
+        qmd = "case_study.report.qmd"
     input:
         diversity = report(REPORT_DIR/"div.plot.png"),
         freyja = report(REPORT_DIR/"freyja.plot.png"),
@@ -120,10 +120,10 @@ rule report:
     shell:
         """
         set +o pipefail
-        Rscript -e 'library(rmarkdown)' -e \"render(input = '{params.qmd}',\
+        Rscript -e 'library(quarto)' -e \"quarto_render(input = '{params.qmd}',\
                                            output_file = 'report.html',\
-                                           params=list(div='{input.diversity}',\
-                                                       freyja='{input.freyja}',\
+                                           execute_params=list(div='{input.diversity}',\
+                                                       freyja ='{input.freyja}',\
                                                        tree = '{input.tree}',\
                                                        tempest = '{input.temest}',\
                                                        SNV = '{input.SNV}',\
