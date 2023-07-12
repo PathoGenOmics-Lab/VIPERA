@@ -51,7 +51,8 @@ rule general_NV_description:
         window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     output:
-        fig = report(REPORT_DIR/"NV.description.png")
+        fig = report(REPORT_DIR/"NV.description.png"),
+        fig_cor = report(REPORT_DIR/"cor_snp_time.png")
     script:
         "../scripts/report/NV_description.R"
 
@@ -62,10 +63,12 @@ rule pylo_plots:
         design = config["PLOTS"],
         metadata = config["METADATA"]
     input: 
-        dist = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv"
+        dist = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
+        ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile"
     output:
         temest = report(REPORT_DIR/"temp_est.png"),
-        tree = report(REPORT_DIR/"tree.png")
+        tree = report(REPORT_DIR/"tree.png"),
+        tree_ml = report(REPORT_DIR/"tree_ml.png")
     script:
         "../scripts/report/pylo.R"
 
@@ -102,7 +105,7 @@ rule report:
     conda: "../envs/renv.yaml"
     shadow: "shallow"
     params:
-        qmd = "case_study.report.Rmd"
+        qmd = "case_study.report.qmd"
     input:
         diversity = report(REPORT_DIR/"div.plot.png"),
         freyja = report(REPORT_DIR/"freyja.plot.png"),
@@ -112,22 +115,26 @@ rule report:
         evo = report(REPORT_DIR/"dn_ds.png"),
         value = "our_diversity.txt",
         panel = report(REPORT_DIR/"panel.png"),
-        volcano = report(REPORT_DIR/"volcano.png")
+        volcano = report(REPORT_DIR/"volcano.png"),
+        tree_ml = report(REPORT_DIR/"tree_ml.png"),
+        fig_cor = report(REPORT_DIR/"cor_snp_time.png")
     output:
-        html = OUTDIR/f"{OUTPUT_NAME}.report.html"
+        html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
     shell:
         """
         set +o pipefail
-        Rscript -e 'library(rmarkdown)' -e \"render(input = '{params.qmd}',\
+        Rscript -e 'library(quarto)' -e \"quarto_render(input = '{params.qmd}',\
                                            output_file = 'report.html',\
-                                           params=list(div='{input.diversity}',\
-                                                       freyja='{input.freyja}',\
+                                           execute_params=list(div='{input.diversity}',\
+                                                       freyja ='{input.freyja}',\
                                                        tree = '{input.tree}',\
                                                        tempest = '{input.temest}',\
                                                        SNV = '{input.SNV}',\
                                                        evo = '{input.evo}',
                                                        div_value = '{input.value}',
                                                        panel = '{input.panel}',
-                                                       volcano = '{input.volcano}'))\"    
+                                                       volcano = '{input.volcano}',
+                                                       tree_ml = '{input.tree_ml}',
+                                                       fig_cor_snp = '{input.fig_cor}'))\"    
         mv report.html {output.html}
         """

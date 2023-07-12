@@ -16,7 +16,7 @@ demix <- data.frame("lineages" = NA, "abundances" = NA, "sample" = NA) %>%
 # Para cada archivo extraer la info e introducirla en el df
 for (directory in directories){
 
-    COV <- str_match(directory,"COV......")
+    COV <- str_extract(directory,".*/.*/(.*)", group = 1)
 
     path <- sprintf("%s/%s_demixed.tsv", directory, COV)
 
