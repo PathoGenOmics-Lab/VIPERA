@@ -6,29 +6,14 @@ library(future.apply)
 library(tidyverse)
 
 
-# DISEÑO DE PLOTS ####
-
-source(snakemake@params[["design"]])
-
-# DATOS ####
-gene_ex <- read.dna(snakemake@params[["outgroup_aln"]],format = "fasta", as.matrix = F) # Genomas del contexto
-study_aln <- read.dna(snakemake@input[["study_fasta"]],format = "fasta", as.matrix = F) # Genomas del estudio
-
-gene_ex <- gene_ex[names(gene_ex) != "NC_045512.2 Severe acute respiratory syndrome coronavirus 2 isolate Wuhan-Hu-1, complete genome"]
-
-# Análisis ####
-
-## Funciones ####
-
-# Función para calcular pi a partir de una muestra
+# Pi calculation
 nucleotide.diversity <- function(dna_object, record.names, sample.size){
   sample <- sample(record.names, sample.size, replace = F)
   dna_subset <- dna_object[record.names %in% sample]
-  return(nuc.div(dna_subset))
+  nuc.div(dna_subset)
 }
 
-# función para hacer el bootstrapping en paralelo
-plan(multisession, workers = 4)
+# Parallel bootstrapping
 boot.nd.parallel <- function(aln, sample.size = 12, reps = 100) {
   record.names <- names(aln)
   future_sapply(
@@ -38,30 +23,64 @@ boot.nd.parallel <- function(aln, sample.size = 12, reps = 100) {
   )
 }
 
-## Cálculo de PI
+# Plot design
+source(snakemake@params[["design"]])
 
+# Outgroup/context alignment
+gene_ex <- read.dna(snakemake@input[["context_fasta"]], format = "fasta", as.matrix = F)
+gene_ex <- gene_ex[!startsWith(names(gene_ex), snakemake@config[["ALIGNMENT_REFERENCE"]])]
 
-# valor de diversidad (PI) para nuestras muestras
-study_aln <- study_aln[names(study_aln) != "NC_045512.2 Severe acute respiratory syndrome coronavirus 2 isolate Wuhan-Hu-1, complete genome"]
-diversity = nuc.div(study_aln)
-write.table(data.frame(div = diversity), snakemake@output[["value"]], row.names = F) # Guardar el valor para el report
+# Study alignment
+study_aln <- read.dna(snakemake@input[["study_fasta"]],format = "fasta", as.matrix = F)
+study_aln <- study_aln[!startsWith(names(study_aln), snakemake@config[["ALIGNMENT_REFERENCE"]])]
 
+# Diversity value for our samples
+diversity <- nuc.div(study_aln)
+write.table(data.frame(div = diversity), snakemake@output[["value"]], row.names = F)
 
-# Valores de diversidad para las muestras del contexto
+# Perform bootstrap
+plan(multisession, workers = snakemake@threads)
+divs <- boot.nd.parallel(gene_ex, length(study_aln), snakemake@params[["bootstrap_reps"]])
+plan(sequential)
 
-divs <- boot.nd.parallel(gene_ex, length(names(study_aln)) -1, 1000)
+# Test normality
+st <- shapiro.test(divs)
 
-# FIGURA ####
+# Calculate p-value (assuming normal distribution)
+standardized.value <- (diversity - mean(divs)) / sd(divs)
+pvalue.norm <- pnorm(standardized.value)
 
-plot <- data.frame(pi = divs) %>%
-  ggplot() + 
-  aes(pi) + 
-  geom_density(aes(x = pi) ,fill = "#2177d4", alpha = 0.7, bw = 0.000001,color = "white" ) + 
-  geom_vline(aes(xintercept = diversity), color = "red") + 
-  labs(x = "π" , y = "Density")
+# Estimate p-value empirically
+empirical.probs <- ecdf(divs)
+pvalue.emp <- empirical.probs(diversity)
 
+# Plot and save
+p <- data.frame(pi = divs) %>%
+  ggplot() +
+  geom_density(aes(x = pi), fill = "#fcbf49", alpha = 0.7, bw = 0.000001, color = "#eae2b7") +
+  geom_vline(aes(xintercept = diversity), color = "#d62828") +
+  stat_function(fun = dnorm, args = list(mean = mean(divs), sd = sd(divs)), color = "#f77f00") +
+  labs(x = "π", y = "Density") +
+  ggtitle(
+    "Diversity distribution",
+    paste0(
+      "Study π: ", prettyNum(diversity), "\n",
+      "eCDF-estimated p =", prettyNum(pvalue.emp), " (left-tailed)", "\n",
+      "Assumed normal p = ", prettyNum(pvalue.norm), " (left-tailed)", "\n",
+      "Normal distribution: ", st$p.value >= 0.05, " (Shapiro-Wilk test, p = ", prettyNum(st$p.value), ")", "\n",
+      snakemake@params[["bootstrap_reps"]], " reps with size=", length(study_aln)
+    )
+  ) +
+  theme(
+    plot.title = element_text(size = 10),
+    plot.subtitle = element_text(size = 8)
+  )
 
-ggsave(filename = snakemake@output[["fig"]], 
-        plot = plot, width=159.2, 
-        height=119.4, units="mm", 
-        dpi=250)
+ggsave(
+  filename = snakemake@output[["fig"]],
+  plot = p,
+  width = snakemake@params[["plot_width"]],
+  height = snakemake@params[["plot_height"]],
+  units = "mm",
+  dpi = 250
+)
