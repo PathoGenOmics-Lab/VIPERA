@@ -45,7 +45,7 @@ rule ml_context_tree:
         etc = ETC_TREE_PARAMS
     input:
         fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
-        outgroup_aln = config["DIVERSITY"]
+        outgroup_aln = CONTEXT_FASTA
     output:
         folder = directory(OUTDIR/"tree_context"),
         state_file = OUTDIR/"tree_context"/f"{OUTPUT_NAME}.state"
