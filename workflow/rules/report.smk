@@ -64,7 +64,8 @@ rule pylo_plots:
     output:
         temest = report(REPORT_DIR/"temp_est.png"),
         tree = report(REPORT_DIR/"tree.png"),
-        tree_ml = report(REPORT_DIR/"tree_ml.png")
+        tree_ml = report(REPORT_DIR/"tree_ml.png"),
+        stats_lm = temp(OUTDIR/"stats.lm.csv")
     script:
         "../scripts/report/pylo.R"
 
@@ -89,13 +90,23 @@ rule snp_plots:
         design = config["PLOTS"],
         metadata = config["METADATA"],
     input:
-         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
+         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     output:
         pseudovolcano = report(REPORT_DIR/"volcano.png"),
         snp_panel = report(REPORT_DIR/"panel.png")
     script:
         "../scripts/report/snp_plots.R"
 
+rule summary_table:
+    conda: "../envs/renv.yaml"
+    params:
+        metadata = config["METADATA"],
+    input:
+         report = report(OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv")
+    output:
+        table = temp(OUTDIR/"summary_table.csv")
+    script:
+        "../scripts/report/summary_table.R"
 
 
 rule report:
@@ -114,7 +125,9 @@ rule report:
         panel = report(REPORT_DIR/"panel.png"),
         volcano = report(REPORT_DIR/"volcano.png"),
         tree_ml = report(REPORT_DIR/"tree_ml.png"),
-        fig_cor = report(REPORT_DIR/"cor_snp_time.png")
+        fig_cor = report(REPORT_DIR/"cor_snp_time.png"),
+        stats_lm = OUTDIR/"stats.lm.csv",
+        table = OUTDIR/"summary_table.csv"
     output:
         html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
     shell:
@@ -132,7 +145,9 @@ rule report:
                                                        panel = '{input.panel}',
                                                        volcano = '{input.volcano}',
                                                        tree_ml = '{input.tree_ml}',
-                                                       fig_cor_snp = '{input.fig_cor}'))\"    
+                                                       fig_cor_snp = '{input.fig_cor}',
+                                                       stats_lm = '{input.stats_lm}',
+                                                       table = '{input.table}'))\"    
         mv report.html {output.html}
         """
 
