@@ -28,7 +28,7 @@ rule align_context:
     shadow: "shallow"
     conda: "../envs/nextalign.yaml"
     params:
-        name = OUTPUT_NAME
+        name = "context_sequences"
     input:
         ref_fasta = OUTDIR/"reference.fasta",
         fasta = CONTEXT_FASTA
