@@ -8,7 +8,8 @@ rule snps_to_ancestor:
         ivar_quality = config["VC"]["IVAR_QUALITY"],
         ivar_freq = config["VC"]["IVAR_FREQ"],
         ivar_depth = config["VC"]["IVAR_DEPTH"],
-        gff = config["ANNOTATION_GFF"]
+        gff = config["ANNOTATION_GFF"],
+        ref_id = "MN908947.3"
     input:
         reference_fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
         bam = get_input_bam
@@ -16,9 +17,7 @@ rule snps_to_ancestor:
         tsv = temp(OUTDIR/"{sample}.tsv")
     shell:
         """
-        set -e
-
-        sed 's/>.*/>MN908947.3/g' {input.reference_fasta} > renamed_reference.fasta
+        sed 's/^>.*/>{params.ref_id}/g' {input.reference_fasta} > renamed_reference.fasta
 
         samtools mpileup \
             -aa \
@@ -37,7 +36,7 @@ rule snps_to_ancestor:
                 -g {params.gff} \
                 -r renamed_reference.fasta
         
-        sed 's/MN908947.3/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}
+        sed 's/{params.ref_id}/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}
         """
 
 
