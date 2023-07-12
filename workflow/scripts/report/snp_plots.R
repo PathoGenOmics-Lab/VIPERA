@@ -27,9 +27,12 @@ vcf <- vcf %>%
   mutate(SNP = paste(REF,POS,ALT, sep = "-")) %>%
   dplyr::select(SNP,REGION,ALT_FREQ, GFF_FEATURE, synonimous)
 
+IDs <- pull(vcf,REGION) %>%
+  unique()
+
 vcf <- vcf %>%
   pivot_wider(names_from = REGION, values_from = ALT_FREQ, values_fill = 0) %>% # Obtener los 0 en los puntos sin variantes
-  pivot_longer(date_order, names_to = "REGION", values_to = "ALT_FREQ") %>%
+  pivot_longer(IDs, names_to = "REGION", values_to = "ALT_FREQ") %>%
   rowwise() %>%
   mutate(POS = strsplit(SNP,"-")[[1]][2]) %>%
   ungroup() 
