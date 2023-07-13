@@ -4,19 +4,17 @@ author: "Jordi Sevilla"
 institute: "PathoGenOmics-lab"
 date: last-modified
 date-format: "DD-MM-YYYY"
-title-block-banner: "#27445C"
+title-block-banner: true
 format: 
   html: 
     page-layout: article
     embed-resources: true
     smooth-scroll: true
     theme: cosmo
-    fontcolor: black
     toc: true
     toc-expand: true
     toc-location: left
     toc-title: Summary
-    mainfont: 'Montserrat'
 css: config/report.styles.css
 editor: visual
 params:
@@ -55,7 +53,6 @@ p_value_lm <- as.numeric(stats[3])
 table <- read.csv(params$table)
 
 ```
-# {style="text-align: justify"}
 
 ## Samples summary
 ```{r, echo= F,message= F}
