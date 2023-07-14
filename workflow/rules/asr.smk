@@ -45,10 +45,11 @@ rule ml_context_tree:
         etc = ETC_TREE_PARAMS
     input:
         fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
-        outgroup_aln = config["DIVERSITY"]
+        outgroup_aln = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     output:
         folder = directory(OUTDIR/"tree_context"),
-        state_file = OUTDIR/"tree_context"/f"{OUTPUT_NAME}.state"
+        state_file = OUTDIR/"tree_context"/f"{OUTPUT_NAME}.state",
+        treefile = OUTDIR/"tree_context"/f"{OUTPUT_NAME}.treefile"
     shell:
         """
         awk '/^>/{{p=seen[$0]++}}!p' {input.fasta} {input.outgroup_aln} > aln.fasta

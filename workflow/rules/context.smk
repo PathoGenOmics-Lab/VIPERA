@@ -28,12 +28,10 @@ rule align_context:
     shadow: "shallow"
     conda: "../envs/nextalign.yaml"
     params:
-        name = OUTPUT_NAME
+        name = "context_sequences"
     input:
         ref_fasta = OUTDIR/"reference.fasta",
-        fasta = OUTDIR/"context"/"sequences.fasta" \
-            if ("CONTEXT_FASTA" not in config.keys() or config["CONTEXT_FASTA"] is None) \
-            else config["CONTEXT_FASTA"]
+        fasta = CONTEXT_FASTA
     output:
         folder = directory(OUTDIR/"context"/"nextalign"),
         fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.fasta"
