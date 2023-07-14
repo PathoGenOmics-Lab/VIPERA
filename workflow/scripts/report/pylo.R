@@ -5,7 +5,7 @@ library(ape)
 library(ggtree)
 library(data.table)
 library(ggpubr)
-
+library(pegas)
 
 # DISEÑO DE PLOTS ####
 source(snakemake@params[["design"]])
@@ -13,9 +13,13 @@ source(snakemake@params[["design"]])
 # DATOS ####
 matrix <- read_csv(snakemake@input[["dist"]])
 metadata <- read_csv(snakemake@params[["metadata"]])
-tree_ml <- read.tree(snakemake@input[["ml"]]) %>%
+tree_ml <- read.tree(snakemake@params[["ml"]]) %>%
   root("NC_045512.2", resolve.root = TRUE)
+
+study_names <- read.dna(snakemake@input[["study_fasta"]],format = "fasta", as.matrix = F) %>% 
+        names()
 # ANÁLISIS ####
+
 
 ## Funciones ####
 # Con n-j puede darse que hayan ramas con longitud negativa si la matriz de distancias no es congruente
@@ -100,9 +104,9 @@ ggsave(filename = snakemake@output[["temest"]],
 
 colors <- c()
 for(ID in tree_ml$tip.label){
-  if(ID %in% metadata$ID){
+  if(ID %in% study_names){
     colors <- c(colors,"red")
-  } else{
+  } else {
     colors <- c(colors,"gray80")
   }
 }
