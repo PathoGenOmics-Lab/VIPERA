@@ -1,6 +1,6 @@
 rule snps_to_ancestor:
     threads: 1
-    shadow: "shallow"
+    shadow: "full"
     conda: "../envs/var_calling.yaml"
     params:
         max_depth = config["VC"]["MAX_DEPTH"],
