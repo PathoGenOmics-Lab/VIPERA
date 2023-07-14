@@ -1,9 +1,9 @@
 # Case-study-SARS-CoV-2
 
-![](.rulegraph.png)
-
+![Snakemake rule graph](.rulegraph.png)
 
 ## Instructions
+
 To run the pipeline, first fetch the data (you may need to modify the script to include your credentials):
 
 ```bash
@@ -18,15 +18,14 @@ snakemake --use-conda -c8
 
 You may change the `-c` argument to use a different number of CPUs.
 
+## Manually adding a context
 
-## TO DO
-- [ ] get reference with `samtools view -H some.bam` (BAM files may not be aligned to same reference)
-- [ ] calculate BAM stats with samtools and summarize
-- [ ] make a config table with infection groups to do ASR separately
-- [x] do Freyja demixing
-- [ ] summarize Freyja demixing results
-- [ ] use just a sample list and a Garnatxa path list to define targets
+A custom sequence dataset can be provided through the `CONTEXT_FASTA` parameter
+by editing `config/targets.yaml` or via the command line:
 
+```bash
+with --config CONTEXT_FASTA="path/to/fasta"
+```
 
 ## Generating a rule graph
 

@@ -11,7 +11,7 @@ rule polymorphic_sites:
     output:
         table = OUTDIR/f"{OUTPUT_NAME}.polymorphic_sites.csv"
     script:
-        "scripts/polymorphic_sites.py"
+        "../scripts/polymorphic_sites.py"
 
 
 rule plot_polymorphisms:
@@ -23,8 +23,8 @@ rule plot_polymorphisms:
         units = "in"
     input:
         table = OUTDIR/f"{OUTPUT_NAME}.polymorphic_sites.csv",
-        metadata = METADATA
+        metadata = config["METADATA"]
     output:
         plot = OUTDIR/f"{OUTPUT_NAME}.polymorphic_sites.pdf"
     script:
-        "scripts/plot_polymorphisms.R"
+        "../scripts/plot_polymorphisms.R"

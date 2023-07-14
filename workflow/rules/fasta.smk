@@ -2,11 +2,11 @@ rule concat_fasta:
     threads: 1
     shadow: "shallow"
     input:
-        FASTA_FOLDER
+        iter_files("fasta")
     output:
         fasta = OUTDIR/f"{OUTPUT_NAME}.fasta"
     shell:
-        "cat {input}/* > {output.fasta}"
+        "cat {input} > {output.fasta}"
 
 
 rule align_fasta:
@@ -38,4 +38,4 @@ rule mask_alignment:
     output:
         fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta"
     script:
-        "scripts/mask-aln.py"
+        "../scripts/mask-aln.py"
