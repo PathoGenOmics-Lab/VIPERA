@@ -1,5 +1,5 @@
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
 dependencies:
-  - iqtree==2.2.2.3
+  - pangolin==4.3

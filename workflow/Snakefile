@@ -5,17 +5,21 @@ min_version("6.0")
 
 configfile: "config/config.yaml"
 configfile: "config/targets.yaml"
+configfile: "config/report.yaml"
 
 
-def iter_lines(file_path):
-    with open(file_path) as f:
-        for line in f:
-            yield line.strip()
+def iter_files(file_type: str):
+    for sample_name in config["SAMPLES"].keys():
+        yield config["SAMPLES"][sample_name][file_type]
 
 
-def iter_samples_in_path(path: Path):
-    for file in path.glob("*"):
-        yield file.name.split(".")[0]
+def iter_samples():
+    for sample_name in config["SAMPLES"].keys():
+        yield sample_name
+
+
+def get_input_bam(wildcards):
+    return config["SAMPLES"][wildcards.sample]["bam"]
 
 
 # Targets
@@ -23,12 +27,16 @@ def iter_samples_in_path(path: Path):
 OUTPUT_NAME = config["OUTPUT_NAME"]
 OUTDIR = Path(config["OUTPUT_DIRECTORY"])
 OUTDIR.mkdir(parents=True, exist_ok=True)
-## Data folders
-BAM_FOLDER = Path(config["BAM_FOLDER"])
-FASTA_FOLDER = Path(config["FASTA_FOLDER"])
-## Metadata table
-METADATA = Path(config["METADATA"])
 
+## Context
+if "CONTEXT_FASTA" not in config.keys() or config["CONTEXT_FASTA"] is None:
+    CONTEXT_FASTA = OUTDIR/"context"/"sequences.fasta"
+else:
+    CONTEXT_FASTA = config["CONTEXT_FASTA"]
+
+## report
+REPORT_DIR = Path(OUTDIR/"report")
+REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Tree parameters
 ETC_TREE_PARAMS = []
@@ -43,9 +51,15 @@ include: "rules/fetch.smk"
 include: "rules/fasta.smk"
 include: "rules/asr.smk"
 include: "rules/demix.smk"
+include: "rules/vaf.smk"
+include: "rules/pangolin.smk"
+include: "rules/distances.smk"
+include: "rules/evolution.smk"
+include: "rules/report.smk"
+include: "rules/context.smk"
 
 
 rule all:
     input:
-        OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
-        expand(OUTDIR/"demixing"/"{sample}", sample=iter_samples_in_path(BAM_FOLDER)) 
+        OUTDIR/f"{OUTPUT_NAME}.report.html",
+        OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv"

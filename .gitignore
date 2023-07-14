@@ -5,5 +5,16 @@
 # Analysis files
 *.bam
 *.fa
-*.fasta
+*/fasta/*.fasta
 /output/
+
+# MAC
+.DS_Store
+
+# report 
+*.html
+.ipynb_checkpoints/
+
+
+# Default credentials
+/config/gisaid.yaml

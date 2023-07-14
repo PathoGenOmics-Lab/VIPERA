@@ -1,0 +1,12 @@
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/consensus/COV012635.fa
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/consensus/COV012638.fa
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/consensus/COV012630.fa
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/consensus/COV012684.fa
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/consensus/COV012716.fa
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/consensus/COV012674.fa
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/consensus/COV012661.fa
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/consensus/COV012651.fa
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/consensus/COV012672.fa
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/consensus/COV012623.fa
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/consensus/COV012640.fa
+/storage/seqcovid/data/yersin/analysis/CAT_CB/illumina/CAT_CB_E0181/consensus/COV012663.fa
