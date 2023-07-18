@@ -17,7 +17,8 @@ rule download_context:
         high_coverage = False,
         min_sleep = 1,
         max_sleep = 3,
-        chunk_length = 3000
+        chunk_length = 3000,
+        min_theoretical_combinations = config["DIVERSITY_BOOTSTRAP_REPS"]
     output:
         fasta = OUTDIR/"context"/"sequences.fasta",
         metadata = OUTDIR/"context"/"metadata.csv"
