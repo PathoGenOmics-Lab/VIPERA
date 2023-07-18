@@ -48,7 +48,8 @@ rule general_NV_description:
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     output:
         fig = report(REPORT_DIR/"NV.description.png"),
-        fig_cor = report(REPORT_DIR/"cor_snp_time.png")
+        fig_cor = report(REPORT_DIR/"cor_snp_time.png"),
+        summary_nv = temp(OUTDIR/"summary_nv.csv")
     script:
         "../scripts/report/NV_description.R"
 
@@ -57,10 +58,12 @@ rule pylo_plots:
     conda: "../envs/renv.yaml"
     params: 
         design = config["PLOTS"],
-        metadata = config["METADATA"]
+        metadata = config["METADATA"],
+        ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile"
     input: 
         dist = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
-        ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile"
+        study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
+        state_file = OUTDIR/"tree_context"/f"{OUTPUT_NAME}.state"
     output:
         temest = report(REPORT_DIR/"temp_est.png"),
         tree = report(REPORT_DIR/"tree.png"),
@@ -127,7 +130,8 @@ rule report:
         tree_ml = report(REPORT_DIR/"tree_ml.png"),
         fig_cor = report(REPORT_DIR/"cor_snp_time.png"),
         stats_lm = OUTDIR/"stats.lm.csv",
-        table = OUTDIR/"summary_table.csv"
+        table = OUTDIR/"summary_table.csv",
+        sum_nv = OUTDIR/"summary_nv.csv"
     output:
         html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
     shell:
@@ -147,7 +151,8 @@ rule report:
                                                        tree_ml = '{input.tree_ml}',
                                                        fig_cor_snp = '{input.fig_cor}',
                                                        stats_lm = '{input.stats_lm}',
-                                                       table = '{input.table}'))\"    
+                                                       table = '{input.table}',
+                                                       sum_nv = '{input.sum_nv}'))\"    
         mv report.html {output.html}
         """
 
