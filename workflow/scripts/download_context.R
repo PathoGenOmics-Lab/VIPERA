@@ -67,6 +67,13 @@ dataframes <- lapply(
 # Join results
 metadata <- bind_rows(dataframes)
 
+# Checkpoint: remove samples that overlap with target samples according to GISAID ID
+samples.accids <- sample.metadata %>%
+    pull(snakemake@params[["samples_gisaid_accession_column"]])
+metadata <- metadata %>%
+    filter(! accession_id %in% samples.accids)
+print(glue("{nrow(metadata)} accession_ids remaining after GISAID ID filter"))
+
 # Checkpoint: at least as many context samples as our dataset
 if (nrow(metadata) < nrow(sample.metadata)) {
     stop(glue("Too few available samples (n={nrow(metadata)}).\n{CHKPT.ERROR.MSG}"))

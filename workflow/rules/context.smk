@@ -8,6 +8,8 @@ rule download_context:
         gisaid_creds = config["GISAID_YAML"],
         date_column = "CollectionDate",
         location_column = "ResidenceCity",
+        samples_gisaid_accession_column = "GISAIDEPI",
+        context_gisaid_accession_column = "accession_id",
         host = "Human",
         exclude_low_coverage = True,
         complete = True,
