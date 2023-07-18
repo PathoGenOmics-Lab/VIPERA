@@ -9,7 +9,7 @@ rule snps_to_ancestor:
         ivar_freq = config["VC"]["IVAR_FREQ"],
         ivar_depth = config["VC"]["IVAR_DEPTH"],
         gff = config["ANNOTATION_GFF"],
-        ref_id = "MN908947.3"
+        ref_id = config["ANNOTATION_GFF_SEQNAME"]
     input:
         reference_fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
         bam = get_input_bam
