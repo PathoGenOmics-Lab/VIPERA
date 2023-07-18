@@ -67,11 +67,6 @@ dataframes <- lapply(
 # Join results
 metadata <- bind_rows(dataframes)
 
-# begin test
-index <- sample(seq_len(nrow(metadata)), nrow(sample.metadata))
-metadata <- metadata %>% slice(index)
-# end test
-
 # Checkpoint: at least as many context samples as our dataset
 if (nrow(metadata) < nrow(sample.metadata)) {
     stop(glue("Too few available samples (n={nrow(metadata)}).\n{CHKPT.ERROR.MSG}"))
