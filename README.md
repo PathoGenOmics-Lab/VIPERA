@@ -24,11 +24,20 @@ A custom sequence dataset can be provided through the `CONTEXT_FASTA` parameter
 by editing `config/targets.yaml` or via the command line:
 
 ```bash
-with --config CONTEXT_FASTA="path/to/fasta"
+snakemake --config CONTEXT_FASTA="path/to/fasta"
 ```
 
-## Generating a rule graph
+## Generating workflow graphs
+
+To generate a simplified rule graph, run:
 
 ```bash
 snakemake --rulegraph | dot -Tpng > .rulegraph.png
+```
+
+To generate the directed acyclic graph (DAG) of all rules
+to be executed, run:
+
+```bash
+snakemake --forceall --dag | dot -Tpng > .dag.png
 ```
