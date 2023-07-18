@@ -11,12 +11,10 @@ rule calculate_bam_variants:
     output:
         folder = directory(OUTDIR/"demixing"/"{sample}/"),
         depth_file = OUTDIR/"demixing"/"{sample}/{sample}_depth.txt",
-        variants_file = OUTDIR/"demixing"/"{sample}/{sample}_variants.tsv"
+        variants_file = OUTDIR/"demixing"/"{sample}/{sample}_variants.tsv",
+        demix_file = OUTDIR/"demixing"/"{sample}/{sample}_demixed.tsv"
     shell:
         """
-        # Create output folder (why is this a necessary step?)
-        mkdir -p {output.folder}
-
         echo Calculating variants of sample '{wildcards.sample}'
         freyja variants \
             "{input.bam}" \
@@ -30,7 +28,7 @@ rule calculate_bam_variants:
             {output.depth_file} \
             --eps {params.minimum_abundance} \
             --covcut {params.coverage_cutoff} \
-            --output "{output.folder}/{wildcards.sample}_demixed.tsv"
+            --output {output.demix_file}
         """
 
 
