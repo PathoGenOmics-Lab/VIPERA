@@ -74,8 +74,21 @@ metadata <- metadata %>%
     filter(! accession_id %in% samples.accids)
 print(glue("{nrow(metadata)} accession_ids remaining after GISAID ID filter"))
 
-# Checkpoint: at least as many context samples as our dataset
-if (nrow(metadata) < nrow(sample.metadata)) {
+# Checkpoint: enforce a minimum number of samples to have at least
+# as many possible combinations as bootstrap replicates.
+# This is done by calculating the root of a function based on the
+# formula for calculating combinations with replacement
+# for n ≥ r ≥ 0: combinations with replacement = n! / (r! (n-r)!)
+r <- nrow(sample.metadata)
+min.comb <- snakemake@params[["min_theoretical_combinations"]]
+solution <- uniroot(
+    function(n) {
+        factorial(n) / (factorial(r) * factorial(n - r)) - min.comb
+    },
+    lower = r,   # determined by sample size (n ≥ r)
+    upper = 170  # determined by default number precision
+)
+if (nrow(metadata) < floor(solution$root)) {
     stop(glue("Too few available samples (n={nrow(metadata)}).\n{CHKPT.ERROR.MSG}"))
 }
 
