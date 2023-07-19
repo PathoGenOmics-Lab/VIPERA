@@ -34,18 +34,17 @@ if (!all(needed.columns.mask)) {
     stop(glue("Missing columns in '{snakemake@input[['metadata']]}'. Alternatively:\n{CHKPT.ERROR.MSG}"))
 }
 
-
 # Get time windows
 dates <- sample.metadata %>%
-    pull(snakemake@params[["date_column"]])
-min.date <- min(dates, na.rm = TRUE)
-max.date <- max(dates, na.rm = TRUE)
-print(glue("Time window: {difftime(max.date, min.date, units = 'days')} days (from {min.date} to {max.date})"))
-
-# Checkpoint: time window cannot be zero
-if (min.date == max.date) {
-    stop(glue("Time window is too short.\n{CHKPT.ERROR.MSG}"))
-}
+    pull(snakemake@params[["date_column"]]) %>%
+    as.numeric
+window.quantile.offset <- (1 - snakemake@params[["date_window_span"]]) / 2
+min.date <- as_date(quantile(dates, window.quantile.offset))
+max.date <- as_date(quantile(dates, 1 - window.quantile.offset))
+padded.min.date <- min.date - snakemake@params[["date_window_paddding_days"]]
+padded.max.date <- max.date + snakemake@params[["date_window_paddding_days"]]
+print(glue("Time window (span={snakemake@params[['date_window_span']]}): {round(interval(min.date, max.date) / days(1))} days (from {min.date} to {max.date})"))
+print(glue("Padded time window (padding={snakemake@params[['date_window_paddding_days']]} days): {round(interval(padded.min.date, padded.max.date) / days(1))} days (from {padded.min.date} to {padded.max.date})"))
 
 # Get locations (if there are multiple, sample from all of them)
 locations <- sample.metadata %>%
@@ -65,8 +64,8 @@ dataframes <- lapply(
     function(location) {
         query(
             credentials = credentials,
-            from = as.character(min.date),
-            to = as.character(max.date),
+            from = as.character(strftime(padded.min.date, format = "%Y-%m-%d")),
+            to = as.character(strftime(padded.max.date, format = "%Y-%m-%d")),
             location = location,
             fast = TRUE,
             low_coverage_excl = snakemake@params[["exclude_low_coverage"]],
