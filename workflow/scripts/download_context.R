@@ -82,8 +82,8 @@ metadata <- bind_rows(dataframes)
 # Checkpoint: remove samples that overlap with target samples according to GISAID ID
 samples.accids <- sample.metadata %>%
     pull(snakemake@params[["samples_gisaid_accession_column"]])
-metadata <- metadata %>%
-    filter(! accession_id %in% samples.accids)
+filtered.accids <- metadata %>% filter(accession_id %in% samples.accids)
+metadata <- metadata %>% filter(!accession_id %in% samples.accids)
 print(glue("{nrow(metadata)} accession_ids remaining after GISAID ID filter"))
 
 # Checkpoint: enforce a minimum number of samples to have at least
@@ -165,3 +165,6 @@ downloads %>%
         col_names = TRUE,
         progress = FALSE
     )
+
+# Write filtered IDs
+write_lines(filtered.accids, snakemake@output[["duplicate_accids"]])
