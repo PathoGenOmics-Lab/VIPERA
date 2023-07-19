@@ -22,6 +22,19 @@ chunk <- function(x, chunk_length = snakemake@params[["chunk_length"]]) {
 # Read original sample metadata
 sample.metadata <- read_delim(snakemake@input[["metadata"]], show_col_types = FALSE)
 
+# Checkpoint: needed columns exist
+needed.columns <- c(
+    snakemake@params[["date_column"]],
+    snakemake@params[["location_column"]],
+    snakemake@params[["samples_gisaid_accession_column"]]
+)
+needed.columns.mask <- needed.columns %in% colnames(sample.metadata)
+if (!all(needed.columns.mask)) {
+    print(glue("Please ensure column '{needed.columns[!needed.columns.mask]}' is present"))
+    stop(glue("Missing columns in '{snakemake@input[['metadata']]}'. Alternatively:\n{CHKPT.ERROR.MSG}"))
+}
+
+
 # Get time windows
 dates <- sample.metadata %>%
     pull(snakemake@params[["date_column"]])
