@@ -13,7 +13,7 @@ source(snakemake@params[["design"]])
 # DATOS ####
 matrix <- read_csv(snakemake@input[["dist"]])
 metadata <- read_csv(snakemake@params[["metadata"]])
-tree_ml <- read.tree(snakemake@params[["ml"]]) %>%
+tree_ml <- read.tree(snakemake@input[["ml"]]) %>%
   root("NC_045512.2", resolve.root = TRUE)
 
 study_names <- read.dna(snakemake@input[["study_fasta"]],format = "fasta", as.matrix = F) %>% 
