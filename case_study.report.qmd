@@ -31,6 +31,7 @@ params:
   fig_cor_snp: ""
   stats_lm: ""
   table: ""
+  sum_nv: ""
 ---
 <head>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,6 +52,13 @@ sub_rate <- as.numeric(stats[1])*365
 sub_rate <- round(sub_rate, digits = 2)
 p_value_lm <- as.numeric(stats[3])
 table <- read.csv(params$table)
+
+
+# NV counts 
+counts <- read.csv(params$sum_nv)
+
+n_SNV <- as.numeric(counts[counts$nv == "SNP","n"])
+n_INDELS <- as.numeric(counts[counts$nv == "INDEL","n"])
 
 ```
 
@@ -115,23 +123,23 @@ With the neighbur-joining tree, partistic distances to root has been correlated 
 
 ### Description for NV 
 
-The number of polimorphic sites over time:
+![**Figure 6.** Number of polimorphisms over time for the studied samples.](`r params$fig_cor_snp`)
 
-![](`r params$fig_cor_snp`)
+`r n_SNV` different SNV and `r n_INDELS` INDELS had been detected along the genome.
 
-![](`r params$SNV`)
+![**Figure 7.** A\) Proportion of polimorphic sites along the genome calculated with 1000nt windows. B\) Nucleotide variants (NV) in the genomes of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV`)
 
-The correlation with time for the SNPs detected is represented in the following plot:
+The correlation with time for the SNVs detected is represented in the following plot:
 
-![](`r params$volcano`)
+![**Figure 8.** *Pearson* r and adjusted p-value (-log10) for the correlation with time for each SNV. Red line indicates a p-value of 0.05.](`r params$volcano`)
 
-The significant correlated SNPs are swown in detail:
+The significant correlated SNVs are swown in detail:
 
-![](`r params$panel`)
+![**Figure 9.** Trend over time for the significantly correlated with time SNVs and for positions with more than 1 alternative allele. ](`r params$panel`)
 
 ### dn/ds over time
 
-![](`r params$evo`)
+![**Figure 10.** Sinonymous mutations per sinonymous site **(dS)** and non sinonymous mutations mutations per non sinonymous site **(dN)** over time. The values are adjusted by the allele frequency.](`r params$evo`)
 
 
 
