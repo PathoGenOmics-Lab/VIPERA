@@ -6,6 +6,8 @@ rule download_context:
         metadata = config["METADATA"]
     params:
         gisaid_creds = config["GISAID_YAML"],
+        date_window_span = 0.95,
+        date_window_paddding_days = 14,
         date_column = "CollectionDate",
         location_column = "ResidenceCity",
         samples_gisaid_accession_column = "GISAIDEPI",
