@@ -17,8 +17,8 @@ rule snps_to_ancestor:
     shell:
         """
         set -e
-
-        sed 's/>.*/>MN908947.3/g' {input.reference_fasta} > renamed_reference.fasta
+        ref=`samtools view -H {input.bam} | grep ^@SQ | cut -d"\t" -f2 | sed 's/SN://g'`
+        sed 's/>.*/>'$ref'/g' {input.reference_fasta} > renamed_reference.fasta
 
         samtools mpileup \
             -aa \
@@ -37,7 +37,7 @@ rule snps_to_ancestor:
                 -g {params.gff} \
                 -r renamed_reference.fasta
         
-        sed 's/MN908947.3/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}
+        sed 's/'$ref'/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}
         """
 
 

@@ -4,10 +4,10 @@ rule rename_fastas:
     output:
         renamed = temp(OUTDIR/"renamed.{sample}.fasta")
     shell:
-    """
-    sed 's/>.*/>'{wildcards.sample}'/g' {input.fasta} > {output.renamed}
-    
-    """
+        """
+        sed 's/>.*/>'{wildcards.sample}'/g' {input.fasta} > {output.renamed}
+        
+        """
 
 rule concat_fasta:
     threads: 1
