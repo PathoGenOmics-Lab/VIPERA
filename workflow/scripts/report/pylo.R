@@ -110,12 +110,35 @@ for(ID in tree_ml$tip.label){
     colors <- c(colors,"gray80")
   }
 }
+bootstrap_color <- c()
+
+for (node.lab in tree_ml$node.label){
+  bt <- as.numeric(strsplit(node.lab,"/")[[1]][2])
+  
+  if (is.na(bt)){
+    bootstrap_color <- c(bootstrap_color,bt)
+   
+  }
+  if (!is.na(bt) & bt <= 75){
+    bootstrap_color <- c(bootstrap_color,NA)
+   
+  } 
+  if (!is.na(bt) & bt > 75 & bt < 85){
+    bootstrap_color <- c(bootstrap_color,NA)
+   
+  }
+  if (!is.na(bt) & bt >= 85){
+    bootstrap_color <- c(bootstrap_color,"green")
+   
+  } 
+}
 
 plot <- ggtree(tree_ml, layout = "circular") + 
   geom_tippoint(color = colors) + 
   geom_treescale(x = 0.0008) + 
-  geom_rootedge(0.00001) + 
-  xlim(-0.0008,NA)
+  geom_rootedge(0.0005) + 
+  xlim(-0.0008,NA) + 
+  geom_nodepoint(color = bootstrap_color, shape = 6)
 
 
 ggsave(filename = snakemake@output[["tree_ml"]], 

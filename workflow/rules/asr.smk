@@ -55,7 +55,7 @@ rule ml_context_tree:
         awk '/^>/{{p=seen[$0]++}}!p' {input.fasta} {input.outgroup_aln} > aln.fasta
         mkdir -p {output.folder}
         iqtree2 \
-            {params.etc} -asr \
+            {params.etc} -asr -B 1000 \
             -o {config[ALIGNMENT_REFERENCE]} -T AUTO --threads-max {threads} -s aln.fasta \
             --seqtype {params.seqtype} -m {config[TREE_MODEL]} --prefix {output.folder}/{params.name}
         """
