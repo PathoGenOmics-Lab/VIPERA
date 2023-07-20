@@ -18,6 +18,10 @@ tree_ml <- read.tree(snakemake@input[["ml"]]) %>%
 
 study_names <- read.dna(snakemake@input[["study_fasta"]],format = "fasta", as.matrix = F) %>% 
         names()
+
+tree_tiplab <- select(metadata, ID, CollectionDate) %>% 
+  mutate(CollectionDate = as.character(CollectionDate)) %>%
+  add_row(ID = "NC_045512.2", CollectionDate = "Ref")
 # ANÁLISIS ####
 
 
@@ -74,10 +78,11 @@ write.csv(df,snakemake@output[["stats_lm"]],row.names = F)
 # FIGURAS ####
 
 # Árbol por distancias ponderadas
-tree_plot <- ggtree(tree) + 
-geom_tiplab() + 
+tree_plot <- ggtree(tree) %<+% tree_tiplab + 
+geom_tiplab(aes(label = CollectionDate)) + 
 geom_treescale() + 
-geom_rootedge(0.5)
+geom_rootedge(0.5) + 
+xlim(0,max(tempest$distance) + 3.5)
 
 ggsave(filename = snakemake@output[["tree"]], 
         plot = tree_plot, width=159.2, 
