@@ -1,0 +1,29 @@
+name: Install
+
+on: [push, pull_request]
+
+jobs:
+  
+  Install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Create environments
+        uses: snakemake/snakemake-github-action@v1
+        with:
+          directory: ".test"
+          snakefile: "workflow/Snakefile"
+          args: "--configfile config/config.yaml config/report.yaml .test/targets.yaml --cores 1 --conda-create-envs-only --use-conda"
+  
+  Dry_run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Dry run
+        uses: snakemake/snakemake-github-action@v1
+        with:
+          directory: ".test"
+          snakefile: "workflow/Snakefile"
+          args: "--configfile config/config.yaml config/report.yaml .test/targets.yaml --dry-run"

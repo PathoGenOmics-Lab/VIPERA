@@ -1,5 +1,7 @@
 # Case-study-SARS-CoV-2
 
+![Install workflow](https://github.com/PathoGenOmics-Lab/Case-study-SARS-CoV-2/actions/workflows/install.yml/badge.svg)
+
 ## Instructions
 
 To run the pipeline, first fetch the data (you may need to modify the script to include your credentials):
