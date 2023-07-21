@@ -1,7 +1,5 @@
 # Case-study-SARS-CoV-2
 
-![Snakemake rule graph](.rulegraph.png)
-
 ## Instructions
 
 To run the pipeline, first fetch the data (you may need to modify the script to include your credentials):
@@ -27,7 +25,7 @@ by editing `config/targets.yaml` or via the command line:
 snakemake --config CONTEXT_FASTA="path/to/fasta"
 ```
 
-## Generating workflow graphs
+## Workflow graphs
 
 To generate a simplified rule graph, run:
 
@@ -35,9 +33,13 @@ To generate a simplified rule graph, run:
 snakemake --rulegraph | dot -Tpng > .rulegraph.png
 ```
 
+![Snakemake rule graph](.rulegraph.png)
+
 To generate the directed acyclic graph (DAG) of all rules
 to be executed, run:
 
 ```bash
 snakemake --forceall --dag | dot -Tpng > .dag.png
 ```
+
+![Snakemake rule graph](.dag.png)
