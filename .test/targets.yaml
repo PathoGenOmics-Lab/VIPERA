@@ -1,0 +1,20 @@
+SAMPLES:
+  sample1:
+    bam: "data/bam/sample1.bam"
+    fasta: "data/fasta/sample1.fasta"
+  sample2:
+    bam: "data/bam/sample2.bam"
+    fasta: "data/fasta/sample2.fasta"
+  sample3:
+    bam: "data/bam/sample3.bam"
+    fasta: "data/fasta/sample3.fasta"
+METADATA:
+  "data/metadata.csv"
+OUTPUT_DIRECTORY:
+  "output"
+CONTEXT_FASTA:
+  "data/context.fasta"
+OUTPUT_NAME:
+  "test"
+DIVERSITY_BOOTSTRAP_REPS:
+  10
