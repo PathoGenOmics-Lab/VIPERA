@@ -46,7 +46,7 @@ rule ml_context_tree:
         bootstrap = 1000
     input:
         fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
-        outgroup_aln = config["DIVERSITY"]
+        outgroup_aln = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     output:
         folder = directory(OUTDIR/"tree_context"),
         state_file = OUTDIR/"tree_context"/f"{OUTPUT_NAME}.state",

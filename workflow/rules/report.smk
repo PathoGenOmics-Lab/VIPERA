@@ -1,4 +1,3 @@
-
 rule window:
     conda: "../envs/biopython.yaml"
     input:
@@ -12,17 +11,22 @@ rule window:
 
 
 rule diversity:
+    threads: 4
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"],
-        outgroup_aln = config["DIVERSITY"]
+        bootstrap_reps = 1000,
+        plot_width = 159.2,
+        plot_height = 119.4
     input:
-        study_fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta"
+        study_fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
+        context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     output:
         fig = report(REPORT_DIR/"div.plot.png"),
-        value = temp("our_diversity.txt")
+        value = temp(OUTDIR/"our_diversity.txt")
     script:
         "../scripts/report/diversity_plot.R"
+
 
 rule freyja_plot:
     conda: "../envs/renv.yaml"
@@ -66,6 +70,7 @@ rule pylo_plots:
         dist = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
         study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
         ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile"
+
     output:
         temest = report(REPORT_DIR/"temp_est.png"),
         tree = report(REPORT_DIR/"tree.png"),
@@ -113,7 +118,6 @@ rule summary_table:
     script:
         "../scripts/report/summary_table.R"
 
-
 rule report:
     conda: "../envs/renv.yaml"
     shadow: "shallow"
@@ -126,7 +130,7 @@ rule report:
         temest = report(REPORT_DIR/"temp_est.png"),
         SNV = report(REPORT_DIR/"NV.description.png"),
         evo = report(REPORT_DIR/"dn_ds.png"),
-        value = "our_diversity.txt",
+        value = OUTDIR/"our_diversity.txt",
         panel = report(REPORT_DIR/"panel.png"),
         volcano = report(REPORT_DIR/"volcano.png"),
         tree_ml = report(REPORT_DIR/"tree_ml.png"),
@@ -157,4 +161,3 @@ rule report:
                                                        sum_nv = '{input.sum_nv}'))\"    
         mv report.html {output.html}
         """
-

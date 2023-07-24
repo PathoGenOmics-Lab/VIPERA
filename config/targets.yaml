@@ -39,3 +39,5 @@ METADATA:
   "data/metadata.csv"
 OUTPUT_DIRECTORY:
   "output"
+CONTEXT_FASTA:
+  null
