@@ -1,8 +1,18 @@
+rule rename_fastas:
+    input:
+        fasta = get_input_fasta
+    output:
+        renamed = temp(OUTDIR/"renamed.{sample}.fasta")
+    shell:
+        "sed 's/>.*/>'{wildcards.sample}'/g' {input.fasta} > {output.renamed}"
+        
+        
+
 rule concat_fasta:
     threads: 1
     shadow: "shallow"
     input:
-        iter_files("fasta")
+        expand(OUTDIR/"renamed.{sample}.fasta", sample = iter_samples())
     output:
         fasta = OUTDIR/f"{OUTPUT_NAME}.fasta"
     shell:
