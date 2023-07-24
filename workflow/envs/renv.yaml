@@ -26,3 +26,4 @@ dependencies:
   - r-future.apply
   - r-scales
   - r-showtext
+  - r-gdtools

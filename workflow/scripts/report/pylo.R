@@ -5,7 +5,7 @@ library(ape)
 library(ggtree)
 library(data.table)
 library(ggpubr)
-
+library(pegas)
 
 # DISEÑO DE PLOTS ####
 source(snakemake@params[["design"]])
@@ -14,8 +14,16 @@ source(snakemake@params[["design"]])
 matrix <- read_csv(snakemake@input[["dist"]])
 metadata <- read_csv(snakemake@params[["metadata"]])
 tree_ml <- read.tree(snakemake@input[["ml"]]) %>%
-  root("NC_045512.2", resolve.root = TRUE)
+  root(snakemake@params[["ref_name"]], resolve.root = TRUE)
+
+study_names <- read.dna(snakemake@input[["study_fasta"]],format = "fasta", as.matrix = F) %>% 
+        names()
+
+tree_tiplab <- select(metadata, ID, CollectionDate) %>% 
+  mutate(CollectionDate = as.character(CollectionDate)) %>%
+  add_row(ID = snakemake@params[["ref_name"]], CollectionDate = "Ref")
 # ANÁLISIS ####
+
 
 ## Funciones ####
 # Con n-j puede darse que hayan ramas con longitud negativa si la matriz de distancias no es congruente
@@ -41,7 +49,7 @@ tree <- matrix %>%
         as.matrix() %>%
         as.dist() %>%
         nj() %>%
-        root("NC_045512.2", resolve.root = TRUE)
+        root(snakemake@params[["ref_name"]], resolve.root = TRUE)
 
 tree <- fix_negative_edge_length(tree)
 
@@ -49,21 +57,37 @@ tree <- fix_negative_edge_length(tree)
 
 tempest <- adephylo::distRoot(tree, "all", method = "patristic") %>% as.data.frame() %>% 
                     rownames_to_column(var = "ID") %>%
-                    filter(ID != "NC_045512.2" ) %>%
+                    filter(ID != snakemake@params[["ref_name"]] ) %>%
                     rename(distance = ".") %>% 
                      mutate(distance = distance) %>%
                     left_join(select(metadata, ID,CollectionDate)) %>%
                      mutate(date_interval = as.numeric(as.Date(CollectionDate) - min(as.Date(CollectionDate))))
 
+### Datos modelo lineal 
 
+model <- lm(distance ~ date_interval, data = tempest)
+
+df <- data.frame(
+  stat = c("sub_rate","r2","pvalue"), 
+  values = c(
+    model$coefficients[[2]],
+    summary(model)$r.squared[[1]],
+    cor.test(tempest$distance,tempest$date_interval)$p.value
+  )
+)
+
+df <- column_to_rownames(df,var = "stat")
+
+write.csv(df,snakemake@output[["stats_lm"]],row.names = F)                                                             
 
 # FIGURAS ####
 
 # Árbol por distancias ponderadas
-tree_plot <- ggtree(tree) + 
-geom_tiplab() + 
+tree_plot <- ggtree(tree) %<+% tree_tiplab + 
+geom_tiplab(aes(label = CollectionDate)) + 
 geom_treescale() + 
-geom_rootedge(0.5)
+geom_rootedge(0.5) + 
+xlim(0,max(tempest$distance) + 3.5)
 
 ggsave(filename = snakemake@output[["tree"]], 
         plot = tree_plot, width=159.2, 
@@ -73,11 +97,10 @@ ggsave(filename = snakemake@output[["tree"]],
 
 # Análisis temp-est
 tempest_fig <- ggplot(tempest) +
-                aes(x = date_interval, y = distance) + 
-                geom_smooth(method = "lm",fill = "gray95", alpha = 0.6) +
-                stat_cor(geom = "label") +
-                geom_point() +
-                labs(y = "Root to tip distance", x = "Time since first sample")
+                  aes(x = date_interval, y = distance) + 
+                  geom_smooth(method = "lm",fill = "gray95", alpha = 0.6, color = "red") +
+                  geom_point() +
+                  labs(y = "Root to tip distance", x = "Time since first sample")
 
 
 ggsave(filename = snakemake@output[["temest"]], 
@@ -91,17 +114,26 @@ ggsave(filename = snakemake@output[["temest"]],
 
 colors <- c()
 for(ID in tree_ml$tip.label){
-  if(ID %in% metadata$ID){
+  if(ID %in% study_names){
     colors <- c(colors,"red")
-  } else{
+  } else {
     colors <- c(colors,"gray80")
   }
 }
+bootstrap_values <- sapply(
+  strsplit(tree_ml$node.label, "/"),
+  function(x) {
+    as.numeric(x[2])
+  }
+)
+bootstrap_color <- ifelse(bootstrap_values >= snakemake@params[["boot_th"]], snakemake@params[["boot_color"]], NA)
 
-plot <- ggtree(tree_ml) + 
-  geom_tippoint(color = colors) + 
-  geom_treescale() + 
-  geom_rootedge(0.00001)
+plot <- ggtree(tree_ml, layout = "circular") + 
+          geom_tippoint(color = colors) + 
+          geom_treescale(x = 0.0008) + 
+          geom_rootedge(0.0005) + 
+          xlim(-0.0008,NA) + 
+          geom_nodepoint(color = bootstrap_color, shape = 6)
 
 
 ggsave(filename = snakemake@output[["tree_ml"]], 
