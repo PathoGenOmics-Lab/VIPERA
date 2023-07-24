@@ -42,20 +42,21 @@ rule ml_context_tree:
     params:
         seqtype = "DNA",
         name = OUTPUT_NAME,
-        etc = ETC_TREE_PARAMS
+        etc = ETC_TREE_PARAMS,
+        bootstrap = 1000
     input:
         fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
         outgroup_aln = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     output:
         folder = directory(OUTDIR/"tree_context"),
         state_file = OUTDIR/"tree_context"/f"{OUTPUT_NAME}.state",
-        treefile = OUTDIR/"tree_context"/f"{OUTPUT_NAME}.treefile"
+        ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile"
     shell:
         """
         awk '/^>/{{p=seen[$0]++}}!p' {input.fasta} {input.outgroup_aln} > aln.fasta
         mkdir -p {output.folder}
         iqtree2 \
-            {params.etc} -asr \
+            {params.etc} -asr -B {params.bootstrap} \
             -o {config[ALIGNMENT_REFERENCE]} -T AUTO --threads-max {threads} -s aln.fasta \
             --seqtype {params.seqtype} -m {config[TREE_MODEL]} --prefix {output.folder}/{params.name}
         """
