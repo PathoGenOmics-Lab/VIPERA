@@ -97,10 +97,10 @@ ggsave(filename = snakemake@output[["tree"]],
 
 # Análisis temp-est
 tempest_fig <- ggplot(tempest) +
-                aes(x = date_interval, y = distance) + 
-                geom_smooth(method = "lm",fill = "gray95", alpha = 0.6, color = "red") +
-                geom_point() +
-                labs(y = "Root to tip distance", x = "Time since first sample")
+                  aes(x = date_interval, y = distance) + 
+                  geom_smooth(method = "lm",fill = "gray95", alpha = 0.6, color = "red") +
+                  geom_point() +
+                  labs(y = "Root to tip distance", x = "Time since first sample")
 
 
 ggsave(filename = snakemake@output[["temest"]], 
@@ -120,35 +120,20 @@ for(ID in tree_ml$tip.label){
     colors <- c(colors,"gray80")
   }
 }
-bootstrap_color <- c()
-
-for (node.lab in tree_ml$node.label){
-  bt <- as.numeric(strsplit(node.lab,"/")[[1]][2])
-  
-  if (is.na(bt)){
-    bootstrap_color <- c(bootstrap_color,bt)
-   
+bootstrap_values <- sapply(
+  strsplit(tree_ml$node.label, "/"),
+  function(x) {
+    as.numeric(x[2])
   }
-  if (!is.na(bt) & bt <= 75){
-    bootstrap_color <- c(bootstrap_color,NA)
-   
-  } 
-  if (!is.na(bt) & bt > 75 & bt < 85){
-    bootstrap_color <- c(bootstrap_color,NA)
-   
-  }
-  if (!is.na(bt) & bt >= 85){
-    bootstrap_color <- c(bootstrap_color,"green")
-   
-  } 
-}
+)
+bootstrap_color <- ifelse(bootstrap_values >= snakemake@params[["boot_th"]], snakemake@params[[boot_color]], NA)
 
 plot <- ggtree(tree_ml, layout = "circular") + 
-  geom_tippoint(color = colors) + 
-  geom_treescale(x = 0.0008) + 
-  geom_rootedge(0.0005) + 
-  xlim(-0.0008,NA) + 
-  geom_nodepoint(color = bootstrap_color, shape = 6)
+          geom_tippoint(color = colors) + 
+          geom_treescale(x = 0.0008) + 
+          geom_rootedge(0.0005) + 
+          xlim(-0.0008,NA) + 
+          geom_nodepoint(color = bootstrap_color, shape = 6)
 
 
 ggsave(filename = snakemake@output[["tree_ml"]], 
