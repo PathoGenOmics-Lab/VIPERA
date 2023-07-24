@@ -67,9 +67,14 @@ tempest <- adephylo::distRoot(tree, "all", method = "patristic") %>% as.data.fra
 
 model <- lm(distance ~ date_interval, data = tempest)
 
-df <- data.frame(stat = c("sub_rate","r2","pvalue"), values = c(model$coefficients[[2]],
-                                                                summary(model)$r.squared[[1]],
-                                                                cor.test(tempest$distance,tempest$date_interval)$p.value))
+df <- data.frame(
+  stat = c("sub_rate","r2","pvalue"), 
+  values = c(
+    model$coefficients[[2]],
+    summary(model)$r.squared[[1]],
+    cor.test(tempest$distance,tempest$date_interval)$p.value
+  )
+)
 
 df <- column_to_rownames(df,var = "stat")
 
