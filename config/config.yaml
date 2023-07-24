@@ -21,3 +21,5 @@ VC:
 DEMIX:
   COV_CUTOFF: 30
   MIN_ABUNDANCE: 0.0001
+GISAID_YAML:
+  "config/gisaid.yaml"
