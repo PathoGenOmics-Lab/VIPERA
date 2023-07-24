@@ -14,14 +14,14 @@ source(snakemake@params[["design"]])
 matrix <- read_csv(snakemake@input[["dist"]])
 metadata <- read_csv(snakemake@params[["metadata"]])
 tree_ml <- read.tree(snakemake@input[["ml"]]) %>%
-  root("NC_045512.2", resolve.root = TRUE)
+  root(snakemake@params[["ref_name"]], resolve.root = TRUE)
 
 study_names <- read.dna(snakemake@input[["study_fasta"]],format = "fasta", as.matrix = F) %>% 
         names()
 
 tree_tiplab <- select(metadata, ID, CollectionDate) %>% 
   mutate(CollectionDate = as.character(CollectionDate)) %>%
-  add_row(ID = "NC_045512.2", CollectionDate = "Ref")
+  add_row(ID = snakemake@params[["ref_name"]], CollectionDate = "Ref")
 # ANÁLISIS ####
 
 
@@ -49,7 +49,7 @@ tree <- matrix %>%
         as.matrix() %>%
         as.dist() %>%
         nj() %>%
-        root("NC_045512.2", resolve.root = TRUE)
+        root(snakemake@params[["ref_name"]], resolve.root = TRUE)
 
 tree <- fix_negative_edge_length(tree)
 
@@ -57,7 +57,7 @@ tree <- fix_negative_edge_length(tree)
 
 tempest <- adephylo::distRoot(tree, "all", method = "patristic") %>% as.data.frame() %>% 
                     rownames_to_column(var = "ID") %>%
-                    filter(ID != "NC_045512.2" ) %>%
+                    filter(ID != snakemake@params[["ref_name"]] ) %>%
                     rename(distance = ".") %>% 
                      mutate(distance = distance) %>%
                     left_join(select(metadata, ID,CollectionDate)) %>%

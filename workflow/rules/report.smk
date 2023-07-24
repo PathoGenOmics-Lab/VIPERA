@@ -58,7 +58,8 @@ rule pylo_plots:
     conda: "../envs/renv.yaml"
     params: 
         design = config["PLOTS"],
-        metadata = config["METADATA"]
+        metadata = config["METADATA"],
+        ref_name = config["ALIGNMENT_REFERENCE"]
     input: 
         dist = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
         study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
