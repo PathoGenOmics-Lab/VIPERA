@@ -22,17 +22,29 @@ chunk <- function(x, chunk_length = snakemake@params[["chunk_length"]]) {
 # Read original sample metadata
 sample.metadata <- read_delim(snakemake@input[["metadata"]], show_col_types = FALSE)
 
+# Checkpoint: needed columns exist
+needed.columns <- c(
+    snakemake@params[["date_column"]],
+    snakemake@params[["location_column"]],
+    snakemake@params[["samples_gisaid_accession_column"]]
+)
+needed.columns.mask <- needed.columns %in% colnames(sample.metadata)
+if (!all(needed.columns.mask)) {
+    print(glue("Please ensure column '{needed.columns[!needed.columns.mask]}' is present"))
+    stop(glue("Missing columns in '{snakemake@input[['metadata']]}'. Alternatively:\n{CHKPT.ERROR.MSG}"))
+}
+
 # Get time windows
 dates <- sample.metadata %>%
-    pull(snakemake@params[["date_column"]])
-min.date <- min(dates, na.rm = TRUE)
-max.date <- max(dates, na.rm = TRUE)
-print(glue("Time window: {difftime(max.date, min.date, units = 'days')} days (from {min.date} to {max.date})"))
-
-# Checkpoint: time window cannot be zero
-if (min.date == max.date) {
-    stop(glue("Time window is too short.\n{CHKPT.ERROR.MSG}"))
-}
+    pull(snakemake@params[["date_column"]]) %>%
+    as.numeric
+window.quantile.offset <- (1 - snakemake@params[["date_window_span"]]) / 2
+min.date <- as_date(quantile(dates, window.quantile.offset))
+max.date <- as_date(quantile(dates, 1 - window.quantile.offset))
+padded.min.date <- min.date - snakemake@params[["date_window_paddding_days"]]
+padded.max.date <- max.date + snakemake@params[["date_window_paddding_days"]]
+print(glue("Time window (span={snakemake@params[['date_window_span']]}): {round(interval(min.date, max.date) / days(1))} days (from {min.date} to {max.date})"))
+print(glue("Padded time window (padding={snakemake@params[['date_window_paddding_days']]} days): {round(interval(padded.min.date, padded.max.date) / days(1))} days (from {padded.min.date} to {padded.max.date})"))
 
 # Get locations (if there are multiple, sample from all of them)
 locations <- sample.metadata %>%
@@ -52,8 +64,8 @@ dataframes <- lapply(
     function(location) {
         query(
             credentials = credentials,
-            from = as.character(min.date),
-            to = as.character(max.date),
+            from = as.character(strftime(padded.min.date, format = "%Y-%m-%d")),
+            to = as.character(strftime(padded.max.date, format = "%Y-%m-%d")),
             location = location,
             fast = TRUE,
             low_coverage_excl = snakemake@params[["exclude_low_coverage"]],
@@ -67,13 +79,28 @@ dataframes <- lapply(
 # Join results
 metadata <- bind_rows(dataframes)
 
-# begin test
-index <- sample(seq_len(nrow(metadata)), nrow(sample.metadata))
-metadata <- metadata %>% slice(index)
-# end test
+# Checkpoint: remove samples that overlap with target samples according to GISAID ID
+samples.accids <- sample.metadata %>%
+    pull(snakemake@params[["samples_gisaid_accession_column"]])
+filtered.accids <- metadata %>% filter(accession_id %in% samples.accids)
+metadata <- metadata %>% filter(!accession_id %in% samples.accids)
+print(glue("{nrow(metadata)} accession_ids remaining after GISAID ID filter"))
 
-# Checkpoint: at least as many context samples as our dataset
-if (nrow(metadata) < nrow(sample.metadata)) {
+# Checkpoint: enforce a minimum number of samples to have at least
+# as many possible combinations as bootstrap replicates.
+# This is done by calculating the root of a function based on the
+# formula for calculating combinations with replacement
+# for n ≥ r ≥ 0: combinations with replacement = n! / (r! (n-r)!)
+r <- nrow(sample.metadata)
+min.comb <- snakemake@params[["min_theoretical_combinations"]]
+solution <- uniroot(
+    function(n) {
+        factorial(n) / (factorial(r) * factorial(n - r)) - min.comb
+    },
+    lower = r,   # determined by sample size (n ≥ r)
+    upper = 170  # determined by default number precision
+)
+if (nrow(metadata) < floor(solution$root)) {
     stop(glue("Too few available samples (n={nrow(metadata)}).\n{CHKPT.ERROR.MSG}"))
 }
 
@@ -138,3 +165,6 @@ downloads %>%
         col_names = TRUE,
         progress = FALSE
     )
+
+# Write filtered IDs
+write_lines(filtered.accids, snakemake@output[["duplicate_accids"]])

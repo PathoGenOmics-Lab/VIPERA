@@ -15,7 +15,7 @@ rule diversity:
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"],
-        bootstrap_reps = 1000,
+        bootstrap_reps = config["DIVERSITY_BOOTSTRAP_REPS"],
         plot_width = 159.2,
         plot_height = 119.4
     input:
