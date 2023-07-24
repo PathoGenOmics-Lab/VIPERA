@@ -42,7 +42,8 @@ rule ml_context_tree:
     params:
         seqtype = "DNA",
         name = OUTPUT_NAME,
-        etc = ETC_TREE_PARAMS
+        etc = ETC_TREE_PARAMS,
+        bootstrap = 1000
     input:
         fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
         outgroup_aln = config["DIVERSITY"]
@@ -55,7 +56,7 @@ rule ml_context_tree:
         awk '/^>/{{p=seen[$0]++}}!p' {input.fasta} {input.outgroup_aln} > aln.fasta
         mkdir -p {output.folder}
         iqtree2 \
-            {params.etc} -asr -B 1000 \
+            {params.etc} -asr -B {params.bootstrap} \
             -o {config[ALIGNMENT_REFERENCE]} -T AUTO --threads-max {threads} -s aln.fasta \
             --seqtype {params.seqtype} -m {config[TREE_MODEL]} --prefix {output.folder}/{params.name}
         """
