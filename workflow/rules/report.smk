@@ -59,7 +59,9 @@ rule pylo_plots:
     params: 
         design = config["PLOTS"],
         metadata = config["METADATA"],
-        ref_name = config["ALIGNMENT_REFERENCE"]
+        ref_name = config["ALIGNMENT_REFERENCE"],
+        boot_th = 85,
+        boot_color = "green"
     input: 
         dist = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
         study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
