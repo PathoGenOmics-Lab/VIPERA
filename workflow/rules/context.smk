@@ -6,8 +6,12 @@ rule download_context:
         metadata = config["METADATA"]
     params:
         gisaid_creds = config["GISAID_YAML"],
+        date_window_span = 0.95,
+        date_window_paddding_days = 14,
         date_column = "CollectionDate",
         location_column = "ResidenceCity",
+        samples_gisaid_accession_column = "GISAIDEPI",
+        context_gisaid_accession_column = "accession_id",
         host = "Human",
         exclude_low_coverage = True,
         complete = True,
@@ -15,10 +19,12 @@ rule download_context:
         high_coverage = False,
         min_sleep = 1,
         max_sleep = 3,
-        chunk_length = 3000
+        chunk_length = 3000,
+        min_theoretical_combinations = config["DIVERSITY_BOOTSTRAP_REPS"]
     output:
-        fasta = OUTDIR/"context"/"sequences.fasta",
-        metadata = OUTDIR/"context"/"metadata.csv"
+        fasta = temp(OUTDIR/"context"/"sequences.fasta"),
+        metadata = temp(OUTDIR/"context"/"metadata.csv"),
+        duplicate_accids = OUTDIR/"context"/"duplicate_accession_ids.txt"
     script:
         "../scripts/download_context.R"
 
