@@ -126,7 +126,7 @@ bootstrap_values <- sapply(
     as.numeric(x[2])
   }
 )
-bootstrap_color <- ifelse(bootstrap_values >= snakemake@params[["boot_th"]], snakemake@params[[boot_color]], NA)
+bootstrap_color <- ifelse(bootstrap_values >= snakemake@params[["boot_th"]], snakemake@params[["boot_color"]], NA)
 
 plot <- ggtree(tree_ml, layout = "circular") + 
           geom_tippoint(color = colors) + 
