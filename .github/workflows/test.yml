@@ -5,6 +5,9 @@ on: [push, pull_request]
 jobs:
 
   skip_duplicate:
+    permissions:
+      actions: write
+      contents: read
     runs-on: ubuntu-latest
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
