@@ -19,6 +19,7 @@ params:
   volcano: ""
   tree_ml: ""
   fig_cor_snp: ""
+output-file: report.html
 ---
 <head>
   <link rel="preconnect" href="https://fonts.googleapis.com">

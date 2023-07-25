@@ -104,9 +104,8 @@ rule snp_plots:
 rule report:
     conda: "../envs/renv.yaml"
     shadow: "shallow"
-    params:
-        qmd = "case_study.report.qmd"
     input:
+        qmd = Path(config["REPORT_QMD"]).resolve().as_posix(),
         diversity = report(REPORT_DIR/"div.plot.png"),
         freyja = report(REPORT_DIR/"freyja.plot.png"),
         tree = report(REPORT_DIR/"tree.png"),
@@ -123,8 +122,7 @@ rule report:
     shell:
         """
         set +o pipefail
-        Rscript -e 'library(quarto)' -e \"quarto_render(input = '{params.qmd}',\
-                                           output_file = 'report.html',\
+        Rscript -e 'library(quarto)' -e \"quarto_render(input = '{input.qmd}',\
                                            execute_params=list(div='{input.diversity}',\
                                                        freyja ='{input.freyja}',\
                                                        tree = '{input.tree}',\
@@ -136,5 +134,5 @@ rule report:
                                                        volcano = '{input.volcano}',
                                                        tree_ml = '{input.tree_ml}',
                                                        fig_cor_snp = '{input.fig_cor}'))\"    
-        mv report.html {output.html}
+        mv $(dirname {input.qmd:q})/report.html {output.html}
         """
