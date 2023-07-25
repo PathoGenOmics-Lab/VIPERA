@@ -1,0 +1,23 @@
+.quarto-title-block .quarto-title-banner {
+    background: #27445C;
+    background-image: url(logo_pathogenomics.png);
+    background-size: 100px;
+    background-position: right;
+    background-repeat: no-repeat;
+    padding-right: 10px;
+    background-origin: content-box; 
+  } 
+
+html {
+  font-family: Montserrat;
+  color: #000000;
+  text-align: justify;
+}
+
+h1, h2, h3 {
+  text-align: left;
+  font-weight: bold;
+}
+#quarto-sidebar-toc-left {
+  text-align: left;
+}
