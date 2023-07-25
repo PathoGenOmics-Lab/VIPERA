@@ -16,7 +16,9 @@ rule snps_to_ancestor:
         tsv = temp(OUTDIR/"{sample}.tsv")
     shell:
         """
-        sed 's/^>.*/>{config[ALIGNMENT_REFERENCE]}/g' {input.reference_fasta} > renamed_reference.fasta
+        set -e
+        ref=`samtools view -H {input.bam} | grep ^@SQ | cut -d"\t" -f2 | sed 's/SN://g'`
+        sed 's/>.*/>'$ref'/g' {input.reference_fasta} > renamed_reference.fasta
 
         samtools mpileup \
             -aa \
@@ -34,8 +36,8 @@ rule snps_to_ancestor:
                 -m {params.ivar_depth} \
                 -g {input.gff} \
                 -r renamed_reference.fasta
-        
-        sed 's/{config[ALIGNMENT_REFERENCE]}/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}
+
+        sed 's/'$ref'/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}
         """
 
 

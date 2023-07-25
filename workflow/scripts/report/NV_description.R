@@ -155,7 +155,7 @@ window_plot <- ggplot(window) +
 window_plot_nsp <- window_plot + 
   geom_vline(data = npc, aes(xintercept = summaary_start), color = "red") + 
   geom_vline(data = npc, aes(xintercept = summaary_end), color = "red") + 
-  geom_label(data = npc, aes(x = (summaary_start + summaary_end)/2, y = max(window$fractions) + 0.002, label = summary_nsp), inherit.aes = F, size = 5)
+  geom_text(data = npc, aes(x = (summaary_start + summaary_end)/2, y = max(window$fractions) + 0.002, label = summary_nsp), inherit.aes = F, size = 5, angle = 60)
 
 
 figura <-   ggarrange(window_plot_nsp,
@@ -163,7 +163,8 @@ figura <-   ggarrange(window_plot_nsp,
           align = "v" ,
           legend.grob = get_legend(variants)
           , heights = c(2,6), 
-          legend = "right")
+          legend = "right",
+          labels = c("A","B"))
 
 
 ggsave(filename = snakemake@output[["fig"]], 
@@ -193,3 +194,10 @@ ggsave(filename = snakemake@output[["fig_cor"]],
         height=119.4, units="mm", 
         dpi=250)
 
+# TABLA ####
+
+n_indels <- filter(vcf, SNP_class == "INDEL") %>% length()
+n_snv <- length(unique(vcf$SNP)) - n_indels
+
+df <- data.frame(nv = c("SNP","INDEL"),n = c(n_snv,n_indels))
+write.csv(df, snakemake@output[["summary_nv"]], row.names = F)
