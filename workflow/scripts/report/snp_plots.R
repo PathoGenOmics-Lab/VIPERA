@@ -97,7 +97,7 @@ dup <- vcf %>% # SNPs que comparten posición
 subset <- c(sign,dup) %>%
   unique()
 
-length = ceiling(length(subset)/4)*40 # Altura del plot para que se vea bién
+plot.height = ceiling(length(subset)/4)*40 # Altura del plot para que se vea bién
 
 panel <- vcf %>%
         filter(SNP %in% subset) %>%
@@ -105,10 +105,18 @@ panel <- vcf %>%
         scale_color_viridis_d() + 
         geom_point() + 
         geom_line() + 
-        facet_wrap(vars(POS), nrow = ceiling(length(subset)/4), ncol = 4) + 
         theme(legend.position = "bottom")
+
+if (length(subset) > 1) {
+  panel <- panel + 
+    facet_wrap(
+      vars(POS),
+      nrow = ceiling(length(subset)/4),
+      ncol = 4
+    )
+}
 
 ggsave(filename = snakemake@output[["snp_panel"]], 
         plot = panel, width=159.2, 
-        height=length, units="mm", 
+        height = max(100, plot.height), units = "mm",
         dpi=250)
