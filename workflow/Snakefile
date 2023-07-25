@@ -21,6 +21,9 @@ def iter_samples():
 def get_input_bam(wildcards):
     return config["SAMPLES"][wildcards.sample]["bam"]
 
+def get_input_fasta(wildcards):
+    return config["SAMPLES"][wildcards.sample]["fasta"]
+
 
 # Targets
 ## Output

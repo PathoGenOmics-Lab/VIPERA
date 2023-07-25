@@ -1,11 +1,21 @@
 ---
-title: "Case_study-SARS-CoV-2"
-author: "Jordi"
+title: "Case-study-SARS-CoV-2" 
+author: "Jordi Sevilla"
+institute: "PathoGenOmics-lab"
+date: last-modified
+date-format: "DD-MM-YYYY"
+title-block-banner: true
 format: 
   html: 
-    theme: journal
-    self-contained: true
-    mainfont: 'Montserrat'
+    page-layout: article
+    embed-resources: true
+    smooth-scroll: true
+    theme: cosmo
+    toc: true
+    toc-expand: true
+    toc-location: left
+    toc-title: Summary
+css: config/report.styles.css
 editor: visual
 params:
   div: ""
@@ -19,6 +29,9 @@ params:
   volcano: ""
   tree_ml: ""
   fig_cor_snp: ""
+  stats_lm: ""
+  table: ""
+  sum_nv: ""
 output-file: report.html
 ---
 <head>
@@ -26,52 +39,108 @@ output-file: report.html
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 </head>
-```{r , echo= F,message= F}
-diversity_value = as.numeric(read.csv(params$div_value)[1,1])
-```
-# {style="text-align: justify"}
 
+```{r , echo= F,message= F, include = F}
+library(gdtools)
+register_gfont(family = "Montserrat")
+library(flextable)
+library(tidyverse)
+diversity_value = as.numeric(read.csv(params$div_value)[1,1])
+stats <- read.csv(params$stats_lm)$value
+
+correlation <- as.numeric(stats[2])
+sub_rate <- as.numeric(stats[1])*365
+sub_rate <- round(sub_rate, digits = 2)
+p_value_lm <- as.numeric(stats[3])
+table <- read.csv(params$table)
+
+
+# NV counts 
+counts <- read.csv(params$sum_nv)
+
+n_SNV <- as.numeric(counts[counts$nv == "SNP","n"])
+n_INDELS <- as.numeric(counts[counts$nv == "INDEL","n"])
+
+```
+
+## Samples summary
+```{r, echo= F,message= F}
+flextable(table) %>%
+set_header_labels(
+  "Sample" = "Sample",
+  "Collection_Date" = "Collection Date",
+  "Lineaje" = "Lineaje"
+) %>%
+bold(i = 1, bold = TRUE, part = "header") %>%
+flextable::align(align = "center") %>% 
+font(fontname = "Montserrat", part = "all") %>%
+autofit()
+```
 ## Evidence for chronic infection 
 
-Phylogeny with other samples:
-![](`r params$tree_ml`)
+
 
 ### Freyja output
+The most probably lineage admixture for each sample has been calculated with software [Freyja](https://github.com/andersen-lab/Freyja).
 
-![](`r params$freyja`)
+![**Figure 1.** Lineage composition of samples according to Freyja. Samples are ordered by collection date.](`r params$freyja`)
 
 ### Diversity comparision
 
-The pi value for the studied samples is $`r diversity_value`$
+The pi value for the studied samples is $`r diversity_value`$.
 
-![](`r params$div`)
+![**Figure 2.** Distribution of nucleotide diversity pi for 1000 randomly selected groups from context sequences. Red line indicates the pi value for the studied samples.](`r params$div`)
 
 ### phylogeny and temporal signal
 
-![](`r params$tree`)
-![](`r params$tempest`)
+A maximum likelihood tree has been adjusted with the context sequences:
+
+![**Figure 3.** Maximum-likelihood tree whith studied and context sequence. Studied sequence are represented in red.](`r params$tree_ml`)
+
+In addition, phylogeny has been reconstructed using genetic variations in samples following the next equation to compute pairwise distance matrix:
+
+$d(M,N)=\sum_{i=1}^{I} \frac{\sum_{j=1}^{J} (M_{ij} -N_{ij})^2}{4 -\sum_{j=1}^{J} (M_{ij} +N_{ij})^2}$
+
+where:
+
+$M$ y $N$: Two sequences.
+
+$i = 1... I :$ Index over polimorphic sites.
+
+$j = 1... J :$ Index over alleles.
+
+$M_{ij}$ : Frequency of allel $j$ in position $i$ for sequence $M$.
+
+
+With the distance matrix, a neighbour-joining tree has been adjusted:
+
+![**Figure 4.** Neighbour-joining tree for studied samples.](`r params$tree`)
+
+With the neighbur-joining tree, partistic distances to root has been correlated with time obtaining a $R^2$ of **`r correlation`** with a p-value of $`r p_value_lm`$. The estimated substitution rate is **`r sub_rate`** substitutions per year.
+
+![**Figure 5.** Partistic distance to root in the neighbour-joining tree against days since first sample. Red line indicates the adjusted linear regression model.](`r params$tempest`)
 
 ## Evolution
 
 ### Description for NV 
 
-The number of polimorphic sites over time:
+![**Figure 6.** Number of polimorphisms over time for the studied samples.](`r params$fig_cor_snp`)
 
-![](`r params$fig_cor_snp`)
+`r n_SNV` different SNV and `r n_INDELS` INDELS had been detected along the genome.
 
-![](`r params$SNV`)
+![**Figure 7.** A\) Proportion of polimorphic sites along the genome calculated with 1000nt windows. B\) Nucleotide variants (NV) in the genomes of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV`)
 
-The correlation with time for the SNPs detected is represented in the following plot:
+The correlation with time for the SNVs detected is represented in the following plot:
 
-![](`r params$volcano`)
+![**Figure 8.** *Pearson* r and adjusted p-value (-log10) for the correlation with time for each SNV. Red line indicates a p-value of 0.05.](`r params$volcano`)
 
-The significant correlated SNPs are swown in detail:
+The significant correlated SNVs are swown in detail:
 
-![](`r params$panel`)
+![**Figure 9.** Trend over time for the significantly correlated with time SNVs and for positions with more than 1 alternative allele. ](`r params$panel`)
 
 ### dn/ds over time
 
-![](`r params$evo`)
+![**Figure 10.** Sinonymous mutations per sinonymous site **(dS)** and non sinonymous mutations mutations per non sinonymous site **(dN)** over time. The values are adjusted by the allele frequency.](`r params$evo`)
 
 
 
