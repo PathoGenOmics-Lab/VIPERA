@@ -1,0 +1,24 @@
+name: Test
+
+on: 
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Run test pipeline
+        uses: snakemake/snakemake-github-action@v1
+        with:
+          directory: ".test"
+          snakefile: "workflow/Snakefile"
+          args: "--configfile config/config.yaml config/report.yaml .test/targets.yaml --cores 1 --use-conda"
