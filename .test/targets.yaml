@@ -18,3 +18,20 @@ OUTPUT_NAME:
   "test"
 DIVERSITY_BOOTSTRAP_REPS:
   10
+PLOTS:
+  "../config/design_plots.R"
+PROBLEMATIC_VCF:
+  "../config/problematic_sites_sarsCov2.vcf"
+VC:
+  MAX_DEPTH: 0
+  MIN_QUALITY: 0
+  IVAR_QUALITY: 5
+  IVAR_FREQ: 0.10
+  IVAR_DEPTH: 5
+DEMIX:
+  COV_CUTOFF: 0
+  MIN_ABUNDANCE: 0.0001
+NSP:
+  "../data/report_files/nsp_annotation.csv"
+REPORT_QMD:
+  "../case_study.report.qmd"
