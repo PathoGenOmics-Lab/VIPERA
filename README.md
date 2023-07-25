@@ -1,6 +1,7 @@
 # Case-study-SARS-CoV-2
 
 ![Install workflow](https://github.com/PathoGenOmics-Lab/Case-study-SARS-CoV-2/actions/workflows/install.yml/badge.svg)
+![Test workflow](https://github.com/PathoGenOmics-Lab/Case-study-SARS-CoV-2/actions/workflows/test.yml/badge.svg)
 
 ## Instructions
 
