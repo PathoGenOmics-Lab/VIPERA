@@ -21,3 +21,11 @@ rule fetch_mapping_references:
             esearch -db nucleotide -query "$ref_id" | efetch -format fasta >> {output.fasta}
         done
         """
+
+
+rule fetch_alignment_annotation:
+    threads: 1
+    output:
+        OUTDIR/"reference.gff3"
+    shell:
+        "wget -O {output} 'https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=gff3&id={config[ALIGNMENT_REFERENCE]}'"

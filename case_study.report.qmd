@@ -33,6 +33,7 @@ params:
   stats_lm: ""
   table: ""
   sum_nv: ""
+output-file: report.html
 ---
 <head>
   <link rel="preconnect" href="https://fonts.googleapis.com">

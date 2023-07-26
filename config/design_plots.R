@@ -1,6 +1,5 @@
 # Jordi Sevilla
 
-# Cargar librerias ####
 library(pacman)
 p_load("tidyverse",
        "showtext")
@@ -8,17 +7,15 @@ p_load("tidyverse",
 # Ajustes ####
 showtext_auto(enable = FALSE)
 showtext_opts(dpi = 200)
-# Tema
 
+# Tema
 font_add_google("Montserrat", "Montserrat")
-font_files()    
-font_families()
 showtext_auto()
 
 theme_set(theme_minimal())
 
-theme_update(text = element_text(size = 16,  family="Montserrat"), 
-             axis.title = element_text(size = 16), 
+theme_update(text = element_text(size = 16,  family = "Montserrat"),
+             axis.title = element_text(size = 16),
              axis.line = element_line(size = 0.5, colour = "grey40", linetype=1, arrow = arrow(length = unit(3,"mm"))),
              panel.grid =element_line(size = 0.17, color = "lightgray")
 ) 
