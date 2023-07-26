@@ -7,11 +7,11 @@ rule snps_to_ancestor:
         min_quality = config["VC"]["MIN_QUALITY"],
         ivar_quality = config["VC"]["IVAR_QUALITY"],
         ivar_freq = config["VC"]["IVAR_FREQ"],
-        ivar_depth = config["VC"]["IVAR_DEPTH"],
-        gff = config["ANNOTATION_GFF"]
+        ivar_depth = config["VC"]["IVAR_DEPTH"]
     input:
         reference_fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
-        bam = get_input_bam
+        bam = get_input_bam,
+        gff = OUTDIR/"reference.gff3"
     output:
         tsv = temp(OUTDIR/"{sample}.tsv")
     shell:
@@ -34,7 +34,7 @@ rule snps_to_ancestor:
                 -q {params.ivar_quality} \
                 -t {params.ivar_freq} \
                 -m {params.ivar_depth} \
-                -g {params.gff} \
+                -g {input.gff} \
                 -r renamed_reference.fasta
 
         sed 's/'$ref'/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}

@@ -3,9 +3,8 @@
 .snakemake*
 
 # Analysis files
-*.bam
-*.fa
-*/fasta/*.fasta
+/data/bam/
+/data/fasta/
 /output/
 
 # MAC

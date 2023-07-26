@@ -6,3 +6,5 @@ NSP:
   "data/report_files/nsp_annotation.csv"
 FIGUR_DIR:
   "workflow/report/figs/"
+REPORT_QMD:
+  "case_study.report.qmd"
