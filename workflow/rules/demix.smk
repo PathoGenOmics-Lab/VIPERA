@@ -5,6 +5,8 @@ rule demix_preprocessing:
     input:
         bam = get_input_bam,
         ref_fasta = OUTDIR/"mapping_references.fasta"
+    params:
+        minq = config["DEMIX"]["MIN_QUALITY"]
     output:
         depth_file = OUTDIR/"demixing"/"{sample}/{sample}_depth.txt",
         variants_file = OUTDIR/"demixing"/"{sample}/{sample}_variants.tsv"
@@ -14,6 +16,7 @@ rule demix_preprocessing:
             "{input.bam}" \
             --variants {output.variants_file} \
             --depths {output.depth_file} \
+            --minq {params.minq} \
             --ref {input.ref_fasta}
         """
 
