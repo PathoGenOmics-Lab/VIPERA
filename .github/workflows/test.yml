@@ -1,6 +1,13 @@
 name: Test
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - "**"
 
 jobs:
 
@@ -17,6 +24,7 @@ jobs:
         with:
           cancel_others: 'true'
           concurrent_skipping: 'same_content_newer'
+          paths_ignore: '["**/README.md"]'
 
   run_test_pipeline:
     needs: skip_duplicate
