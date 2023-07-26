@@ -71,7 +71,7 @@ snakemake --forceall --dag | dot -Tpng > .dag.png
 In order to describe in a better way the relationship between samples, distances beween them are calculated tacking into account allele frequencies in sequencing data. Our aproach to compute the distance between sets of allele frequencies is based on FST formula and define the distance between two samples as:
 
 ```math
-d(M,N)=\sum_{i=1}^I \frac{\sum_{j=1}^J (M_{ij} -N_{ij})^2 }{4 - \sum_{j=1}^J (M_{ij} +N_{ij})^2 }
+d(M,N)=\sum\limits_{i=1}^I \frac {\sum\limits_{j=1}^J (M_{ij} -N_{ij})^2 } {4 - \sum\limits_{j=1}^J (M_{ij} +N_{ij})^2 }
 ```
 
 where:
