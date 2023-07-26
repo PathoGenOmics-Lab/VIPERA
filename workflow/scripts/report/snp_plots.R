@@ -32,7 +32,7 @@ vcf <- vcf %>%
 
 IDs <- pull(vcf,REGION) %>%
   unique()
-vcf
+
 vcf <- vcf %>%
   pivot_wider(names_from = REGION, values_from = ALT_FREQ, values_fill = 0) %>% # Obtener los 0 en los puntos sin variantes
   pivot_longer(IDs, names_to = "REGION", values_to = "ALT_FREQ") %>%
@@ -99,7 +99,7 @@ dup <- vcf %>% # SNPs que comparten posición
 subset <- c(sign,dup) %>%
   unique()
 
-plot.height = ceiling(length(subset)/4)*40 # Altura del plot para que se vea bién
+plot.height = ceiling(length(subset)/4)*42 # Altura del plot para que se vea bién
 
 panel <- vcf %>%
         filter(SNP %in% subset) %>%
@@ -112,7 +112,8 @@ panel <- vcf %>%
         theme(legend.position = "bottom",
         legend.text = element_text(size = 9)) + 
         labs(x = "Days since first sample",
-             y = "Frequency")
+             y = "Frequency") + 
+             guides(color = guide_legend(ncol = 4))
 
 if (length(subset) > 1) {
   panel <- panel + 
