@@ -72,7 +72,7 @@ In order to describe in a better way the relationship between samples, distances
 
 ```math
 d(M,N)=\sum_{i=1}^I \frac{\sum_{j=1}^J (M_{ij} -N_{ij})^2 }{4 - \sum_{j=1}^J (M_{ij} +N_{ij})^2 }
-
+```
 
 where:
 
@@ -83,6 +83,6 @@ $i = 1... I :$ Index over polimorphic sites.
 $j = 1... J :$ Index over alleles.
 
 $M_{ij}$ : Frequency of allel $j$ in position $i$ for sequence $M$.
-``````
+
 
 
