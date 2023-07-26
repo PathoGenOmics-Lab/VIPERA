@@ -122,21 +122,21 @@ rule report:
     conda: "../envs/renv.yaml"
     shadow: "shallow"
     input:
-        qmd = Path(config["REPORT_QMD"]).resolve().as_posix(),
-        diversity = report(REPORT_DIR/"div.plot.png"),
-        freyja = report(REPORT_DIR/"freyja.plot.png"),
-        tree = report(REPORT_DIR/"tree.png"),
-        temest = report(REPORT_DIR/"temp_est.png"),
-        SNV = report(REPORT_DIR/"NV.description.png"),
-        evo = report(REPORT_DIR/"dn_ds.png"),
-        value = OUTDIR/"our_diversity.txt",
-        panel = report(REPORT_DIR/"panel.png"),
-        volcano = report(REPORT_DIR/"volcano.png"),
-        tree_ml = report(REPORT_DIR/"tree_ml.png"),
-        fig_cor = report(REPORT_DIR/"cor_snp_time.png"),
-        stats_lm = OUTDIR/"stats.lm.csv",
-        table = OUTDIR/"summary_table.csv",
-        sum_nv = OUTDIR/"summary_nv.csv"
+        qmd       = Path(config["REPORT_QMD"]).resolve(),
+        diversity = report((REPORT_DIR/"div.plot.png").resolve()),
+        freyja    = report((REPORT_DIR/"freyja.plot.png").resolve()),
+        tree      = report((REPORT_DIR/"tree.png").resolve()),
+        temest    = report((REPORT_DIR/"temp_est.png").resolve()),
+        SNV       = report((REPORT_DIR/"NV.description.png").resolve()),
+        evo       = report((REPORT_DIR/"dn_ds.png").resolve()),
+        value     = (OUTDIR/"our_diversity.txt").resolve(),
+        panel     = report((REPORT_DIR/"panel.png").resolve()),
+        volcano   = report((REPORT_DIR/"volcano.png").resolve()),
+        tree_ml   = report((REPORT_DIR/"tree_ml.png").resolve()),
+        fig_cor   = report((REPORT_DIR/"cor_snp_time.png").resolve()),
+        stats_lm  = (OUTDIR/"stats.lm.csv").resolve(),
+        table     = (OUTDIR/"summary_table.csv").resolve(),
+        sum_nv    = (OUTDIR/"summary_nv.csv").resolve()
     output:
         html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
     shell:
@@ -157,5 +157,5 @@ rule report:
                                                        stats_lm = '{input.stats_lm}',
                                                        table = '{input.table}',
                                                        sum_nv = '{input.sum_nv}'))\"    
-        mv $(dirname {input.qmd:q})/report.html {output.html}
+        mv "$(dirname {input.qmd:q})/report.html" {output.html}
         """
