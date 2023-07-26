@@ -28,4 +28,4 @@ rule fetch_alignment_annotation:
     output:
         OUTDIR/"reference.gff3"
     shell:
-        "wget -O {output} 'https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=gff3&id={config[ALIGNMENT_REFERENCE]}'"
+        "curl 'https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=gff3&id={config[ALIGNMENT_REFERENCE]}' -o {output} -s"
