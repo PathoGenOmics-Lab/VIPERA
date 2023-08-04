@@ -30,6 +30,17 @@ CONTEXT_FASTA:
 
 You may also provide these information through the `--config` parameter.
 
+Setting `CONTEXT_FASTA` to `null` will enable automatic download of sequences
+from the GISAID SARS-CoV-2 database
+(see [the following section](README.md#context-checkpoints) for further details).
+To enable this, you must provide your GISAID credentials by creating and
+filling an additional configuration file `config/gisaid.yaml` as follows:
+
+```yaml
+USERNAME: "your-username"
+PASSWORD: "your-password"
+```
+
 To run the analysis with the default configuration, just run the following command
 (change the `-c/--cores` argument to use a different number of CPUs):
 
@@ -47,12 +58,8 @@ snakemake --slurm --use-conda --profile profile/default
 
 ## Context checkpoints
 
-By default, a dataset of samples matching the location and time window
-of the target samples will be fetched from the GISAID database
-
-By default, the pipeline starts by selecting samples that meet the spatial
-and temporal criteria (see the [`download_context`](workflow/rules/context.smk)
-rule for reference):
+By default, a dataset of samples that meet the spatial
+and temporal criteria set through the [`download_context` rule](workflow/rules/context.smk):
 
 - Location matching the place(s) of sampling of the target samples
 - Collection date within the time window that includes 95% of the date distribution of the
