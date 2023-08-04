@@ -1,0 +1,7 @@
+default-resources:
+  slurm_account: <your SLURM account>
+  slurm_partition: global
+  mem_mb: 4000
+  runtime: 30
+  slurm_extra: "--qos=short"
+jobs: 10
