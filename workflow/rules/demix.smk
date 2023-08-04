@@ -1,7 +1,7 @@
 rule demix_preprocessing:
     threads: 1
     conda: "../envs/freyja.yaml"
-    shadow: "full"
+    shadow: "minimal"
     input:
         bam = get_input_bam,
         ref_fasta = OUTDIR/"mapping_references.fasta"
@@ -24,7 +24,7 @@ rule demix_preprocessing:
 rule demix:
     threads: 1
     conda: "../envs/freyja.yaml"
-    shadow: "full"
+    shadow: "minimal"
     input:
         depth_file = OUTDIR/"demixing"/"{sample}/{sample}_depth.txt",
         variants_file = OUTDIR/"demixing"/"{sample}/{sample}_variants.tsv"
