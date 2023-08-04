@@ -4,7 +4,6 @@ default-resources:
   - mem="4000MB"
   - runtime="30m"
   - slurm_extra="--qos=short"
-  - output="logs/{rule}/slurm-%x-%j.out"
 jobs: 25
 shadow-prefix: "/scr/aherrera/"
 rerun-incomplete: True
