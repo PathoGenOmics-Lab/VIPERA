@@ -113,7 +113,7 @@ def get_matrix(df, cov_list, reference, freq):
     mask_positions = parse_vcf()
 
     def calculate_distance(sample):
-        print(f"Calculating distances for sample: {sample}")
+        logging.info(f"Calculating distances for sample: {sample}")
         distances = [get_dif_n(df, sample, x, mask_positions, reference, freq) for x in cov_list]
         return distances
     num_jobs = snakemake.threads
@@ -123,7 +123,7 @@ def get_matrix(df, cov_list, reference, freq):
     else:
         batch_size = int(len(cov_list) / effective_n_jobs(num_jobs))  # Tamanyo de lote optimo
 
-    print(f"Parallelizing the calculation with {num_jobs} jobs...")
+    logging.info(f"Parallelizing the calculation with {num_jobs} jobs...")
     results = Parallel(n_jobs=num_jobs, batch_size=batch_size, verbose=10, timeout=None)(
         delayed(calculate_distance)(sample) for sample in cov_list
     )
@@ -151,6 +151,7 @@ def read_and_concatenate_tsvs(input,tsv_reference,reference, reference_name):
 
 
 def main():    
+    logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
     input_file = snakemake.input.tsv
     reference = str(next(SeqIO.parse(snakemake.params.tsv_reference, "fasta")).seq)
     outgroup = str(next(SeqIO.parse(snakemake.params.reference, "fasta")).seq)

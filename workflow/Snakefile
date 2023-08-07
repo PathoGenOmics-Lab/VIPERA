@@ -37,6 +37,11 @@ if "CONTEXT_FASTA" not in config.keys() or config["CONTEXT_FASTA"] is None:
 else:
     CONTEXT_FASTA = config["CONTEXT_FASTA"]
 
+
+## Logging
+LOGDIR = OUTDIR / "logs"
+
+
 ## report
 REPORT_DIR = Path(OUTDIR/"report")
 REPORT_DIR.mkdir(parents=True, exist_ok=True)

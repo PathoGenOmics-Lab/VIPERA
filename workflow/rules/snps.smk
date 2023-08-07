@@ -26,5 +26,7 @@ rule plot_polymorphisms:
         metadata = config["METADATA"]
     output:
         plot = OUTDIR/f"{OUTPUT_NAME}.polymorphic_sites.pdf"
+    log:
+        LOGDIR / "plot_polymorphisms" / "log.txt"
     script:
         "../scripts/plot_polymorphisms.R"

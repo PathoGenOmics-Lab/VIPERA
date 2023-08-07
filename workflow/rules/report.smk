@@ -6,6 +6,8 @@ rule window:
         step = 1000
     output:
         window_df = OUTDIR/f"{OUTPUT_NAME}.window.csv",
+    log:
+        LOGDIR / "window" / "log.txt"
     script:
         "../scripts/window.py"
 
@@ -24,6 +26,8 @@ rule diversity:
     output:
         fig = report((REPORT_DIR/"div.plot.png").resolve()),
         value = temp((OUTDIR/"our_diversity.txt").resolve())
+    log:
+        LOGDIR / "diversity" / "log.txt"
     script:
         "../scripts/report/diversity_plot.R"
 
@@ -37,6 +41,8 @@ rule freyja_plot:
         summary_demixing =  OUTDIR/"summary_freyja_demixing.csv"
     output:
         fig = report((REPORT_DIR/"freyja.plot.png").resolve())
+    log:
+        LOGDIR / "freyja_plot" / "log.txt"
     script:
         "../scripts/report/freyja_plot.R"
 
@@ -54,6 +60,8 @@ rule general_NV_description:
         fig = report((REPORT_DIR/"NV.description.png").resolve()),
         fig_cor = report((REPORT_DIR/"cor_snp_time.png").resolve()),
         summary_nv = temp((OUTDIR/"summary_nv.csv").resolve())
+    log:
+        LOGDIR / "general_NV_description" / "log.txt"
     script:
         "../scripts/report/NV_description.R"
 
@@ -75,6 +83,8 @@ rule phylo_plots:
         tree = report((REPORT_DIR/"tree.png").resolve()),
         tree_ml = report((REPORT_DIR/"tree_ml.png").resolve()),
         stats_lm = temp((OUTDIR/"stats.lm.csv").resolve())
+    log:
+        LOGDIR / "phylo_plots" / "log.txt"
     script:
         "../scripts/report/pylo.R"
 
@@ -89,6 +99,8 @@ rule evo_plots:
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     output:
         plot = report((REPORT_DIR/"dn_ds.png").resolve())
+    log:
+        LOGDIR / "evo_plots" / "log.txt"
     script:
         "../scripts/report/evo_plots.R"
 
@@ -103,6 +115,8 @@ rule snp_plots:
     output:
         pseudovolcano = report((REPORT_DIR/"volcano.png").resolve()),
         snp_panel = report((REPORT_DIR/"panel.png").resolve())
+    log:
+        LOGDIR / "snp_plots" / "log.txt"
     script:
         "../scripts/report/snp_plots.R"
 
@@ -114,6 +128,8 @@ rule summary_table:
         report = report(OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv")
     output:
         table = temp((OUTDIR/"summary_table.csv").resolve())
+    log:
+        LOGDIR / "summary_table" / "log.txt"
     script:
         "../scripts/report/summary_table.R"
 
@@ -138,6 +154,8 @@ rule report:
         sum_nv    = rules.general_NV_description.output.summary_nv
     output:
         html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
+    log:
+        LOGDIR / "report" / "log.txt"
     shell:
         """
         set +o pipefail
@@ -155,6 +173,6 @@ rule report:
                                                        fig_cor_snp = '{input.fig_cor}',
                                                        stats_lm = '{input.stats_lm}',
                                                        table = '{input.table}',
-                                                       sum_nv = '{input.sum_nv}'))\"    
+                                                       sum_nv = '{input.sum_nv}'))\" >{log} 2>&1
         mv "$(dirname {input.qmd:q})/report.html" {output.html}
         """

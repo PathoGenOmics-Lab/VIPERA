@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import logging
 import pandas as pd
  
 def parse_vcf():
@@ -20,6 +21,8 @@ def parse_vcf():
     return positions
 
 def main():
+    logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
+    
     # parse VCF to get list of sites to mask
     iffy_sites = parse_vcf()
 
