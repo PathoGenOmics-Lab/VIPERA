@@ -62,7 +62,7 @@ rule ml_context_tree:
         exec >{log}                                                                    
         exec 2>&1
         
-        awk '/^>/{{p=seen[$0]++}}!p' {input.fasta} {input.outgroup_aln} > aln.fasta 2>
+        awk '/^>/{{p=seen[$0]++}}!p' {input.fasta} {input.outgroup_aln} > aln.fasta
         mkdir -p {output.folder}
         iqtree2 \
             {params.etc} -asr -B {params.bootstrap} \

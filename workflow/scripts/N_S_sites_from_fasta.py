@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import logging
 from Bio import SeqIO
 from Bio import Seq
 import copy
@@ -120,6 +121,8 @@ def get_df(codons):
     return df
 
 def main():
+    logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
+    
     sequence = list(SeqIO.parse(snakemake.input.fasta,"fasta"))[0]
     codons_dict =  get_feature_codons(sequence,SCov2_annotation)
     df = get_df(codons_dict)

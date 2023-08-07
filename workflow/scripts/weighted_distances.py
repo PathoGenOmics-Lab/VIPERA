@@ -151,6 +151,7 @@ def read_and_concatenate_tsvs(input,tsv_reference,reference, reference_name):
 
 
 def main():    
+    logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
     input_file = snakemake.input.tsv
     reference = str(next(SeqIO.parse(snakemake.params.tsv_reference, "fasta")).seq)
     outgroup = str(next(SeqIO.parse(snakemake.params.reference, "fasta")).seq)
