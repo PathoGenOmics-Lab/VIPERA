@@ -1,7 +1,7 @@
 from pathlib import Path
 from snakemake.utils import min_version
 
-min_version("6.0")
+min_version("7.19")
 
 configfile: "config/config.yaml"
 configfile: "config/targets.yaml"
@@ -21,6 +21,7 @@ def iter_samples():
 def get_input_bam(wildcards):
     return config["SAMPLES"][wildcards.sample]["bam"]
 
+
 def get_input_fasta(wildcards):
     return config["SAMPLES"][wildcards.sample]["fasta"]
 
@@ -37,10 +38,8 @@ if "CONTEXT_FASTA" not in config.keys() or config["CONTEXT_FASTA"] is None:
 else:
     CONTEXT_FASTA = config["CONTEXT_FASTA"]
 
-
 ## Logging
 LOGDIR = OUTDIR / "logs"
-
 
 ## report
 REPORT_DIR = Path(OUTDIR/"report")
