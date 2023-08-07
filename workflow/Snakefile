@@ -1,5 +1,7 @@
 from pathlib import Path
 from snakemake.utils import min_version
+import subprocess
+
 
 min_version("7.19")
 
@@ -24,6 +26,23 @@ def get_input_bam(wildcards):
 
 def get_input_fasta(wildcards):
     return config["SAMPLES"][wildcards.sample]["fasta"]
+
+
+def get_version_str(base_dir: str) -> str:
+    if not Path(f"{base_dir}/.git").is_dir():
+        print("Not a git repository!")
+        return "no version available"
+    last_tag_description = subprocess.check_output(
+        ["git", f"--git-dir={base_dir}/.git", "describe", "--always"]
+    ).strip().decode("utf-8")
+    if last_tag_description.startswith("v"):
+        return last_tag_description
+    else:
+        return f"commit '{description}'"
+
+
+# Workflow version
+__version__ = get_version_str(".")
 
 
 # Targets
