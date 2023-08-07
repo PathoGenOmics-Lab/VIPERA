@@ -10,6 +10,8 @@ rule demix_preprocessing:
     output:
         depth_file = OUTDIR/"demixing"/"{sample}/{sample}_depth.txt",
         variants_file = OUTDIR/"demixing"/"{sample}/{sample}_variants.tsv"
+    log:
+        LOGDIR / "demix_preprocessing" / "{sample}.log.txt"
     shell:
         """
         freyja variants \
@@ -17,7 +19,7 @@ rule demix_preprocessing:
             --variants {output.variants_file} \
             --depths {output.depth_file} \
             --minq {params.minq} \
-            --ref {input.ref_fasta}
+            --ref {input.ref_fasta} >{log} 2>&1
         """
 
 
@@ -33,6 +35,8 @@ rule demix:
         minimum_abundance = config["DEMIX"]["MIN_ABUNDANCE"]
     output:
         demix_file = OUTDIR/"demixing"/"{sample}/{sample}_demixed.tsv"
+    log:
+        LOGDIR / "demix" / "{sample}.log.txt"
     shell:
         """
         freyja demix \
@@ -40,7 +44,7 @@ rule demix:
             "{input.depth_file}" \
             --eps {params.minimum_abundance} \
             --covcut {params.coverage_cutoff} \
-            --output {output.demix_file}
+            --output {output.demix_file} >{log} 2>&1
         """
 
 
@@ -52,5 +56,7 @@ rule summarise_demixing:
         tables = expand(OUTDIR/"demixing"/"{sample}/{sample}_demixed.tsv", sample=iter_samples())
     output:
         summary_df = report(OUTDIR/"summary_freyja_demixing.csv")
+    log:
+        LOGDIR / "summarise_demixing" / "log.txt"
     script: 
         "../scripts/summary_demixing.R"

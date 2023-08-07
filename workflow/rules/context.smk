@@ -25,6 +25,8 @@ rule download_context:
         fasta = temp(OUTDIR/"context"/"sequences.fasta"),
         metadata = temp(OUTDIR/"context"/"metadata.csv"),
         duplicate_accids = OUTDIR/"context"/"duplicate_accession_ids.txt"
+    log:
+        LOGDIR / "download_context" / "log.txt"
     script:
         "../scripts/download_context.R"
 
@@ -41,8 +43,10 @@ rule align_context:
     output:
         folder = directory(OUTDIR/"context"/"nextalign"),
         fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.fasta"
+    log:
+        LOGDIR / "align_context" / "log.txt"
     shell:
-        "nextalign run -j {threads} -O {output.folder} -o {output.fasta} -n {params.name} --include-reference -r {input.ref_fasta} {input.fasta}"
+        "nextalign run -j {threads} -O {output.folder} -o {output.fasta} -n {params.name} --include-reference -r {input.ref_fasta} {input.fasta} >{log} 2>&1"
 
 
 rule mask_context:
@@ -57,5 +61,7 @@ rule mask_context:
         ref_fasta = OUTDIR/"reference.fasta"
     output:
         fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
+    log:
+        LOGDIR / "mask_context" / "log.txt"
     script:
         "../scripts/mask-aln.py"
