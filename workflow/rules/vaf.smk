@@ -14,9 +14,14 @@ rule snps_to_ancestor:
         gff = OUTDIR/"reference.gff3"
     output:
         tsv = temp(OUTDIR/"{sample}.tsv")
+    log:
+        LOGDIR / "snps_to_ancestor" / "{sample}.log.txt"
     shell:
         """
         set -e
+        exec >{log}                                                                    
+        exec 2>&1
+
         ref=`samtools view -H {input.bam} | grep ^@SQ | cut -d"\t" -f2 | sed 's/SN://g'`
         sed 's/>.*/>'$ref'/g' {input.reference_fasta} > renamed_reference.fasta
 
@@ -48,6 +53,8 @@ rule format_tsv:
         expand(OUTDIR/"{sample}.tsv", sample = iter_samples())
     output:
         tsv = OUTDIR/f"{OUTPUT_NAME}.tsv"
+    log:
+        LOGDIR / "format_tsv" / "log.txt"
     shell:
         """
         path=`echo {input} | awk '{{print $1}}'`
@@ -69,6 +76,8 @@ rule mask_tsv:
         tsv = OUTDIR/f"{OUTPUT_NAME}.tsv"
     output:
         masked_tsv = OUTDIR/f"{OUTPUT_NAME}.masked.tsv"
+    log:
+        LOGDIR / "mask_tsv" / "log.txt"
     script:
         "../scripts/mask_tsv.py"
 
@@ -76,11 +85,11 @@ rule mask_tsv:
 rule filter_tsv:
     threads: 1
     conda: "../envs/renv.yaml"
-    params:
-         
     input: 
         tsv = OUTDIR/f"{OUTPUT_NAME}.masked.tsv"
     output:
         filtered_tsv = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
+    log:
+        LOGDIR / "filter_tsv" / "log.txt"
     script:
         "../scripts/filter_tsv.R"

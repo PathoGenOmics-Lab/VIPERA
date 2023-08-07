@@ -5,7 +5,9 @@ rule pangolin_report:
         fastas = OUTDIR/f"{OUTPUT_NAME}.fasta"
     output:
         report = report(OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv")
+    log:
+        LOGDIR / "pangolin_report" / "log.txt"
     shell:
         """
-        pangolin {input.fastas} --outfile {output.report} -t {threads}
+        pangolin {input.fastas} --outfile {output.report} -t {threads} >{log} 2>&1
         """
