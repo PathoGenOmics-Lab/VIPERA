@@ -38,7 +38,7 @@ def get_version_str(base_dir: str) -> str:
     if last_tag_description.startswith("v"):
         return last_tag_description
     else:
-        return f"commit '{description}'"
+        return f"commit {last_tag_description}"
 
 
 # Workflow version
