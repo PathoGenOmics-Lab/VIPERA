@@ -10,11 +10,13 @@ rule infer_tree:
     output:
         touch(OUTDIR/"tree"/".iqtree_done"),
         folder = directory(OUTDIR/"tree")
+    log:
+        LOGDIR / "infer_tree" / "log.txt"
     shell:
         """
         mkdir -p {output.folder}
         iqtree2 \
             {params.etc} \
             -o {config[REFSEQ_REFERENCE]} -T AUTO --threads-max {threads} -s {input.fasta} \
-            --seqtype {params.seqtype} -m {config[TREE_MODEL]} --prefix {output.folder}/{params.name}
+            --seqtype {params.seqtype} -m {config[TREE_MODEL]} --prefix {output.folder}/{params.name} >{log} 2>&1
         """

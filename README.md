@@ -2,33 +2,65 @@
 
 ![Install workflow](https://github.com/PathoGenOmics-Lab/Case-study-SARS-CoV-2/actions/workflows/install.yml/badge.svg)
 ![Test workflow](https://github.com/PathoGenOmics-Lab/Case-study-SARS-CoV-2/actions/workflows/test.yml/badge.svg)
+[![Snakemake](https://img.shields.io/badge/snakemake-≥7.19-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
 
 ## Instructions
 
-To run the pipeline, first fetch the data (you may need to modify the script to include your credentials):
+To run the pipeline, you will need an environment with `snakemake`
+(check [the Snakemake docs](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)).
 
-```bash
-./fetch_data.sh
+Then, modify the [target configuration file](config/targets.yaml)
+to point to your data. It should look like this:
+
+```yaml
+SAMPLES:
+  sample1:
+    bam: "path/to/sorted/bam1.bam"
+    fasta: "path/to/sequence1.fasta"
+  sample2:
+    bam: "path/to/sorted/bam2.bam"
+    fasta: "path/to/sequence2.fasta"
+  ...
+METADATA:
+  "path/to/metadata.csv"
+OUTPUT_DIRECTORY:
+  "output"
+CONTEXT_FASTA:
+  null
 ```
 
-Then, within an environment with `snakemake>6.0`
-(see [the Snakemake docs](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)),
-run the following:
+You may also provide these information through the `--config` parameter.
 
-```bash
+Setting `CONTEXT_FASTA` to `null` will enable automatic download of sequences
+from the GISAID SARS-CoV-2 database
+(see [the following section](README.md#context-checkpoints) for further details).
+To enable this, you must provide your GISAID credentials by creating and
+filling an additional configuration file `config/gisaid.yaml` as follows:
+
+```yaml
+USERNAME: "your-username"
+PASSWORD: "your-password"
+```
+
+To run the analysis with the default configuration, just run the following command
+(change the `-c/--cores` argument to use a different number of CPUs):
+
+```shell
 snakemake --use-conda -c8
 ```
 
-You may change the `-c/--cores` argument to use a different number of CPUs.
+To run the analysis in an HPC environment using SLURM, we provide a
+[default profile configuration](profile/default/config.yaml) that adapt
+to your needs or directly use of by running the following command:
+
+```shell
+snakemake --slurm --use-conda --profile profile/default
+```
 
 ## Context checkpoints
 
-By default, a dataset of samples matching the location and time window
-of the target samples will be fetched from the GISAID database
-
-By default, the pipeline starts by selecting samples that meet the spatial
-and temporal criteria (see the [`download_context`](workflow/rules/context.smk)
-rule for reference):
+By default, a dataset of samples that meet the spatial
+and temporal criteria set through the [`download_context` rule](workflow/rules/context.smk):
 
 - Location matching the place(s) of sampling of the target samples
 - Collection date within the time window that includes 95% of the date distribution of the
@@ -43,7 +75,7 @@ If these requirements are not met, a custom sequence dataset must be
 provided through the `CONTEXT_FASTA` parameter by editing [the target configuration file](config/targets.yaml)
 or via the command line:
 
-```bash
+```shell
 snakemake --config CONTEXT_FASTA="path/to/fasta"
 ```
 
@@ -51,7 +83,7 @@ snakemake --config CONTEXT_FASTA="path/to/fasta"
 
 To generate a simplified rule graph, run:
 
-```bash
+```shell
 snakemake --rulegraph | dot -Tpng > .rulegraph.png
 ```
 
@@ -60,7 +92,7 @@ snakemake --rulegraph | dot -Tpng > .rulegraph.png
 To generate the directed acyclic graph (DAG) of all rules
 to be executed, run:
 
-```bash
+```shell
 snakemake --forceall --dag | dot -Tpng > .dag.png
 ```
 

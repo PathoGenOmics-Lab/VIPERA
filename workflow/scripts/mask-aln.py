@@ -27,7 +27,7 @@ Modified by Miguel Alvarez <m.alvarez.herrera@csic.es>
 Date: 2023-03-23
 """
 
-
+import logging
 from Bio import SeqIO
 import pandas as pd
 
@@ -82,6 +82,8 @@ def parse_vcf():
 
 
 def main():
+    logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
+    
     # parse VCF to get list of sites to mask
     iffy_sites = parse_vcf()
 

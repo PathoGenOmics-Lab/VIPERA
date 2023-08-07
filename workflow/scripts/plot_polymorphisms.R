@@ -2,6 +2,11 @@ library(tidyverse)
 library(ggrepel)
 library(logger)
 
+# Write stdout and stderr to log file
+log <- file(snakemake@log[[1]], open = "wt")
+sink(log, type = "message")
+sink(log, type = "output")
+
 log_threshold(INFO)
 NUCLEOTIDES <- c("A", "C", "G", "T")
 

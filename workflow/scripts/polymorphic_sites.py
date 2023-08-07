@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import logging
 import pandas as pd
 from Bio import SeqIO
 
@@ -22,6 +23,8 @@ def is_different_indet(char1, char2):
 
 
 if __name__ == "__main__":
+
+    logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
 
     # Set dif function
     if snakemake.params.include_indeterminations:

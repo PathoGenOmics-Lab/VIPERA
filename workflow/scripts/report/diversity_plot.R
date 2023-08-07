@@ -5,6 +5,10 @@ library(pegas)
 library(future.apply)
 library(tidyverse)
 
+# Write stdout and stderr to log file
+log <- file(snakemake@log[[1]], open = "wt")
+sink(log, type = "message")
+sink(log, type = "output")
 
 # Pi calculation
 nucleotide.diversity <- function(dna_object, record.names, sample.size){
