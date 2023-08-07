@@ -24,3 +24,5 @@ GISAID_YAML:
   "config/gisaid.yaml"
 DIVERSITY_BOOTSTRAP_REPS:
   1000
+LOG_PY_FMT:
+  "%(asctime)s - %(name)s - %(levelname)-8s - %(message)s"

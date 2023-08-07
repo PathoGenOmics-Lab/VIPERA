@@ -19,6 +19,11 @@ chunk <- function(x, chunk_length = snakemake@params[["chunk_length"]]) {
 # MAIN #
 # ==== #
 
+# Write stdout and stderr to log file
+log <- file(snakemake@log[[1]], open = "wt")
+sink(log, type = "message")
+sink(log, type = "output")
+
 # Read original sample metadata
 sample.metadata <- read_delim(snakemake@input[["metadata"]], show_col_types = FALSE)
 

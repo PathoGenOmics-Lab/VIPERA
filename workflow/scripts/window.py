@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
+import logging
 import pandas as pd
 
 
-# TODO: use GFF file for annotation
-# TODO: don't hard-code the genome length (29903)
 SCov2_annotation = {
     # "SCov2_genome"    : [1, 29903],
     "five_prime_UTR"  : [    1,   265],
@@ -50,6 +49,8 @@ def window_calculation(sites, step, genome_size, coord):
 
 
 def main():
+    logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
+
     # Diccionario con relación coordenada --> gen
     coord2gene = {i : "intergenic" for i in range(1, 29903 + 1)}
     for gene in SCov2_annotation:

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 
+import logging
+
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 from Bio.Seq import Seq
@@ -16,6 +18,8 @@ def filter_node_lines(file, node):
 
 
 if __name__ == "__main__":
+
+    logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
 
     sequence = []
     for fields in filter_node_lines(snakemake.input.state_file, snakemake.params.node_id):
