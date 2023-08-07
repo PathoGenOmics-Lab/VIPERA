@@ -18,6 +18,7 @@ format:
 css: config/report.styles.css
 editor: visual
 params:
+  workflow_version: ""
   div: ""
   freyja: ""
   tree: ""
@@ -39,6 +40,8 @@ output-file: report.html
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 </head>
+
+> Workflow: `r params$workflow_version`
 
 ```{r , echo= F,message= F, include = F}
 library(gdtools)
