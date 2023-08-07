@@ -160,7 +160,9 @@ rule report:
         """
         set +o pipefail
         Rscript -e 'library(quarto)' -e \"quarto_render(input = '{input.qmd}',\
-                                           execute_params=list(div='{input.diversity}',\
+                                           execute_params=list( \
+                                                       workflow_version='{__version__}',\
+                                                       div='{input.diversity}',\
                                                        freyja ='{input.freyja}',\
                                                        tree = '{input.tree}',\
                                                        tempest = '{input.temest}',\
