@@ -2,10 +2,11 @@
 
 ![Install workflow](https://github.com/PathoGenOmics-Lab/Case-study-SARS-CoV-2/actions/workflows/install.yml/badge.svg)
 ![Test workflow](https://github.com/PathoGenOmics-Lab/Case-study-SARS-CoV-2/actions/workflows/test.yml/badge.svg)
+[![Snakemake](https://img.shields.io/badge/snakemake-≥7.19-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
 
 ## Instructions
 
-To run the pipeline, you will need an environment with `snakemake>7.29`
+To run the pipeline, you will need an environment with `snakemake`
 (check [the Snakemake docs](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)).
 
 Then, modify the [target configuration file](config/targets.yaml)
