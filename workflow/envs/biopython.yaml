@@ -3,4 +3,3 @@ channels:
 dependencies:
   - biopython==1.74
   - pandas==2.0.3
-  - joblib==1.3.0
