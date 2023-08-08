@@ -25,7 +25,7 @@ rule diversity:
         context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     output:
         fig = report((REPORT_DIR/"div.plot.png").resolve()),
-        value = temp((OUTDIR/"our_diversity.txt").resolve())
+        json = temp((OUTDIR/"diversity.json").resolve())
     log:
         LOGDIR / "diversity" / "log.txt"
     script:
@@ -144,9 +144,9 @@ rule report:
         temest    = report(rules.phylo_plots.output.temest),
         SNV       = report(rules.general_NV_description.output.fig),
         evo       = report(rules.evo_plots.output.plot),
-        value     = rules.diversity.output.value,
-        panel     = report(rules.snp_plots.output.pseudovolcano),
-        volcano   = report(rules.snp_plots.output.snp_panel),
+        value     = rules.diversity.output.json,
+        panel     = report(rules.snp_plots.output.snp_panel),
+        volcano   = report(rules.snp_plots.output.pseudovolcano),
         tree_ml   = report(rules.phylo_plots.output.tree_ml),
         fig_cor   = report(rules.general_NV_description.output.fig_cor),
         stats_lm  = rules.phylo_plots.output.stats_lm,

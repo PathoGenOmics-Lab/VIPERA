@@ -87,5 +87,4 @@ include: "rules/context.smk"
 
 rule all:
     input:
-        OUTDIR/f"{OUTPUT_NAME}.report.html",
-        OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv"
+        OUTDIR/f"{OUTPUT_NAME}.report.html"
