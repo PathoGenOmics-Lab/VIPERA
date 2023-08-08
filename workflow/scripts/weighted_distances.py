@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 # Script adaptado a nuestro input de https://github.com/PathoGenOmics-Lab/genetic-distances
+import logging
+import multiprocessing as mp
+
 import pandas as pd
 from Bio import SeqIO
-import logging
-from joblib import Parallel, delayed, effective_n_jobs
 
 
 def parse_vcf():
@@ -94,23 +95,18 @@ def get_dif_n(df, COV1, COV2, mask, reference, freq):
                 for i in range(len(reference)) if i + 1 not in mask])
 
 
+def _calculate_distance(df, sample, mask_positions, reference, freq, cov_list):
+    return [get_dif_n(df, sample, cov, mask_positions, reference, freq) for cov in cov_list]
+
+
 def get_matrix(df, cov_list, reference, freq, num_jobs):
     distance_matrix = {}
     mask_positions = parse_vcf()
-
-    def calculate_distance(sample):
-        logging.info(f"Calculating distances for sample: {sample}")
-        distances = [get_dif_n(df, sample, x, mask_positions, reference, freq) for x in cov_list]
-        return distances
-
-    if len(cov_list) <= effective_n_jobs(num_jobs):
-        batch_size = 1  # Establecer batch_size en 1 si el tamanyo de cov_list es menor o igual al numero de trabajos paralelos
-    else:
-        batch_size = int(len(cov_list) / effective_n_jobs(num_jobs))  # Tamanyo de lote optimo
-    logging.info(f"Parallelizing the calculation with {num_jobs} jobs...")
-    results = Parallel(n_jobs=num_jobs, batch_size=batch_size, verbose=10, timeout=None)(
-        delayed(calculate_distance)(sample) for sample in cov_list
-    )
+    with mp.Pool(num_jobs) as pool:
+        results = pool.starmap(
+            _calculate_distance,
+            [(df, sample, mask_positions, reference, freq, cov_list) for sample in cov_list]
+        )
     for i, sample in enumerate(cov_list):
         distance_matrix[sample] = results[i]
     # Llenar la parte superior de la matriz reflejando los valores
@@ -132,14 +128,17 @@ def read_and_concatenate_tsvs(input, tsv_reference, reference, reference_name):
 
 def main():    
     logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
-    input_file = snakemake.input.tsv
+    logging.info("Reading input FASTA files")
     reference = str(next(SeqIO.parse(snakemake.params.tsv_reference, "fasta")).seq)
     outgroup = str(next(SeqIO.parse(snakemake.params.reference, "fasta")).seq)
     outgroup_name = str(next(SeqIO.parse(snakemake.params.reference, "fasta")).id)
-    df = read_and_concatenate_tsvs(input_file,reference,outgroup,outgroup_name)
+    logging.info("Reading input tables")
+    df = read_and_concatenate_tsvs(snakemake.input.tsv, reference, outgroup, outgroup_name)
     cov_list = df["REGION"].unique().tolist()
-    freq = create_freq_dict(input_file)
+    freq = create_freq_dict(snakemake.input.tsv)
+    logging.info(f"Parallelizing the calculation with {snakemake.threads} jobs")
     df = get_matrix(df, cov_list, reference, freq, snakemake.threads)
+    logging.info("Writing results")
     df.to_csv(snakemake.output.distances)
 
 
