@@ -86,7 +86,7 @@ rule phylo_plots:
     log:
         LOGDIR / "phylo_plots" / "log.txt"
     script:
-        "../scripts/report/pylo.R"
+        "../scripts/report/phylo_plots.R"
 
 
 rule evo_plots:
@@ -120,6 +120,7 @@ rule snp_plots:
     script:
         "../scripts/report/snp_plots.R"
 
+
 rule summary_table:
     conda: "../envs/renv.yaml"
     params:
@@ -132,6 +133,7 @@ rule summary_table:
         LOGDIR / "summary_table" / "log.txt"
     script:
         "../scripts/report/summary_table.R"
+
 
 rule report:
     conda: "../envs/renv.yaml"
