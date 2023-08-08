@@ -53,7 +53,6 @@ rule ml_context_tree:
         outgroup_aln = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     output:
         folder = directory(OUTDIR/"tree_context"),
-        state_file = OUTDIR/"tree_context"/f"{OUTPUT_NAME}.state",
         ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile"
     log:
         LOGDIR / "ml_context_tree" / "log.txt"
@@ -65,7 +64,7 @@ rule ml_context_tree:
         awk '/^>/{{p=seen[$0]++}}!p' {input.fasta} {input.outgroup_aln} > aln.fasta
         mkdir -p {output.folder}
         iqtree2 \
-            {params.etc} -asr -B {params.bootstrap} \
+            {params.etc} -B {params.bootstrap} \
             -o {config[ALIGNMENT_REFERENCE]} -T AUTO --threads-max {threads} -s aln.fasta \
             --seqtype {params.seqtype} -m {config[TREE_MODEL]} --prefix {output.folder}/{params.name}
         """
