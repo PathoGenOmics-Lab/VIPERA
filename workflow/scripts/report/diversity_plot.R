@@ -4,7 +4,7 @@ library(ape)
 library(pegas)
 library(future.apply)
 library(tidyverse)
-library(rjson)
+library(jsonlite)
 
 # Write stdout and stderr to log file
 log <- file(snakemake@log[[1]], open = "wt")

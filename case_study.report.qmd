@@ -46,7 +46,7 @@ output-file: report.html
 
 ```{r , echo= F,message= F, include = F}
 library(gdtools)
-library(rjson)
+library(jsonlite)
 register_gfont(family = "Montserrat")
 library(flextable)
 library(tidyverse)
