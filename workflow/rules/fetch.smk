@@ -34,4 +34,4 @@ rule fetch_alignment_annotation:
     log:
         LOGDIR / "fetch_alignment_annotation" / "log.txt"
     shell:
-        "wget -O {output} 'https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=gff3&id={config[ALIGNMENT_REFERENCE]}' 2>{log}"
+        "curl 'https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=gff3&id={config[ALIGNMENT_REFERENCE]}' -o {output} -s 2>{log}"

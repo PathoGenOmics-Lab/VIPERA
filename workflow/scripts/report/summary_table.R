@@ -14,7 +14,16 @@ metadata <- read.csv(snakemake@params[["metadata"]])
 
 pango_report <- read.csv(snakemake@input[["report"]])
 
+date_order <- read_csv(snakemake@params[["metadata"]]) %>%
+arrange(CollectionDate) %>%
+filter(ID %in% pango_report$taxon) %>%
+pull(ID) %>%
+unique()
+
 # SUMMARY ####
+
+index  <- data.frame(Sample = date_order, 
+                    Index = seq(1,length(date_order),1))
 
 metadata <- select(metadata,ID,CollectionDate) %>%
             filter(ID %in% pango_report$taxon) %>%
@@ -23,4 +32,6 @@ metadata <- select(metadata,ID,CollectionDate) %>%
             Collection_Date = CollectionDate,
             Lineage = lineage)
 
-write.csv(metadata, snakemake@output[["table"]], row.names = F)
+table <- left_join(index,metadata)
+
+write.csv(table, snakemake@output[["table"]], row.names = F)

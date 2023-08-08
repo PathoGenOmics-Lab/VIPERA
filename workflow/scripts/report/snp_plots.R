@@ -29,8 +29,11 @@ unique()
 
 # Modificar datos de variantes
 vcf <- vcf %>% 
-  mutate(SNP = paste(REF,POS,ALT, sep = "-")) %>%
-  dplyr::select(SNP,REGION,ALT_FREQ, GFF_FEATURE, synonimous)
+  mutate(GFF_FEATURE = gsub(":.*","",GFF_FEATURE),
+         SNP = case_when(!is.na(REF_AA) ~ paste(GFF_FEATURE,":",REF_AA,POS_AA,ALT_AA, sep = ""),
+                         T ~ paste(REF,POS,ALT, sep = ""))) %>%
+                         unique() %>%
+  dplyr::select(SNP,REGION,ALT_FREQ, POS)
 
 IDs <- pull(vcf,REGION) %>%
   unique()
@@ -39,7 +42,6 @@ vcf <- vcf %>%
   pivot_wider(names_from = REGION, values_from = ALT_FREQ, values_fill = 0) %>% # Obtener los 0 en los puntos sin variantes
   pivot_longer(IDs, names_to = "REGION", values_to = "ALT_FREQ") %>%
   rowwise() %>%
-  mutate(POS = strsplit(SNP,"-")[[1]][2]) %>%
   ungroup() 
 
 # Unir datos
@@ -102,20 +104,26 @@ dup <- vcf %>% # SNPs que comparten posición
 subset <- c(sign,dup) %>%
   unique()
 
-plot.height = ceiling(length(subset)/4)*40 # Altura del plot para que se vea bién
+plot.height = ceiling(length(subset)/4)*42 # Altura del plot para que se vea bién
 
 panel <- vcf %>%
         filter(SNP %in% subset) %>%
+        group_by(POS) %>% 
+        mutate(facet = first(SNP)) %>%
         ggplot(aes(x = interval, y = ALT_FREQ, color = SNP)) + 
         scale_color_viridis_d() + 
         geom_point() + 
         geom_line() + 
-        theme(legend.position = "bottom")
+        theme(legend.position = "bottom",
+        legend.text = element_text(size = 9)) + 
+        labs(x = "Days since first sample",
+             y = "Frequency") + 
+             guides(color = guide_legend(ncol = 4))
 
 if (length(subset) > 1) {
   panel <- panel + 
     facet_wrap(
-      vars(POS),
+      vars(facet),
       nrow = ceiling(length(subset)/4),
       ncol = 4
     )
