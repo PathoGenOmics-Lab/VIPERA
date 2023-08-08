@@ -1,6 +1,5 @@
 channels:
   - bioconda
   - conda-forge
-  - anaconda
 dependencies:
   - nextalign==2.13
