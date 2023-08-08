@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from snakemake.utils import min_version
 import subprocess
@@ -54,6 +55,8 @@ OUTDIR.mkdir(parents=True, exist_ok=True)
 ## Context
 if "CONTEXT_FASTA" not in config.keys() or config["CONTEXT_FASTA"] is None:
     CONTEXT_FASTA = OUTDIR/"context"/"sequences.fasta"
+    if not Path(config["GISAID_YAML"]).is_file():
+        sys.exit(f"Neither '{config['GISAID_YAML']}' or a context FASTA were found (see README.md).")
 else:
     CONTEXT_FASTA = config["CONTEXT_FASTA"]
 
