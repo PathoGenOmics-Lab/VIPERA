@@ -4,7 +4,9 @@ rule reconstruct_ancestral_sequence:
     params:
         seqtype = "DNA",
         name = OUTPUT_NAME,
-        etc = ETC_TREE_PARAMS
+        etc = ETC_TREE_PARAMS,
+        outgroup = config["ALIGNMENT_REFERENCE"],
+        model = config["TREE_MODEL"]
     input:
         fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta"
     output:
@@ -17,8 +19,8 @@ rule reconstruct_ancestral_sequence:
         mkdir -p {output.folder}
         iqtree2 \
             {params.etc} -asr \
-            -o {config[ALIGNMENT_REFERENCE]} -T AUTO --threads-max {threads} -s {input.fasta} \
-            --seqtype {params.seqtype} -m {config[TREE_MODEL]} --prefix {output.folder}/{params.name} >{log} 2>&1
+            -o {params.outgroup} -T AUTO --threads-max {threads} -s {input.fasta} \
+            --seqtype {params.seqtype} -m {params.model} --prefix {output.folder}/{params.name} >{log} 2>&1
         """
 
 

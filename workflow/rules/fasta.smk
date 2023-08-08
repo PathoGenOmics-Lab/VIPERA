@@ -7,8 +7,7 @@ rule rename_fastas:
         LOGDIR / "rename_fastas" / "{sample}.log.txt"
     shell:
         "sed 's/>.*/>'{wildcards.sample}'/g' {input.fasta} > {output.renamed} 2> {log}"
-        
-        
+
 
 rule concat_fasta:
     threads: 1

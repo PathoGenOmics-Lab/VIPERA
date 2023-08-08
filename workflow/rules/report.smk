@@ -154,6 +154,8 @@ rule report:
         stats_lm  = rules.phylo_plots.output.stats_lm,
         table     = rules.summary_table.output.table,
         sum_nv    = rules.general_NV_description.output.summary_nv
+    params:
+        workflow_version = __version__
     output:
         html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
     log:
@@ -163,7 +165,7 @@ rule report:
         set +o pipefail
         Rscript -e 'library(quarto)' -e \"quarto_render(input = '{input.qmd}',\
                                            execute_params=list( \
-                                                       workflow_version='{__version__}',\
+                                                       workflow_version='{params.workflow_version}',\
                                                        div='{input.diversity}',\
                                                        freyja ='{input.freyja}',\
                                                        tree = '{input.tree}',\
