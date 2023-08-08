@@ -4,4 +4,3 @@ channels:
   - anaconda
 dependencies:
   - entrez-direct==16.2
-  - curl==8.2.1

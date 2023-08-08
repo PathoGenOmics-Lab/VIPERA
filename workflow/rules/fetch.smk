@@ -33,7 +33,6 @@ rule fetch_mapping_references:
 
 rule fetch_alignment_annotation:
     threads: 1
-    conda: "../envs/fetch.yaml"
     params:
         ref = config["ALIGNMENT_REFERENCE"]
     output:
