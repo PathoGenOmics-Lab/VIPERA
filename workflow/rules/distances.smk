@@ -1,5 +1,5 @@
 rule weighted_distances:
-    threads: 8
+    threads: 4
     conda: "../envs/biopython.yaml"
     params:
         mask_class = ["mask"],
