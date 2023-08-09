@@ -35,4 +35,4 @@ DEMIX:
 NSP:
   "../data/report_files/nsp_annotation.csv"
 REPORT_QMD:
-  "../case_study.report.qmd"
+  "../template.qmd"
