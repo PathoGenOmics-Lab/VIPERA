@@ -73,7 +73,9 @@ rule phylo_plots:
         metadata = config["METADATA"],
         ref_name = config["ALIGNMENT_REFERENCE"],
         boot_th = 95,
-        alrt_th = 80
+        alrt_th = 80,
+        plot_height_mm = 119.4,
+        plot_width_mm = 159.2
     input:
         dist = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
         study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
