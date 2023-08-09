@@ -14,8 +14,7 @@ include: "rules/common.smk"
 
 
 # Workflow version
-__version__ = get_version_str(".")
-
+__version__ = get_version_str(Path(".").resolve())
 
 # Targets
 ## Output
