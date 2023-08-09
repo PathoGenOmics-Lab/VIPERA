@@ -50,7 +50,7 @@ library(jsonlite)
 register_gfont(family = "Montserrat")
 library(flextable)
 library(tidyverse)
-div_values <- fromJSON(file = params$div_value)
+div_values <- fromJSON(params$div_value)
 stats <- read.csv(params$stats_lm)$value
 
 correlation <- as.numeric(stats[2])
