@@ -17,12 +17,13 @@ def get_input_fasta(wildcards):
 
 
 def get_version_str(base_dir: str) -> str:
-    if not Path(f"{base_dir}/.git").is_dir():
-        print("Not a git repository!")
+    try:
+        last_tag_description = subprocess.check_output(
+            ["git", f"--git-dir={base_dir}/.git", "describe", "--always"]
+        ).strip().decode("utf-8")
+    except subprocess.CalledProcessError as e:
+        print(f"Version not found. Error: '{e}'")
         return "no version available"
-    last_tag_description = subprocess.check_output(
-        ["git", f"--git-dir={base_dir}/.git", "describe", "--always"]
-    ).strip().decode("utf-8")
     if last_tag_description.startswith("v"):
         return last_tag_description
     else:
