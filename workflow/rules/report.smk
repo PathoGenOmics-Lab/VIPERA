@@ -68,13 +68,13 @@ rule general_NV_description:
 
 rule phylo_plots:
     conda: "../envs/renv.yaml"
-    params: 
+    params:
         design = config["PLOTS"],
         metadata = config["METADATA"],
         ref_name = config["ALIGNMENT_REFERENCE"],
-        boot_th = 85,
-        boot_color = "green"
-    input: 
+        boot_th = 95,
+        alrt_th = 80
+    input:
         dist = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
         study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
         ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile"
