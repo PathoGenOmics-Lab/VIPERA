@@ -126,33 +126,41 @@ ggsave(filename = snakemake@output[["temest"]],
 
 
 
-# ML tree para el contexto 
+# ML tree para el contexto
+tip.color <- ifelse(tree_ml$tip.label %in% study_names, "blue", NA)
 
-colors <- c()
-for(ID in tree_ml$tip.label){
-  if(ID %in% study_names){
-    colors <- c(colors,"red")
-  } else {
-    colors <- c(colors,"gray80")
+# Node labels contain SH-aLRT/UFboot values
+aLRT_values <- sapply(
+  strsplit(tree_ml$node.label, "/"),
+  function(x) {
+    as.numeric(x[1])
   }
-}
+)
 bootstrap_values <- sapply(
   strsplit(tree_ml$node.label, "/"),
   function(x) {
     as.numeric(x[2])
   }
 )
-bootstrap_color <- ifelse(bootstrap_values >= snakemake@params[["boot_th"]], snakemake@params[["boot_color"]], NA)
+aLRT_mask <- aLRT_values >= snakemake@params[["alrt_th"]]
+boot_mask <- bootstrap_values >= snakemake@params[["boot_th"]]
 
-plot <- ggtree(tree_ml, layout = "circular") + 
-          geom_tippoint(color = colors) + 
+node.color <- case_when(
+  aLRT_mask & boot_mask ~ "red",
+  !aLRT_mask & boot_mask ~ "#ff6600",
+  aLRT_mask & !boot_mask ~ "#ffbf51"
+)
+
+study.mrca <- getMRCA(tree_ml, study_names)
+p <- ggtree(tree_ml, layout = "circular") +
+          geom_highlight(node = study.mrca, colour = "red", fill = "red", alpha = 0.2) +
+          geom_tippoint(color = tip.color, shape = 1) + 
           geom_treescale(x = 0.0008) + 
           geom_rootedge(0.0005) + 
           xlim(-0.0008,NA) + 
-          geom_nodepoint(color = bootstrap_color, shape = 6)
-
+          geom_nodepoint(color = node.color, shape = 20)
 
 ggsave(filename = snakemake@output[["tree_ml"]], 
-        plot = plot, width=159.2, 
+        plot = p, width=159.2, 
         height=119.4, units="mm", 
         dpi=250)
