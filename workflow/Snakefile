@@ -37,13 +37,6 @@ LOGDIR = OUTDIR / "logs"
 REPORT_DIR = Path(OUTDIR/"report")
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Tree parameters
-ETC_TREE_PARAMS = []
-## UFBoot
-if config["N_UFBOOT"] != 0:
-    ETC_TREE_PARAMS.append(f"-B {config['N_UFBOOT']:d}")
-ETC_TREE_PARAMS = " ".join(ETC_TREE_PARAMS)
-
 
 # Rules
 include: "rules/fetch.smk"
