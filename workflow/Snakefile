@@ -8,7 +8,6 @@ min_version("7.19")
 
 configfile: "config/config.yaml"
 configfile: "config/targets.yaml"
-configfile: "config/report.yaml"
 
 include: "rules/common.smk"
 

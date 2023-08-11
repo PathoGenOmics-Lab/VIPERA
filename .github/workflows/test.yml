@@ -38,4 +38,4 @@ jobs:
         with:
           directory: ".test"
           snakefile: "workflow/Snakefile"
-          args: "--configfile config/config.yaml config/report.yaml .test/targets.yaml --cores 1 --use-conda"
+          args: "--configfile config/config.yaml .test/targets.yaml --cores 1 --use-conda"

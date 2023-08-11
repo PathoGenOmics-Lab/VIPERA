@@ -30,7 +30,7 @@ jobs:
         with:
           directory: ".test"
           snakefile: "workflow/Snakefile"
-          args: "--configfile config/config.yaml config/report.yaml .test/targets.yaml --cores 1 --conda-create-envs-only --use-conda"
+          args: "--configfile config/config.yaml .test/targets.yaml --cores 1 --conda-create-envs-only --use-conda"
   
   Dry_run:
     needs: skip_duplicate
@@ -44,4 +44,4 @@ jobs:
         with:
           directory: ".test"
           snakefile: "workflow/Snakefile"
-          args: "--configfile config/config.yaml config/report.yaml .test/targets.yaml --dry-run"
+          args: "--configfile config/config.yaml .test/targets.yaml --dry-run"
