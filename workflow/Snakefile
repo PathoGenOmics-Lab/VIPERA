@@ -13,7 +13,8 @@ include: "rules/common.smk"
 
 
 # Workflow version
-__version__ = get_version_str(Path(".").resolve())
+repo_version = get_version_str('.')
+__version__ = "0.1" + f"(git: {repo_version})"
 
 # Targets
 ## Output

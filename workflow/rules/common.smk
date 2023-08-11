@@ -24,7 +24,7 @@ def get_version_str(base_dir: str) -> str:
         ).strip().decode("utf-8")
     except subprocess.CalledProcessError as e:
         print(f"Version not found. Error: '{e}'")
-        return "no version available"
+        return "N/A"
     if last_tag_description.startswith("v"):
         return last_tag_description
     else:
