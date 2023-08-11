@@ -22,13 +22,21 @@ OUTPUT_NAME = config["OUTPUT_NAME"]
 OUTDIR = Path(config["OUTPUT_DIRECTORY"])
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
-## Context
+## Set context to be fetched automatically if CONTEXT_FASTA=null
 if "CONTEXT_FASTA" not in config.keys() or config["CONTEXT_FASTA"] is None:
     CONTEXT_FASTA = OUTDIR/"context"/"sequences.fasta"
     if not Path(config["GISAID_YAML"]).is_file():
         sys.exit(f"Neither '{config['GISAID_YAML']}' or a context FASTA were found (see README.md).")
 else:
     CONTEXT_FASTA = config["CONTEXT_FASTA"]
+
+## Set mapping references to be fetched automatically if CONTEXT_FASTA=null
+if "MAPPING_REFERENCES_FASTA" not in config.keys() or config["MAPPING_REFERENCES_FASTA"] is None:
+    MAPPING_REFERENCES_FASTA = OUTDIR/"mapping_references.fasta"
+    if not Path(config["GISAID_YAML"]).is_file():
+        sys.exit(f"No FASTA with mapping references was found (see README.md).")
+else:
+    MAPPING_REFERENCES_FASTA = config["MAPPING_REFERENCES_FASTA"]
 
 ## Logging
 LOGDIR = OUTDIR / "logs"

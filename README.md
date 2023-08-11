@@ -27,11 +27,13 @@ OUTPUT_DIRECTORY:
   "output"
 CONTEXT_FASTA:
   null
+MAPPING_REFERENCES_FASTA:
+  null
 ```
 
 You may also provide these information through the `--config` parameter.
 
-Setting `CONTEXT_FASTA` to `null` will enable automatic download of sequences
+Setting `CONTEXT_FASTA` to `null` will enable the automatic download of sequences
 from the GISAID SARS-CoV-2 database
 (see [the following section](README.md#context-checkpoints) for further details).
 To enable this, you must provide your GISAID credentials by creating and
@@ -41,6 +43,12 @@ filling an additional configuration file `config/gisaid.yaml` as follows:
 USERNAME: "your-username"
 PASSWORD: "your-password"
 ```
+
+Setting `MAPPING_REFERENCES_FASTA` will enable the automatic download of the
+reference sequence(s) that were used to map the reads and generate the BAM files.
+If the required sequence is not available publically or you already have it
+at your disposal, it may be provided manually by setting the parameter to the
+path of the reference FASTA file.
 
 To run the analysis with the default configuration, just run the following command
 (change the `-c/--cores` argument to use a different number of CPUs):
