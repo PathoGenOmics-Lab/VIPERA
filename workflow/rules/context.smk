@@ -58,7 +58,8 @@ rule mask_context:
         mask_class = ["mask"]
     input:
         fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.fasta",
-        ref_fasta = OUTDIR/"reference.fasta"
+        ref_fasta = OUTDIR/"reference.fasta",
+        vcf = OUTDIR/"problematic_sites.vcf"
     output:
         fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     log:

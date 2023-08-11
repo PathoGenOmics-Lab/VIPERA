@@ -73,7 +73,8 @@ rule mask_tsv:
     params:
          mask_class = ["mask"]
     input: 
-        tsv = OUTDIR/f"{OUTPUT_NAME}.tsv"
+        tsv = OUTDIR/f"{OUTPUT_NAME}.tsv",
+        vcf = OUTDIR / "problematic_sites.vcf"
     output:
         masked_tsv = OUTDIR/f"{OUTPUT_NAME}.masked.tsv"
     log:
