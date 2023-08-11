@@ -26,3 +26,9 @@ DIVERSITY_BOOTSTRAP_REPS:
   1000
 LOG_PY_FMT:
   "%(asctime)s - %(name)s - %(levelname)-8s - %(message)s"
+PLOTS:
+  "config/design_plots.R"
+NSP:
+  "data/report_files/nsp_annotation.csv"
+REPORT_QMD:
+  "template.qmd"
