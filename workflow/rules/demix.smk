@@ -4,7 +4,7 @@ rule demix_preprocessing:
     shadow: "minimal"
     input:
         bam = get_input_bam,
-        ref_fasta = OUTDIR/"mapping_references.fasta"
+        ref_fasta = MAPPING_REFERENCES_FASTA
     params:
         minq = config["DEMIX"]["MIN_QUALITY"]
     output:

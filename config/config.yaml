@@ -2,8 +2,6 @@ OUTPUT_NAME:
   "case_study"
 ALIGNMENT_REFERENCE:
   "NC_045512.2"
-MAPPING_REFERENCES:
-  ["NC_045512.2", "MN908947.3"]
 PROBLEMATIC_VCF_URL:
   "https://raw.githubusercontent.com/W-L/ProblematicSites_SARS-CoV2/da322c32004f7b16bdaa6a8ee7fd24d56e79d9dc/problematic_sites_sarsCov2.vcf"
 TREE_MODEL:

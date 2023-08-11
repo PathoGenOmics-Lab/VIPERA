@@ -22,7 +22,7 @@ rule download_context:
         chunk_length = 3000,
         min_theoretical_combinations = config["DIVERSITY_BOOTSTRAP_REPS"]
     output:
-        fasta = temp(OUTDIR/"context"/"sequences.fasta"),
+        fasta = temp(CONTEXT_FASTA),
         metadata = temp(OUTDIR/"context"/"metadata.csv"),
         duplicate_accids = OUTDIR/"context"/"duplicate_accession_ids.txt"
     log:
