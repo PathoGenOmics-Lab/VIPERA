@@ -19,7 +19,7 @@ def get_input_fasta(wildcards):
 def get_version_str(base_dir: str) -> str:
     try:
         last_tag_description = subprocess.check_output(
-            ["git", f"--git-dir={base_dir}/.git", "describe", "--always"],
+            f"git --git-dir={base_dir}/.git describe --always",
             shell=True
         ).strip().decode("utf-8")
     except subprocess.CalledProcessError as e:
