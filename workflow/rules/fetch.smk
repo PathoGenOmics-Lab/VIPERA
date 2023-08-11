@@ -41,3 +41,15 @@ rule fetch_alignment_annotation:
         LOGDIR / "fetch_alignment_annotation" / "log.txt"
     shell:
         "curl 'https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=gff3&id={params.ref}' -o {output} -s 2>{log}"
+
+
+rule fetch_problematic_vcf:
+    threads: 1
+    params:
+        url = config["PROBLEMATIC_VCF_URL"]
+    log:
+        LOGDIR / "fetch_problematic_vcf" / "log.txt"
+    output:
+        OUTDIR / "problematic_sites.vcf"
+    shell:
+        "curl {params.url} -o {output} -s 2> {log}"

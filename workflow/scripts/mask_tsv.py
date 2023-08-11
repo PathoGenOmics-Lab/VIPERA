@@ -12,7 +12,7 @@ def parse_vcf():
     Masked sites are specified with params.
     """
     vcf = pd.read_csv(
-        snakemake.config["PROBLEMATIC_VCF"],
+        snakemake.input["vcf"],
         delim_whitespace=True,
         comment="#",
         names=("CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO")

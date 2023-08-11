@@ -49,7 +49,8 @@ rule mask_alignment:
         mask_class = ["mask"]
     input:
         fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.fasta",
-        ref_fasta = OUTDIR/"reference.fasta"
+        ref_fasta = OUTDIR/"reference.fasta",
+        vcf = OUTDIR/"problematic_sites.vcf"
     output:
         fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta"
     log:
