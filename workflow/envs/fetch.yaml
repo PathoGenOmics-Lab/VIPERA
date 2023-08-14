@@ -1,6 +1,5 @@
 channels:
   - bioconda
   - conda-forge
-  - anaconda
 dependencies:
   - entrez-direct==16.2

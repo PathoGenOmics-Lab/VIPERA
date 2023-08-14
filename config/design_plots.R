@@ -1,8 +1,8 @@
 # Jordi Sevilla
 
-library(pacman)
-p_load("tidyverse",
-       "showtext")
+
+library(tidyverse)
+library(showtext)
 
 # Ajustes ####
 showtext_auto(enable = FALSE)

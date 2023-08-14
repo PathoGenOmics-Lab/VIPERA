@@ -15,9 +15,11 @@ format:
     toc-expand: true
     toc-location: left
     toc-title: Summary
+    number-sections: true
 css: config/report.styles.css
 editor: visual
 params:
+  workflow_version: ""
   div: ""
   freyja: ""
   tree: ""
@@ -40,12 +42,15 @@ output-file: report.html
   <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 </head>
 
+> Workflow: `r params$workflow_version`
+
 ```{r , echo= F,message= F, include = F}
 library(gdtools)
+library(jsonlite)
 register_gfont(family = "Montserrat")
 library(flextable)
 library(tidyverse)
-diversity_value = as.numeric(read.csv(params$div_value)[1,1])
+div_values <- fromJSON(params$div_value)
 stats <- read.csv(params$stats_lm)$value
 
 correlation <- as.numeric(stats[2])
@@ -80,39 +85,26 @@ autofit()
 
 
 
-### Freyja output
+### Lineage admixture
 The most probably lineage admixture for each sample has been calculated with software [Freyja](https://github.com/andersen-lab/Freyja).
 
 ![**Figure 1.** Lineage composition of samples according to Freyja. Samples are ordered by collection date.](`r params$freyja`)
 
-### Diversity comparision
+### Nucleotide diversity comparison
 
-The pi value for the studied samples is $`r diversity_value`$.
+Nucleotide diversity is has been calculated for $`r div_values[["boot.reps"]]`$ bootstrap replicates of $`r div_values[["sample.size"]]`$ samples in the context data. The distribution for the nuclotide diversity is assumed to `r div_values[["norm.text"]]` be normal with a p-value = $`r div_values[["normal.pvalue"]]`$ (*Shapiro-test*).
+
+The nucleotide diversity value for the studied samples is $`r div_values[["diversity"]]`$. Assuming the context samples to be patient-independent, the `r div_values[["type.test"]]` p-value for a reduced nucleotide diversity in the studied samples is $`r div_values[["p.value"]]`$.
 
 ![**Figure 2.** Distribution of nucleotide diversity pi for 1000 randomly selected groups from context sequences. Red line indicates the pi value for the studied samples.](`r params$div`)
 
-### phylogeny and temporal signal
+### Phylogeny and temporal signal
 
 A maximum likelihood tree has been adjusted with the context sequences:
 
 ![**Figure 3.** Maximum-likelihood tree whith studied and context sequence. Studied sequence are represented in red.](`r params$tree_ml`)
 
-In addition, phylogeny has been reconstructed using genetic variations in samples following the next equation to compute pairwise distance matrix:
-
-$d(M,N)=\sum_{i=1}^{I} \frac{\sum_{j=1}^{J} (M_{ij} -N_{ij})^2}{4 -\sum_{j=1}^{J} (M_{ij} +N_{ij})^2}$
-
-where:
-
-$M$ y $N$: Two sequences.
-
-$i = 1... I :$ Index over polimorphic sites.
-
-$j = 1... J :$ Index over alleles.
-
-$M_{ij}$ : Frequency of allel $j$ in position $i$ for sequence $M$.
-
-
-With the distance matrix, a neighbour-joining tree has been adjusted:
+In addition, phylogeny has been reconstructed using pairwise distances between target samples taking into account allele frequencies detected in sequencing data.
 
 ![**Figure 4.** Neighbour-joining tree for studied samples.](`r params$tree`)
 
@@ -120,21 +112,27 @@ With the neighbur-joining tree, partistic distances to root has been correlated 
 
 ![**Figure 5.** Partistic distance to root in the neighbour-joining tree against days since first sample. Red line indicates the adjusted linear regression model.](`r params$tempest`)
 
-## Evolution
+## Characterizing within-host evolution
 
-### Description for NV 
+### Number of polimorphic sites
+
+Sites with minor allele frequency > 0.05  are considered as polimorphic sites.
 
 ![**Figure 6.** Number of polimorphisms over time for the studied samples.](`r params$fig_cor_snp`)
 
-`r n_SNV` different SNV and `r n_INDELS` INDELS had been detected along the genome.
+### Description for within-host nucleotide variants 
+
+`r n_SNV` different SNV and `r n_INDELS` INDELS had been detected along the genome. In the **Figure 7** is shown their distribution along the genome and the variation in allele frequencies in the studied samples.
 
 ![**Figure 7.** A\) Proportion of polimorphic sites along the genome calculated with 1000nt windows. B\) Nucleotide variants (NV) in the genomes of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV`)
 
-The correlation with time for the SNVs detected is represented in the following plot:
+### time dependency for the within-host nucleotide variants
+
+The correlation with time is calculated for the allele frequency of each NV.
 
 ![**Figure 8.** *Pearson* r and adjusted p-value (-log10) for the correlation with time for each SNV. Red line indicates a p-value of 0.05.](`r params$volcano`)
 
-The significant correlated SNVs are swown in detail:
+The significant correlated NV are swown in detail:
 
 ![**Figure 9.** Trend over time for the significantly correlated with time SNVs and for positions with more than 1 alternative allele. ](`r params$panel`)
 

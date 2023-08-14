@@ -1,5 +1,6 @@
 rule snps_to_ancestor:
     threads: 1
+    retries: 3
     shadow: "minimal"
     conda: "../envs/var_calling.yaml"
     params:
@@ -23,8 +24,14 @@ rule snps_to_ancestor:
         exec 2>&1
 
         ref=`samtools view -H {input.bam} | grep ^@SQ | cut -d"\t" -f2 | sed 's/SN://g'`
+        echo Reference: $ref
+        echo FASTA before:
+        grep ">" {input.reference_fasta}
         sed 's/>.*/>'$ref'/g' {input.reference_fasta} > renamed_reference.fasta
-
+        echo FASTA after:
+        grep ">" renamed_reference.fasta
+        
+        echo Starting VC
         samtools mpileup \
             -aa \
             --ignore-overlaps \
@@ -73,7 +80,8 @@ rule mask_tsv:
     params:
          mask_class = ["mask"]
     input: 
-        tsv = OUTDIR/f"{OUTPUT_NAME}.tsv"
+        tsv = OUTDIR/f"{OUTPUT_NAME}.tsv",
+        vcf = OUTDIR / "problematic_sites.vcf"
     output:
         masked_tsv = OUTDIR/f"{OUTPUT_NAME}.masked.tsv"
     log:

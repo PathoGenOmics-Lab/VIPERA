@@ -1,29 +1,20 @@
+import sys
 from pathlib import Path
 from snakemake.utils import min_version
+import subprocess
 
-min_version("6.0")
+
+min_version("7.19")
 
 configfile: "config/config.yaml"
 configfile: "config/targets.yaml"
-configfile: "config/report.yaml"
+
+include: "rules/common.smk"
 
 
-def iter_files(file_type: str):
-    for sample_name in config["SAMPLES"].keys():
-        yield config["SAMPLES"][sample_name][file_type]
-
-
-def iter_samples():
-    for sample_name in config["SAMPLES"].keys():
-        yield sample_name
-
-
-def get_input_bam(wildcards):
-    return config["SAMPLES"][wildcards.sample]["bam"]
-
-def get_input_fasta(wildcards):
-    return config["SAMPLES"][wildcards.sample]["fasta"]
-
+# Workflow version
+repo_version = get_version_str('.')
+__version__ = "0.1" + f"(git: {repo_version})"
 
 # Targets
 ## Output
@@ -31,27 +22,30 @@ OUTPUT_NAME = config["OUTPUT_NAME"]
 OUTDIR = Path(config["OUTPUT_DIRECTORY"])
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
-## Context
+## Set context to be fetched automatically if CONTEXT_FASTA=null
 if "CONTEXT_FASTA" not in config.keys() or config["CONTEXT_FASTA"] is None:
     CONTEXT_FASTA = OUTDIR/"context"/"sequences.fasta"
-else:
+    if not Path(config["GISAID_YAML"]).is_file():
+        sys.exit(f"Tried to download a context dataset, but no GISAID credentials were found at '{config['GISAID_YAML']}' (see README.md).")
+elif Path(config["CONTEXT_FASTA"]).is_file():
     CONTEXT_FASTA = config["CONTEXT_FASTA"]
+else:
+    sys.exit(f"No context FASTA file was found at '{config['CONTEXT_FASTA']}' (see README.md).")
 
+## Set mapping references to be fetched automatically if MAPPING_REFERENCES_FASTA=null
+if "MAPPING_REFERENCES_FASTA" not in config.keys() or config["MAPPING_REFERENCES_FASTA"] is None:
+    MAPPING_REFERENCES_FASTA = OUTDIR/"mapping_references.fasta"
+elif Path(config["MAPPING_REFERENCES_FASTA"]).is_file():
+    MAPPING_REFERENCES_FASTA = config["MAPPING_REFERENCES_FASTA"]
+else:
+    sys.exit(f"No mapping references FASTA file was found at '{config['MAPPING_REFERENCES_FASTA']}' (see README.md).")
 
 ## Logging
 LOGDIR = OUTDIR / "logs"
 
-
 ## report
 REPORT_DIR = Path(OUTDIR/"report")
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
-
-# Tree parameters
-ETC_TREE_PARAMS = []
-## UFBoot
-if config["N_UFBOOT"] != 0:
-    ETC_TREE_PARAMS.append(f"-B {config['N_UFBOOT']:d}")
-ETC_TREE_PARAMS = " ".join(ETC_TREE_PARAMS)
 
 
 # Rules
@@ -69,5 +63,4 @@ include: "rules/context.smk"
 
 rule all:
     input:
-        OUTDIR/f"{OUTPUT_NAME}.report.html",
-        OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv"
+        OUTDIR/f"{OUTPUT_NAME}.report.html"

@@ -1,9 +1,5 @@
 channels:
   - conda-forge
-  - anaconda
 dependencies:
-  - biopython
-  - pandas
-  - typing
-  - numpy
-  - joblib
+  - biopython==1.74
+  - pandas==2.0.3

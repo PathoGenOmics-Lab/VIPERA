@@ -20,8 +20,8 @@ DIVERSITY_BOOTSTRAP_REPS:
   10
 PLOTS:
   "../config/design_plots.R"
-PROBLEMATIC_VCF:
-  "../config/problematic_sites_sarsCov2.vcf"
+PROBLEMATIC_VCF_URL:
+  "https://raw.githubusercontent.com/W-L/ProblematicSites_SARS-CoV2/da322c32004f7b16bdaa6a8ee7fd24d56e79d9dc/problematic_sites_sarsCov2.vcf"
 VC:
   MAX_DEPTH: 0
   MIN_QUALITY: 0
@@ -35,4 +35,4 @@ DEMIX:
 NSP:
   "../data/report_files/nsp_annotation.csv"
 REPORT_QMD:
-  "../case_study.report.qmd"
+  "../template.qmd"

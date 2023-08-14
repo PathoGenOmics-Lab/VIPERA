@@ -2,14 +2,14 @@ OUTPUT_NAME:
   "case_study"
 ALIGNMENT_REFERENCE:
   "NC_045512.2"
-MAPPING_REFERENCES:
-  ["NC_045512.2", "MN908947.3"]
-PROBLEMATIC_VCF:
-  "config/problematic_sites_sarsCov2.vcf"
+PROBLEMATIC_VCF_URL:
+  "https://raw.githubusercontent.com/W-L/ProblematicSites_SARS-CoV2/da322c32004f7b16bdaa6a8ee7fd24d56e79d9dc/problematic_sites_sarsCov2.vcf"
 TREE_MODEL:
-  "GTR+G+I"
-N_UFBOOT:
-  0
+  "GTR+F+I+G4"
+UFBOOT_REPS:
+  1000
+SHALRT_REPS:
+  1000
 VC:
   MAX_DEPTH: 0
   MIN_QUALITY: 0
@@ -26,3 +26,9 @@ DIVERSITY_BOOTSTRAP_REPS:
   1000
 LOG_PY_FMT:
   "%(asctime)s - %(name)s - %(levelname)-8s - %(message)s"
+PLOTS:
+  "config/design_plots.R"
+NSP:
+  "data/report_files/nsp_annotation.csv"
+REPORT_QMD:
+  "template.qmd"
