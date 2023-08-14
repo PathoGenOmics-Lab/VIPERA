@@ -117,7 +117,7 @@ ggsave(
 tempest_fig <- ggplot(tempest, aes(x = date_interval, y = distance)) +
   geom_smooth(method = "lm", fill = "gray95", alpha = 0.6, color = "red") +
   geom_point() +
-  labs(y = "Root to tip distance", x = "Time since first sample")
+  labs(y = "Root to tip distance", x = "Time since first sample (Days)")
 
 ggsave(filename = snakemake@output[["temest"]],
   plot = tempest_fig,

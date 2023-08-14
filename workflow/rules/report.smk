@@ -138,7 +138,7 @@ rule summary_table:
 
 
 rule report:
-    conda: "../envs/renv.yaml"
+    conda: "../envs/quarto_render.yaml"
     shadow: "shallow"
     input:
         qmd       = Path(config["REPORT_QMD"]).resolve(),
