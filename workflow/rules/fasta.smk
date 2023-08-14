@@ -1,3 +1,22 @@
+rule read_bam_refs:
+    threads: 1
+    shadow: "minimal"
+    conda: "../envs/var_calling.yaml"
+    input:
+        iter_files("bam")
+    output:
+        temp(OUTDIR / "bam_ids.txt")
+    log:
+        LOGDIR / "read_bam_refs" / "log.txt"
+    shell:
+        """
+        for bam_file in {input:q}; do
+            samtools view -H "$bam_file" | grep ^@SQ | cut -d"\t" -f2 | sed 's/SN://g' >> ids.txt 2>> {log}
+        done
+        sort ids.txt | uniq > {output}
+        """
+
+
 rule rename_fastas:
     input:
         fasta = get_input_fasta
@@ -7,8 +26,7 @@ rule rename_fastas:
         LOGDIR / "rename_fastas" / "{sample}.log.txt"
     shell:
         "sed 's/>.*/>'{wildcards.sample}'/g' {input.fasta} > {output.renamed} 2> {log}"
-        
-        
+
 
 rule concat_fasta:
     threads: 1
@@ -50,7 +68,8 @@ rule mask_alignment:
         mask_class = ["mask"]
     input:
         fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.fasta",
-        ref_fasta = OUTDIR/"reference.fasta"
+        ref_fasta = OUTDIR/"reference.fasta",
+        vcf = OUTDIR/"problematic_sites.vcf"
     output:
         fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta"
     log:

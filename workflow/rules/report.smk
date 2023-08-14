@@ -25,7 +25,7 @@ rule diversity:
         context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     output:
         fig = report((REPORT_DIR/"div.plot.png").resolve()),
-        value = temp((OUTDIR/"our_diversity.txt").resolve())
+        json = temp((OUTDIR/"diversity.json").resolve())
     log:
         LOGDIR / "diversity" / "log.txt"
     script:
@@ -68,13 +68,15 @@ rule general_NV_description:
 
 rule phylo_plots:
     conda: "../envs/renv.yaml"
-    params: 
+    params:
         design = config["PLOTS"],
         metadata = config["METADATA"],
         ref_name = config["ALIGNMENT_REFERENCE"],
-        boot_th = 85,
-        boot_color = "green"
-    input: 
+        boot_th = 95,
+        alrt_th = 80,
+        plot_height_mm = 119.4,
+        plot_width_mm = 159.2
+    input:
         dist = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
         study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
         ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile"
@@ -86,7 +88,7 @@ rule phylo_plots:
     log:
         LOGDIR / "phylo_plots" / "log.txt"
     script:
-        "../scripts/report/pylo.R"
+        "../scripts/report/phylo_plots.R"
 
 
 rule evo_plots:
@@ -120,6 +122,7 @@ rule snp_plots:
     script:
         "../scripts/report/snp_plots.R"
 
+
 rule summary_table:
     conda: "../envs/renv.yaml"
     params:
@@ -133,6 +136,7 @@ rule summary_table:
     script:
         "../scripts/report/summary_table.R"
 
+
 rule report:
     conda: "../envs/renv.yaml"
     shadow: "shallow"
@@ -144,14 +148,16 @@ rule report:
         temest    = report(rules.phylo_plots.output.temest),
         SNV       = report(rules.general_NV_description.output.fig),
         evo       = report(rules.evo_plots.output.plot),
-        value     = rules.diversity.output.value,
-        panel     = report(rules.snp_plots.output.pseudovolcano),
-        volcano   = report(rules.snp_plots.output.snp_panel),
+        value     = rules.diversity.output.json,
+        panel     = report(rules.snp_plots.output.snp_panel),
+        volcano   = report(rules.snp_plots.output.pseudovolcano),
         tree_ml   = report(rules.phylo_plots.output.tree_ml),
         fig_cor   = report(rules.general_NV_description.output.fig_cor),
         stats_lm  = rules.phylo_plots.output.stats_lm,
         table     = rules.summary_table.output.table,
         sum_nv    = rules.general_NV_description.output.summary_nv
+    params:
+        workflow_version = __version__
     output:
         html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
     log:
@@ -160,7 +166,9 @@ rule report:
         """
         set +o pipefail
         Rscript -e 'library(quarto)' -e \"quarto_render(input = '{input.qmd}',\
-                                           execute_params=list(div='{input.diversity}',\
+                                           execute_params=list( \
+                                                       workflow_version='{params.workflow_version}',\
+                                                       div='{input.diversity}',\
                                                        freyja ='{input.freyja}',\
                                                        tree = '{input.tree}',\
                                                        tempest = '{input.temest}',\

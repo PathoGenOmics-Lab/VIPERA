@@ -21,3 +21,7 @@ h1, h2, h3 {
 #quarto-sidebar-toc-left {
   text-align: left;
 }
+
+.header-section-number {
+  color:#000000
+}

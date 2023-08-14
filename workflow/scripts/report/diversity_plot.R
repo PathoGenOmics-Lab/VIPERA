@@ -4,6 +4,7 @@ library(ape)
 library(pegas)
 library(future.apply)
 library(tidyverse)
+library(jsonlite)
 
 # Write stdout and stderr to log file
 log <- file(snakemake@log[[1]], open = "wt")
@@ -40,7 +41,7 @@ study_aln <- study_aln[!startsWith(names(study_aln), snakemake@config[["ALIGNMEN
 
 # Diversity value for our samples
 diversity <- nuc.div(study_aln)
-write.table(data.frame(div = diversity), snakemake@output[["value"]], row.names = F)
+
 
 # Perform bootstrap
 plan(multisession, workers = snakemake@threads)
@@ -64,21 +65,8 @@ p <- data.frame(pi = divs) %>%
   geom_density(aes(x = pi), fill = "#fcbf49", alpha = 0.7, bw = 0.000001, color = "#eae2b7") +
   geom_vline(aes(xintercept = diversity), color = "#d62828") +
   stat_function(fun = dnorm, args = list(mean = mean(divs), sd = sd(divs)), color = "#f77f00") +
-  labs(x = "π", y = "Density") +
-  ggtitle(
-    "Diversity distribution",
-    paste0(
-      "Study π: ", prettyNum(diversity), "\n",
-      "eCDF-estimated p =", prettyNum(pvalue.emp), " (left-tailed)", "\n",
-      "Assumed normal p = ", prettyNum(pvalue.norm), " (left-tailed)", "\n",
-      "Normal distribution: ", st$p.value >= 0.05, " (Shapiro-Wilk test, p = ", prettyNum(st$p.value), ")", "\n",
-      snakemake@params[["bootstrap_reps"]], " reps with size=", length(study_aln)
-    )
-  ) +
-  theme(
-    plot.title = element_text(size = 10),
-    plot.subtitle = element_text(size = 8)
-  )
+  labs(x = "π", y = "Density") 
+
 
 ggsave(
   filename = snakemake@output[["fig"]],
@@ -88,3 +76,19 @@ ggsave(
   units = "mm",
   dpi = 250
 )
+
+# DATA JSON #####
+
+list.div <- list(
+                "diversity" = diversity,
+                "p.value" = ifelse(st$p.value >= 0.05, pvalue.norm,pvalue.emp),
+                "normal.pvalue" = st$p.value,
+                "norm.text" = ifelse(st$p.value >= 0.05, "","not"),
+                "type.test" = ifelse(st$p.value >= 0.05, "","empirical"),
+                "boot.reps" = snakemake@params[["bootstrap_reps"]],
+                "sample.size" = length(study_aln)
+)
+
+json <- toJSON(list.div)
+
+write(json, snakemake@output[["json"]])

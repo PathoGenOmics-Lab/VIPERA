@@ -58,10 +58,44 @@ rule mask_context:
         mask_class = ["mask"]
     input:
         fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.fasta",
-        ref_fasta = OUTDIR/"reference.fasta"
+        ref_fasta = OUTDIR/"reference.fasta",
+        vcf = OUTDIR/"problematic_sites.vcf"
     output:
         fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     log:
         LOGDIR / "mask_context" / "log.txt"
     script:
         "../scripts/mask-aln.py"
+
+
+rule ml_context_tree:
+    threads: 4
+    conda: "../envs/iqtree.yaml"
+    shadow: "shallow"
+    params:
+        seqtype = "DNA",
+        name = OUTPUT_NAME,
+        ufboot = config["UFBOOT_REPS"],
+        alrt = config["SHALRT_REPS"],
+        outgroup = config["ALIGNMENT_REFERENCE"],
+        model = config["TREE_MODEL"]
+    input:
+        fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
+        outgroup_aln = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
+    output:
+        folder = directory(OUTDIR/"tree_context"),
+        ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile"
+    log:
+        LOGDIR / "ml_context_tree" / "log.txt"
+    shell:
+        """
+        exec >{log}                                                                    
+        exec 2>&1
+        
+        awk '/^>/{{p=seen[$0]++}}!p' {input.fasta} {input.outgroup_aln} > aln.fasta
+        mkdir -p {output.folder}
+        iqtree2 \
+            -B {params.ufboot} -alrt {params.alrt} \
+            -o {params.outgroup} -T AUTO --threads-max {threads} -s aln.fasta \
+            --seqtype {params.seqtype} -m {params.model} --prefix {output.folder}/{params.name}
+        """
