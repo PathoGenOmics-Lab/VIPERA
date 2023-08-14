@@ -45,11 +45,11 @@ output-file: report.html
 > Workflow: `r params$workflow_version`
 
 ```{r , echo= F,message= F, include = F}
-library(gdtools)
 library(jsonlite)
-register_gfont(family = "Montserrat")
-library(flextable)
-library(tidyverse)
+library(gt)
+library(tidyr)
+library(dplyr)
+
 div_values <- fromJSON(params$div_value)
 stats <- read.csv(params$stats_lm)$value
 
@@ -70,16 +70,26 @@ n_INDELS <- as.numeric(counts[counts$nv == "INDEL","n"])
 
 ## Samples summary
 ```{r, echo= F,message= F}
-flextable(table) %>%
-set_header_labels(
-  "Sample" = "Sample",
-  "Collection_Date" = "Collection Date",
-  "Lineaje" = "Lineaje"
+gt(table) %>%
+cols_label(
+  Sample = "Sample",
+  Collection_Date = "Collection Date",
+  Lineage = "Lineage"
 ) %>%
-bold(i = 1, bold = TRUE, part = "header") %>%
-flextable::align(align = "center") %>% 
-font(fontname = "Montserrat", part = "all") %>%
-autofit()
+tab_style(
+  style = list(
+    cell_text(weight = "bold")
+  ),
+  location = cells_column_labels()
+) %>%
+cols_align(
+  align = "center",
+  columns = everything()
+) %>% 
+opt_table_font(
+  font = google_font("Montserrat")
+)
+
 ```
 ## Evidence for chronic infection 
 

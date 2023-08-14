@@ -7,7 +7,6 @@ dependencies:
   - r-ggrepel==0.9.3
   - r-quarto==1.2
   - r-stringi==1.7.12
-  - r-flextable==0.9.1
   - r-ggpubr==0.6.0
   - bioconductor-ggtree==3.2.0
   - r-ape==5.7
@@ -18,4 +17,4 @@ dependencies:
   - r-future.apply==1.11.0
   - r-scales==1.2.1
   - r-showtext==0.9_6
-  - r-gdtools==0.3.3
+  - r-jsonlite==1.8.5
