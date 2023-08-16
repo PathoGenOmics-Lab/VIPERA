@@ -1,5 +1,7 @@
 channels:
   - conda-forge
 dependencies:
-  - biopython==1.74
+  - python==3.10
+  - biopython==1.81
   - pandas==2.0.3
+  - pip==23.2.1
