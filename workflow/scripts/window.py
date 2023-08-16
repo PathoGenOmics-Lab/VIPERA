@@ -9,6 +9,7 @@ from gb2seq.features import Features
 
 replace_terry = {
     "ORF1ab polyprotein": "orf1ab",
+    "ORF1a polyprotein": "orf1ab",
     "surface glycoprotein": "S",
     "ORF3a protein": "ORF3a",
     "envelope protein": "E",
