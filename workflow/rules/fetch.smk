@@ -11,6 +11,20 @@ rule fetch_alignment_reference:
         "esearch -db nucleotide -query {params.ref} | efetch -format fasta > {output.fasta} 2> {log}"
 
 
+rule fetch_alignment_gb:
+    threads: 1
+    conda: "../envs/fetch.yaml"
+    params:
+        ref = config["ALIGNMENT_REFERENCE"]
+    output:
+        fasta = OUTDIR/"reference.gb"
+    log:
+        LOGDIR / "fetch_alignment_reference" / "log.txt"
+    shell:
+        "esearch -db nucleotide -query {params.ref} | efetch -format gb > {output.fasta} 2> {log}"
+
+
+
 rule fetch_mapping_references:
     threads: 1
     conda: "../envs/fetch.yaml"

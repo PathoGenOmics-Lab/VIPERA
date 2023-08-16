@@ -25,13 +25,6 @@ theme_update(text = element_text(size = 16,  family = "Montserrat"),
 
 # AJUSTES ####
 
-lineage_colors = c(B.1 = "#5CC7B2",
-                   B.1.165 = "#DB3A34",
-                   B.1.239 = "#E6913A",
-                   B.1.238= "#FBD966",
-                   B.1.399 = "#935FCA",
-                   B.1.400 = "#D5A6BD",
-                   Other = "gray39")
 
 gene_colors = c(M = "#B4D4B4",
                 N = "#B7B7B8",
@@ -41,7 +34,7 @@ gene_colors = c(M = "#B4D4B4",
                 S = "#F5CC9E",
                 E = "#B2E1EA",
                 ORF6 = "#F0D474",
-                ORF7a = "#AA88CB",
+                ORF7 = "#AA88CB",
                 ORF10 = "#CACB5D")
 
 snp_colors = c("C-26029-A" = "#e69138",

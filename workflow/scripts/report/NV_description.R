@@ -29,7 +29,7 @@ SCov2_annotation = list(
   "Intergenic_5"    = c(27192:27201),
   "ORF6"            = c(27202:27387),
   "Intergenic_6"    = c(27388:27393),
-  "ORF7a"           = c(27394:27759),
+  "ORF7"            = c(27394:27759),
   "Intergenic_7"    = c(27760:27893),
   "ORF8"            = c(27894:28259),
   "Intergenic_8"    = c(28260:28273),
@@ -37,32 +37,6 @@ SCov2_annotation = list(
   "Intergenic_9"    = c(29534:29557),
   "ORF10"           = c(29558:29674),
   "three_prime_UTR" = c(29675:29903))
-
-dic = data.frame(pos = c(1:29903))
-
-# Generar un df con la anotación para cada posición
-gene = c()
-for (pos in c(1:29903)){
-  for (name in names(SCov2_annotation)){
-    annotated = F
-    if (pos %in% SCov2_annotation[[name]] & !annotated){
-      gene <- c(gene,name)
-      annotated = T
-      break
-      
-    } 
-    
-  }
-  if (!annotated ){
-    gene = c(gene,"Intergenic")
-  }
-}
-
-dic["gene"] <- gene
-
-dic <- mutate(dic, gene = case_when(str_detect(gene,"prime") | str_detect(gene,"Inter") ~ "Intergenic",
-                                    T ~ gene))
-
 
 
 # DATOS ####
@@ -105,7 +79,7 @@ vcf <- vcf %>%
                            T ~ synonimous),
          POS = as.numeric(POS)) %>%
   rowwise() %>%
-  mutate( gene = as.character(dic[dic$pos == POS,"gene"]), # Anotación
+  mutate( gene = as.character(window[window$position == POS,"gen"]), # Anotación
           indel_len = case_when(SNP_class == "INDEL" & str_detect(SNP,fixed("--")) ~ str_length(strsplit(SNP,"--")[[1]][2]) -1, # Longitud de los INDELS
                                 SNP_class == "INDEL" & str_detect(SNP,fixed("-+")) ~ str_length(strsplit(SNP,"-+")[[1]][2]) -1),
           indel_class = case_when(gene == "Intergenic" ~ "Intergenic",  # Clasificación de los indels

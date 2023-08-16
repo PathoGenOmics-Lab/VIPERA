@@ -1,22 +1,24 @@
 #!/usr/bin/env python3
+
+
+
 import logging
 import pandas as pd
+from gb2seq.features import Features
 
 
-SCov2_annotation = {
-    # "SCov2_genome"    : [1, 29903],
-    "five_prime_UTR"  : [    1,   265],
-    "orf1ab"          : [  266, 21555],
-    "S"               : [21563, 25384],
-    "ORF3a"           : [25393, 26220],
-    "E"               : [26245, 26472],
-    "M"               : [26523, 27191],
-    "ORF6"            : [27202, 27387],
-    "ORF7a"           : [27394, 27759],
-    "ORF8"            : [27894, 28259],
-    "N"               : [28274, 29533],
-    "ORF10"           : [29558, 29674],
-    "three_prime_UTR" : [29675, 29903]
+replace_terry = {
+    "ORF1ab polyprotein": "orf1ab",
+    "surface glycoprotein": "S",
+    "ORF3a protein": "ORF3a",
+    "envelope protein": "E",
+    "membrane glycoprotein": "M",
+    "ORF6 protein": "ORF6",
+    "ORF7a protein": "ORF7",
+    "ORF7b": "ORF7",
+    "ORF8 protein": "ORF8",
+    "nucleocapsid phosphoprotein": "N",
+    "ORF10 protein": "ORF10"
 }
 
 
@@ -25,14 +27,20 @@ def get_polimorphic_sites(df):
 
 
 def window_calculation(sites, step, genome_size, coord):
+
+    ft = Features(coord)
+    
     positions = []
     pct = []
     genes = []
     lim_sup = genome_size + 1
     for position in range(1, lim_sup):
         # Add gene
-        gene = coord[position]
-        genes.append(gene)
+        if len(ft.getFeatureNames(position)) == 0:
+            genes.append("Intergenic")
+        else:
+            genes.append(list(ft.getFeatureNames(position))[0])
+    
         # Add percent (excluding initial and final positions)
         if position - step not in range(1, lim_sup):
             pct.append(0)
@@ -51,16 +59,11 @@ def window_calculation(sites, step, genome_size, coord):
 def main():
     logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
 
-    # Diccionario con relación coordenada --> gen
-    coord2gene = {i : "intergenic" for i in range(1, 29903 + 1)}
-    for gene in SCov2_annotation:
-        start, end = SCov2_annotation[gene]
-        for i in range(start, end + 1):
-            coord2gene[i] = gene
     # Process
     df = pd.read_table(snakemake.input.vcf)    
     sites = get_polimorphic_sites(df)
-    frame = window_calculation(sites, snakemake.params.step, 29903, coord2gene)
+    frame = window_calculation(sites, snakemake.params.step, 29903, snakemake.input.gb)
+    frame.replace(replace_terry, inplace = True)
     frame.to_csv(snakemake.output.window_df)
 
 
