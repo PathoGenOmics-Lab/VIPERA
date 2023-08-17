@@ -25,6 +25,7 @@ params:
   tree: ""
   tempest: ""
   SNV: ""
+  SNV_s: ""
   evo: ""
   div_value: ""
   panel: ""
@@ -134,7 +135,15 @@ Sites with minor allele frequency > 0.05  are considered as polimorphic sites.
 
 `r n_SNV` different SNV and `r n_INDELS` INDELS had been detected along the genome. In the **Figure 7** is shown their distribution along the genome and the variation in allele frequencies in the studied samples.
 
-![**Figure 7.** A\) Proportion of polimorphic sites along the genome calculated with 1000nt windows. B\) Nucleotide variants (NV) in the genomes of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV`)
+::: {.panel-tabset}
+
+## Whole genome
+![**Figure 7a.** A\) Proportion of polimorphic sites along the genome calculated with 1000nt windows. B\) Nucleotide variants (NV) in the genomes of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV`)
+
+## Spike sequence
+
+![**Figure 7b.** A\) Proportion of polimorphic sites along the spike nucleotide sequence calculated with 1000nt windows. B\) Nucleotide variants (NV) in the spike sequences of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV_s`)
+:::
 
 ### time dependency for the within-host nucleotide variants
 

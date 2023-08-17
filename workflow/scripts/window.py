@@ -65,7 +65,7 @@ def main():
     sites = get_polimorphic_sites(df)
     frame = window_calculation(sites, snakemake.params.step, 29903, snakemake.input.gb)
     frame.replace(replace_terry, inplace = True)
-    frame.to_csv(snakemake.output.window_df)
+    frame.to_csv(snakemake.output.window_df,index= False)
 
 
 if __name__ == "__main__":

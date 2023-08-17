@@ -116,7 +116,8 @@ ggplot() +
   geom_col(data = notation, aes(x = len,y = 0.3, fill = factor(gene,rev(names(SCov2_annotation)))), inherit.aes = F, width = 0.3) +
   scale_fill_manual(values = gene_colors) + 
   xlim(c(0,29903)) + 
-  scale_color_manual(labels = c("Frameshift","Inframe","Intergenic","Non synonymous","Synonymous"), values = c("#568D63","black","#B27CF9","#AE584A","#0248FD")) + 
+  scale_color_manual(labels = NV_names, 
+                    values  = NV_colors) + 
   labs(x = "SARS-CoV-2 genome position", y = "Sample", shape = "Variant class", color = "Classification", alpha = "Frequency", fill = "Region") 
 
 # porcentaje por ventanas
@@ -180,6 +181,55 @@ n_snv <- length(unique(vcf$SNP)) - n_indels
 
 df <- data.frame(nv = c("SNP","INDEL"),n = c(n_snv,n_indels))
 write.csv(df, snakemake@output[["summary_nv"]], row.names = F)
+
+# Zoom in in spike
+spike.pos <- 
+  window %>% 
+  filter(gen == "S") %>% 
+  pull(position)
+
+print(spike.pos)
+
+window_plot_spike <- window %>% 
+      filter(gen == "S") %>% 
+      ggplot() + 
+      aes(x = position, y = fractions, color = gen) + 
+      geom_point() +
+      geom_line(aes(group = 1), colour = "black", alpha = 0.3) +
+      scale_y_continuous(label = scales::percent, limits = c(0,max(window$fractions) + 0.005)) + 
+      xlim(c(min(spike.pos),max(spike.pos))) + 
+      scale_color_manual(values = gene_colors, guide = "none") +
+      labs(y = "Proportion of \n sites with SNV", x = "")
+
+variants_spike <- vcf %>%
+  filter(ALT_FREQ > 0,
+        POS %in% spike.pos) %>%
+  ggplot() + 
+    aes(x = POS, y = factor(REGION,date_order), shape = factor(NV_class,c("SNP","INDEL")), color = group, alpha = ALT_FREQ) +
+    geom_point(size = 3) +  
+    xlim(c(min(spike.pos),max(spike.pos))) + 
+    scale_color_manual(labels = NV_names, 
+                    values  = NV_colors) +
+    labs(x = "SARS-CoV-2 genome position", 
+        y = "Sample", 
+        shape = "Variant class", 
+        color = "Classification", 
+        alpha = "Frequency", 
+        fill = "Region") 
+
+
+figura_spike <- ggarrange(window_plot_spike,
+                variants_spike,nrow = 3,
+                align = "v" ,
+                legend.grob = get_legend(variants)
+                , heights = c(2,6), 
+                legend = "right",
+                labels = c("A","B"))
+
+ggsave(filename = snakemake@output[["fig_s"]], 
+        plot = figura_spike, width=250, 
+        height=240, units="mm", 
+        dpi=250)
 
 print("Saving tables")
 
