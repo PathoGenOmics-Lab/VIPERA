@@ -6,7 +6,7 @@ rule window:
         vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         gb = OUTDIR/"reference.gb"
     output:
-        window_df = temp(OUTDIR/f"{OUTPUT_NAME}.window.csv"),
+        window_df = OUTDIR/f"{OUTPUT_NAME}.window.csv",
     log:
         LOGDIR / "window" / "log.txt"
     script:
@@ -59,7 +59,8 @@ rule general_NV_description:
         window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     output:
-        fig = report((REPORT_DIR_PLOTS/"figure_7.png").resolve()),
+        fig = report((REPORT_DIR_PLOTS/"figure_7a.png").resolve()),
+        fig_s = report((REPORT_DIR_PLOTS/"figure_7b.png").resolve()),
         fig_cor = report((REPORT_DIR_PLOTS/"figure_6.png").resolve()),
         summary_nv = temp((OUTDIR/"summary_nv.csv").resolve()),
         table_1 = report((REPORT_DIR_TABLES/"figure_7a.csv").resolve()),
@@ -156,6 +157,7 @@ rule report:
         tree      = report(rules.phylo_plots.output.tree),
         temest    = report(rules.phylo_plots.output.temest),
         SNV       = report(rules.general_NV_description.output.fig),
+        SNV_spike = report(rules.general_NV_description.output.fig_s),
         evo       = report(rules.evo_plots.output.plot),
         value     = rules.diversity.output.json,
         panel     = report(rules.snp_plots.output.snp_panel),
@@ -182,6 +184,7 @@ rule report:
                                                        tree = '{input.tree}',\
                                                        tempest = '{input.temest}',\
                                                        SNV = '{input.SNV}',\
+                                                       SNV_s = '{input.SNV_spike}',
                                                        evo = '{input.evo}',
                                                        div_value = '{input.value}',
                                                        panel = '{input.panel}',

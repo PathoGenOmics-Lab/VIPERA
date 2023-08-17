@@ -58,3 +58,19 @@ tree_colors = c(
     alrt_pass = "#ffbf51",
     boot_alrt_pass = "red"
 )
+
+NV_colors <- c(
+    Frameshift = "#568D63",
+    "In frame" = "black",
+    Intergenic = "#B27CF9",
+    No = "#AE584A",
+    yes = "#0248FD"
+)
+
+NV_names <- c(
+     Frameshift = "Frameshift",
+    "In frame" = "Inframe",
+    Intergenic = "Intergenic",
+    No = "Non synonymous",
+    yes = "Synonymous"
+)
