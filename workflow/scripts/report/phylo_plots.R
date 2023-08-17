@@ -5,6 +5,7 @@ library(ggtree)
 library(data.table)
 library(ggpubr)
 library(pegas)
+library(jsonlite)
 
 # legend thresholds for ml tree
 legend.names <- c(
@@ -91,20 +92,7 @@ tempest <- adephylo::distRoot(tree, "all", method = "patristic") %>% as.data.fra
                     left_join(select(metadata, ID,CollectionDate)) %>%
                      mutate(date_interval = as.numeric(as.Date(CollectionDate) - min(as.Date(CollectionDate))))
 
-### Datos modelo lineal
-model <- lm(distance ~ date_interval, data = tempest)
 
-df <- data.frame(
-  stat = c("sub_rate", "r2", "pvalue"),
-  values = c(
-    model$coefficients[[2]],
-    summary(model)$r.squared[[1]],
-    cor.test(tempest$distance, tempest$date_interval)$p.value
-  )
-)
-
-df <- column_to_rownames(df, var = "stat")
-write.csv(df, snakemake@output[["stats_lm"]], row.names = FALSE)
 
 # FIGURAS ####
 # Árbol por distancias ponderadas
@@ -205,3 +193,19 @@ tempest %>%
     DaysSinceFirst = date_interval
   ) %>% 
   write.csv(snakemake@output[["table"]], row.names = F)
+
+  print("saving stats")
+
+  ## Datos modelo lineal
+model <- lm(distance ~ date_interval, data = tempest)
+
+stats.lm <- list(
+  "sub_rate" = model$coefficients[[2]]*365,
+  "r2"       = summary(model)$r.squared[[1]],
+  "pvalue"   = cor.test(tempest$distance, tempest$date_interval)$p.value
+)
+
+json <- toJSON(stats.lm)
+
+write(json, snakemake@output[["json"]])
+

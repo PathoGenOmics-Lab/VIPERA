@@ -56,21 +56,25 @@ library(readr)
 
 # values for diversity
 div_values <- fromJSON(params$div_value)
-stats <- read.csv(params$stats_lm)$value
+
 
 # values for temp-est
-correlation <- as.numeric(stats[2])
-sub_rate <- as.numeric(stats[1])*365
-sub_rate <- round(sub_rate, digits = 2)
-p_value_lm <- as.numeric(stats[3])
-table <- read.csv(params$table)
 
+stats <- fromJSON(params$stats_lm)
+
+correlation <- stats[["r2"]]
+sub_rate <- stats[["sub_rate"]]
+sub_rate <- round(sub_rate, digits = 2)
+p_value_lm <- stats[["pvalue"]]
 
 # NV counts 
-counts <- read.csv(params$sum_nv)
+nv.counts <- fromJSON(params$sum_nv)
 
-n_SNV <- as.numeric(counts[counts$nv == "SNP","n"])
-n_INDELS <- as.numeric(counts[counts$nv == "INDEL","n"])
+n_SNV <- nv.counts[["SNV"]]
+n_INDELS <- nv.counts[["INDELS"]]
+
+# Summary table
+table <- read.csv(params$table)
 
 # heatmap
 
@@ -147,7 +151,7 @@ Sites with minor allele frequency > 0.05  are considered as polimorphic sites.
 
 ### Description for within-host nucleotide variants 
 
-`r n_SNV` different SNV and `r n_INDELS` INDELS had been detected along the genome. In the **Figure 7** is shown their distribution along the genome and the variation in allele frequencies in the studied samples.
+`r n_SNV` different SNV and `r n_INDELS` INDELS had been detected along the genome. In the **Figure 7a** is shown their distribution along the genome and the variation in allele frequencies in the studied samples.
 
 ::: {.panel-tabset}
 

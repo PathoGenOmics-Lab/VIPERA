@@ -75,7 +75,7 @@ rule general_NV_description:
         fig = report((REPORT_DIR_PLOTS/"figure_7a.png").resolve()),
         fig_s = report((REPORT_DIR_PLOTS/"figure_7b.png").resolve()),
         fig_cor = report((REPORT_DIR_PLOTS/"figure_6.png").resolve()),
-        summary_nv = temp((OUTDIR/"summary_nv.csv").resolve()),
+        json = temp((OUTDIR/"summary_nv.json").resolve()),
         table_1 = report((REPORT_DIR_TABLES/"figure_7a.csv").resolve()),
         table_2 = report((REPORT_DIR_TABLES/"figure_7b.csv").resolve()),
         table_3 = report((REPORT_DIR_TABLES/"figure_6.csv").resolve())
@@ -104,7 +104,7 @@ rule phylo_plots:
         tree = report((REPORT_DIR_PLOTS/"figure_4.png").resolve()),
         tree_ml = report((REPORT_DIR_PLOTS/"figure_3.png").resolve()),
         table = report((REPORT_DIR_TABLES/"figure_5.csv").resolve()),
-        stats_lm = temp((OUTDIR/"stats.lm.csv").resolve())
+        json = temp((OUTDIR/"stats.lm.json").resolve())
     log:
         LOGDIR / "phylo_plots" / "log.txt"
     script:
@@ -177,9 +177,9 @@ rule report:
         volcano   = report(rules.snp_plots.output.pseudovolcano),
         tree_ml   = report(rules.phylo_plots.output.tree_ml),
         fig_cor   = report(rules.general_NV_description.output.fig_cor),
-        stats_lm  = rules.phylo_plots.output.stats_lm,
+        stats_lm  = rules.phylo_plots.output.json,
         table     = rules.summary_table.output.table,
-        sum_nv    = rules.general_NV_description.output.summary_nv,
+        sum_nv    = rules.general_NV_description.output.json,
         heat_table= rules.heatmap.output.table
     params:
         workflow_version = __version__
