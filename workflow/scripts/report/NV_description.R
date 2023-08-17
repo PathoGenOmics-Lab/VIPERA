@@ -2,6 +2,7 @@
 library(tidyverse)
 library(stringi)
 library(ggpubr)
+library(jsonlite)
 
 # Write stdout and stderr to log file
 log <- file(snakemake@log[[1]], open = "wt")
@@ -175,13 +176,6 @@ ggsave(filename = snakemake@output[["fig_cor"]],
         dpi=250)
 
 # TABLA ####
-
-n_indels <- filter(vcf, NV_class == "INDEL") %>% length()
-n_snv <- length(unique(vcf$SNP)) - n_indels
-
-df <- data.frame(nv = c("SNP","INDEL"),n = c(n_snv,n_indels))
-write.csv(df, snakemake@output[["summary_nv"]], row.names = F)
-
 # Zoom in in spike
 spike.pos <- 
   window %>% 
@@ -276,3 +270,17 @@ vcf_snp %>%
   ungroup() %>% 
   rename(sample = REGION) %>% 
   write.csv(snakemake@output[["table_3"]], row.names = FALSE)
+
+  print("saving stats")
+
+n_indels <- filter(vcf, NV_class == "INDEL") %>% length()
+n_snv <- length(unique(vcf$SNP)) - n_indels
+
+nv.stats.list = list(
+  "INDELS" = n_indels,
+  "SNV" = n_snv
+)
+
+json <- toJSON(nv.stats.list)
+
+write(json, snakemake@output[["json"]])
