@@ -51,3 +51,10 @@ snp_colors = c("C-26029-A" = "#e69138",
                ,"C-4230-T" = "#93c47d",
                "Other" = "gray40")
 
+
+tree_colors = c(
+    tip_label = "blue",
+    Bootstrap_pass = "#ff6600",
+    alrt_pass = "#ffbf51",
+    boot_alrt_pass = "red"
+)
