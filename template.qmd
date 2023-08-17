@@ -171,6 +171,8 @@ The significant correlated NV are swown in detail:
 
 ### Correlation between alternative alleles
 
+To see posible interactions between mutations, pairwise correlation between the alternative frequencies are calculated.
+
 ```{r, echo= F,message= F, fig.align='center', fig.height= 150, fig.width= 180}
 
 heatmaply_cor(
@@ -180,7 +182,7 @@ heatmaply_cor(
   column_text_angle = 90)
 
 ```
-![**Figure 10.** Heatmap for correlation between alternative alleles.]()
+![**Figure 10.** Heatmap for pairwise correlation between frquencies for alternative alleles.]()
 
 ### dn/ds over time
 
