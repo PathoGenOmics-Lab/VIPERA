@@ -1,3 +1,16 @@
+rule heatmap:
+    conda: "../envs/renv.yaml"
+    params:
+        metadata = config["METADATA"]
+    input:
+        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
+    output:
+        table = report((REPORT_DIR_TABLES/"figure_10.csv").resolve())
+    log:
+        LOGDIR / "heatmap" / "log.txt"
+    script:
+        "../scripts/report/heatmap.R"
+
 rule window:
     conda: "../envs/biopython.yaml"
     params:
@@ -107,8 +120,8 @@ rule evo_plots:
         N_S = OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv",
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     output:
-        plot = report((REPORT_DIR_PLOTS/"figure_10.png").resolve()),
-        table = report((REPORT_DIR_TABLES/"figure_10.csv").resolve())
+        plot = report((REPORT_DIR_PLOTS/"figure_11.png").resolve()),
+        table = report((REPORT_DIR_TABLES/"figure_11.csv").resolve())
     log:
         LOGDIR / "evo_plots" / "log.txt"
     script:
@@ -166,7 +179,8 @@ rule report:
         fig_cor   = report(rules.general_NV_description.output.fig_cor),
         stats_lm  = rules.phylo_plots.output.stats_lm,
         table     = rules.summary_table.output.table,
-        sum_nv    = rules.general_NV_description.output.summary_nv
+        sum_nv    = rules.general_NV_description.output.summary_nv,
+        heat_table= rules.heatmap.output.table
     params:
         workflow_version = __version__
     output:
@@ -193,6 +207,7 @@ rule report:
                                                        fig_cor_snp = '{input.fig_cor}',
                                                        stats_lm = '{input.stats_lm}',
                                                        table = '{input.table}',
-                                                       sum_nv = '{input.sum_nv}'))\" >{log} 2>&1
+                                                       sum_nv = '{input.sum_nv}',
+                                                       heat_tab = '{input.heat_table}'))\" >{log} 2>&1
         mv "$(dirname {input.qmd:q})/report.html" {output.html}
         """

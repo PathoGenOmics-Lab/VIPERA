@@ -35,6 +35,7 @@ params:
   stats_lm: ""
   table: ""
   sum_nv: ""
+  heat_tab: ""
 output-file: report.html
 ---
 <head>
@@ -50,10 +51,14 @@ library(jsonlite)
 library(gt)
 library(tidyr)
 library(dplyr)
+library(heatmaply)
+library(readr)
 
+# values for diversity
 div_values <- fromJSON(params$div_value)
 stats <- read.csv(params$stats_lm)$value
 
+# values for temp-est
 correlation <- as.numeric(stats[2])
 sub_rate <- as.numeric(stats[1])*365
 sub_rate <- round(sub_rate, digits = 2)
@@ -66,6 +71,15 @@ counts <- read.csv(params$sum_nv)
 
 n_SNV <- as.numeric(counts[counts$nv == "SNP","n"])
 n_INDELS <- as.numeric(counts[counts$nv == "INDEL","n"])
+
+# heatmap
+
+vcf <- read_csv(params$heat_tab) 
+row.names(vcf) <- vcf$`...1`
+vcf <- vcf[-1]
+
+
+cor.mat <- cor(vcf)
 
 ```
 
@@ -145,7 +159,7 @@ Sites with minor allele frequency > 0.05  are considered as polimorphic sites.
 ![**Figure 7b.** A\) Proportion of polimorphic sites along the spike nucleotide sequence calculated with 1000nt windows. B\) Nucleotide variants (NV) in the spike sequences of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV_s`)
 :::
 
-### time dependency for the within-host nucleotide variants
+### Time dependency for the within-host nucleotide variants
 
 The correlation with time is calculated for the allele frequency of each NV.
 
@@ -155,9 +169,22 @@ The significant correlated NV are swown in detail:
 
 ![**Figure 9.** Trend over time for the significantly correlated with time SNVs and for positions with more than 1 alternative allele. ](`r params$panel`)
 
+### Correlation between alternative alleles
+
+```{r, echo= F,message= F, fig.align='center', fig.height= 150, fig.width= 180}
+
+heatmaply_cor(
+  cor.mat,
+  fontsize_row = 8, 
+  fontsize_col = 8,
+  column_text_angle = 90)
+
+```
+![**Figure 10.** Heatmap for correlation between alternative alleles.]()
+
 ### dn/ds over time
 
-![**Figure 10.** Sinonymous mutations per sinonymous site **(dS)** and non sinonymous mutations mutations per non sinonymous site **(dN)** over time. The values are adjusted by the allele frequency.](`r params$evo`)
+![**Figure 11.** Sinonymous mutations per sinonymous site **(dS)** and non sinonymous mutations mutations per non sinonymous site **(dN)** over time. The values are adjusted by the allele frequency.](`r params$evo`)
 
 
 
