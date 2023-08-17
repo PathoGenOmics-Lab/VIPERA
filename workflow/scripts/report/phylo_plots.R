@@ -6,6 +6,16 @@ library(data.table)
 library(ggpubr)
 library(pegas)
 
+# legend thresholds for ml tree
+legend.names <- c(
+    tip_label = "Studied samples",
+    Bootstrap_pass = sprintf("bootstrap >= %s",snakemake@params[["boot_th"]]),
+    alrt_pass = sprintf("aLRT >= %s",snakemake@params[["alrt_th"]]),
+    boot_alrt_pass = sprintf("bootstrap >= %s & aLRT >= %s ",snakemake@params[["boot_th"]],snakemake@params[["alrt_th"]] )
+)
+
+
+
 # Write stdout and stderr to log file
 log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
@@ -128,7 +138,7 @@ ggsave(filename = snakemake@output[["temest"]],
 )
 
 # ML tree para el contexto
-tip.color <- ifelse(tree_ml$tip.label %in% study_names, "blue", NA)
+tip.color <- ifelse(tree_ml$tip.label %in% study_names, "tip_label", NA)
 
 # Node labels contain SH-aLRT/UFboot values
 aLRT.values <- sapply(
@@ -147,19 +157,34 @@ aLRT.mask <- aLRT.values >= snakemake@params[["alrt_th"]]
 boot.mask <- bootstrap.values >= snakemake@params[["boot_th"]]
 
 node.color <- case_when(
-  aLRT.mask & boot.mask ~ "red",
-  !aLRT.mask & boot.mask ~ "#ff6600",
-  aLRT.mask & !boot.mask ~ "#ffbf51"
+  aLRT.mask & boot.mask ~ "boot_alrt_pass",
+  !aLRT.mask & boot.mask ~ "Bootstrap_pass",
+  aLRT.mask & !boot.mask ~ "alrt_pass"
 )
+
 
 study.mrca <- getMRCA(tree_ml, study_names)
 p <- ggtree(tree_ml, layout = "circular") +
           geom_highlight(node = study.mrca, colour = "red", fill = "red", alpha = 0.2) +
-          geom_tippoint(color = tip.color, shape = 1) +
+          geom_point(
+            aes(
+              color = c(tip.color,node.color), 
+              shape = c(rep("tip",length(tree_ml$tip.label)),rep("node",length(tree_ml$node.label)))
+              ),
+              show.legend = T
+              ) +
           geom_treescale(x = 0.0008) +
           geom_rootedge(0.0005) +
-          xlim(-0.0008, NA) +
-          geom_nodepoint(color = node.color, shape = 20)
+          xlim(-0.0008, NA) + 
+          scale_shape_manual(values = c(
+            tip = 1,
+            node = 20
+          ), guide = "none") + 
+          labs(color = "Class") + 
+          scale_color_manual(values = tree_colors,
+                            na.value = NA,
+                            labels = legend.names
+          )
 
 ggsave(
   filename = snakemake@output[["tree_ml"]],
