@@ -9,7 +9,7 @@ rule weighted_distances:
         tsv = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         vcf = OUTDIR/"problematic_sites.vcf"
     output:
-        distances = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv"
+        distances = REPORT_DIR_TABLES/f"figure_4.csv"
     log:
         LOGDIR / "weighted_distances" / "log.txt"
     script:

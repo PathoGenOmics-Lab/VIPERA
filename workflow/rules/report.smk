@@ -19,7 +19,7 @@ rule window:
         vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         gb = OUTDIR/"reference.gb"
     output:
-        window_df = OUTDIR/f"{OUTPUT_NAME}.window.csv",
+        window_df = temp(OUTDIR/f"{OUTPUT_NAME}.window.csv"),
     log:
         LOGDIR / "window" / "log.txt"
     script:
@@ -96,7 +96,7 @@ rule phylo_plots:
         plot_height_mm = 119.4,
         plot_width_mm = 159.2
     input:
-        dist = OUTDIR/f"{OUTPUT_NAME}.weighted_distances.csv",
+        dist = REPORT_DIR_TABLES/f"figure_4.csv",
         study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
         ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile"
     output:
