@@ -6,7 +6,7 @@ rule window:
         vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         gb = OUTDIR/"reference.gb"
     output:
-        window_df = OUTDIR/f"{OUTPUT_NAME}.window.csv",
+        window_df = temp(OUTDIR/f"{OUTPUT_NAME}.window.csv"),
     log:
         LOGDIR / "window" / "log.txt"
     script:
@@ -25,7 +25,7 @@ rule diversity:
         study_fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
         context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     output:
-        fig = report((REPORT_DIR/"div.plot.png").resolve()),
+        fig = report((REPORT_DIR_PLOTS/"figure_2.png").resolve()),
         json = temp((OUTDIR/"diversity.json").resolve())
     log:
         LOGDIR / "diversity" / "log.txt"
@@ -41,7 +41,8 @@ rule freyja_plot:
     input:
         summary_demixing =  OUTDIR/"summary_freyja_demixing.csv"
     output:
-        fig = report((REPORT_DIR/"freyja.plot.png").resolve())
+        fig = report((REPORT_DIR_PLOTS/"figure_1.png").resolve()),
+        table = report((REPORT_DIR_TABLES/"figure_1.csv").resolve())
     log:
         LOGDIR / "freyja_plot" / "log.txt"
     script:
@@ -58,9 +59,12 @@ rule general_NV_description:
         window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     output:
-        fig = report((REPORT_DIR/"NV.description.png").resolve()),
-        fig_cor = report((REPORT_DIR/"cor_snp_time.png").resolve()),
-        summary_nv = temp((OUTDIR/"summary_nv.csv").resolve())
+        fig = report((REPORT_DIR_PLOTS/"figure_7.png").resolve()),
+        fig_cor = report((REPORT_DIR_PLOTS/"figure_6.png").resolve()),
+        summary_nv = temp((OUTDIR/"summary_nv.csv").resolve()),
+        table_1 = report((REPORT_DIR_TABLES/"figure_7a.csv").resolve()),
+        table_2 = report((REPORT_DIR_TABLES/"figure_7b.csv").resolve()),
+        table_3 = report((REPORT_DIR_TABLES/"figure_6.csv").resolve())
     log:
         LOGDIR / "general_NV_description" / "log.txt"
     script:
@@ -82,9 +86,10 @@ rule phylo_plots:
         study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
         ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile"
     output:
-        temest = report((REPORT_DIR/"temp_est.png").resolve()),
-        tree = report((REPORT_DIR/"tree.png").resolve()),
-        tree_ml = report((REPORT_DIR/"tree_ml.png").resolve()),
+        temest = report((REPORT_DIR_PLOTS/"figure_5.png").resolve()),
+        tree = report((REPORT_DIR_PLOTS/"figure_4.png").resolve()),
+        tree_ml = report((REPORT_DIR_PLOTS/"figure_3.png").resolve()),
+        table = report((REPORT_DIR_TABLES/"figure_5.csv").resolve()),
         stats_lm = temp((OUTDIR/"stats.lm.csv").resolve())
     log:
         LOGDIR / "phylo_plots" / "log.txt"
@@ -101,7 +106,8 @@ rule evo_plots:
         N_S = OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv",
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     output:
-        plot = report((REPORT_DIR/"dn_ds.png").resolve())
+        plot = report((REPORT_DIR_PLOTS/"figure_10.png").resolve()),
+        table = report((REPORT_DIR_TABLES/"figure_10.csv").resolve())
     log:
         LOGDIR / "evo_plots" / "log.txt"
     script:
@@ -116,8 +122,10 @@ rule snp_plots:
     input:
          vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     output:
-        pseudovolcano = report((REPORT_DIR/"volcano.png").resolve()),
-        snp_panel = report((REPORT_DIR/"panel.png").resolve())
+        pseudovolcano = report((REPORT_DIR_PLOTS/"figure_8.png").resolve()),
+        snp_panel = report((REPORT_DIR_PLOTS/"figure_9.png").resolve()),
+        table_1 = report((REPORT_DIR_TABLES/"figure_8.csv").resolve()),
+        table_2 = report((REPORT_DIR_TABLES/"figure_9.csv").resolve())
     log:
         LOGDIR / "snp_plots" / "log.txt"
     script:

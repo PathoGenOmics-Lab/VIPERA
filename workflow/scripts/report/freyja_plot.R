@@ -49,3 +49,23 @@ ggsave(filename = snakemake@output[["fig"]],
         plot = demix_plot, width = 159.2,
         height = 119.4, units = "mm",
         dpi = 250)
+
+
+print("Saving table")
+
+demix %>%
+  mutate(
+    lineages = case_when(
+      lineages %in% main_lineages ~ lineages,
+      TRUE ~ "Other"
+    )
+  ) %>% 
+  group_by(sample,lineages) %>% 
+  summarise(abundances = sum(abundances)) %>% 
+  ungroup() %>% 
+  left_join(select(
+    read_csv(snakemake@params[["metadata"]]),
+    ID,
+    CollectionDate
+  ), by = c("sample" = "ID")) %>%
+  write.csv(snakemake@output[["table"]], row.names = F)
