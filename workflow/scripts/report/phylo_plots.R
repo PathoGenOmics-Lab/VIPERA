@@ -169,3 +169,14 @@ ggsave(
   units = "mm",
   dpi = 250
 )
+
+print("saving tables")
+
+tempest %>% 
+  transmute(
+    sample = ID,
+    Distance = distance,
+    CollectionDate = CollectionDate,
+    DaysSinceFirst = date_interval
+  ) %>% 
+  write.csv(snakemake@output[["table"]], row.names = F)

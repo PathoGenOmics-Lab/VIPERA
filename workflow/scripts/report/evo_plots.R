@@ -56,3 +56,22 @@ ggsave(filename = snakemake@output[["plot"]],
         plot = plot, width=159.2, 
         height=119.4, units="mm", 
         dpi=250)
+
+print("Saving tables")
+
+vcf %>%
+    group_by(REGION,synonimous) %>%
+    summarise(Freq = sum(ALT_FREQ, na.rm = T)) %>% # Cácular la frecuencia de mutaciones sinónimas y no sinónimas por genoma
+    pivot_wider( names_from = synonimous, values_from = Freq, values_fill = 0 )  %>%
+    transmute(dn = No/sum(N_S_position$S), # Mutaciones no sinónimas por sitio no sinónimo
+              ds = yes/sum(N_S_position$S)) %>% # Mutaciones sinónimas por sitio no sinónimo
+              ungroup() %>%
+    left_join(unique(select(vcf,REGION,interval))) %>% 
+    transmute(
+      sample = REGION,
+      DaysSinceFirst = interval,
+      dN = dn,
+      dS = ds
+    ) %>% 
+    write.csv(snakemake@output[["table"]], row.names = F)
+    

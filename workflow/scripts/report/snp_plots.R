@@ -108,8 +108,6 @@ plot.height = ceiling(length(subset)/4)*42 # Altura del plot para que se vea bi√
 
 panel <- vcf %>%
         filter(SNP %in% subset) %>%
-        group_by(POS) %>% 
-        mutate(facet = first(SNP)) %>%
         ggplot(aes(x = interval, y = ALT_FREQ, color = SNP)) + 
         scale_color_viridis_d() + 
         geom_point() + 
@@ -123,7 +121,7 @@ panel <- vcf %>%
 if (length(subset) > 1) {
   panel <- panel + 
     facet_wrap(
-      vars(facet),
+      vars(POS),
       nrow = ceiling(length(subset)/4),
       ncol = 4
     )
@@ -133,3 +131,26 @@ ggsave(filename = snakemake@output[["snp_panel"]],
         plot = panel, width=159.2, 
         height = max(100, plot.height), units = "mm",
         dpi=250)
+
+
+print("saving tables")
+
+cor.df %>% 
+transmute(
+  NV = snp,
+  PearsonCor = cor,
+  adj_pvalue = p.value
+) %>% 
+write.csv(snakemake@output[["table_1"]], row.names = F)
+
+vcf %>%
+  filter(SNP %in% subset) %>%
+  transmute(
+    sample = REGION,
+    POS = POS,
+    NV = SNP,
+    ALT_FREQ = ALT_FREQ,
+    DaysSinceFirst = interval
+    ) %>% 
+    write.csv(snakemake@output[["table_2"]], row.names = F)
+

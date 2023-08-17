@@ -73,22 +73,22 @@ for (name in names(SCov2_annotation)){
 
 # Clasificación de las variantes
 vcf <- vcf %>%
-  mutate(SNP_class = case_when(str_detect(SNP,fixed("--")) | str_detect(SNP,fixed("+")) ~ "INDEL", # Diferenciar entre INDELS y SNP
+  mutate(NV_class = case_when(str_detect(SNP,fixed("--")) | str_detect(SNP,fixed("+")) ~ "INDEL", # Diferenciar entre INDELS y SNP
                          T ~ "SNP"),
          Class = case_when(is.na(GFF_FEATURE) ~ "Intergenic", # Clasificación para los SNPs
                            T ~ synonimous),
          POS = as.numeric(POS)) %>%
   rowwise() %>%
   mutate( gene = as.character(window[window$position == POS,"gen"]), # Anotación
-          indel_len = case_when(SNP_class == "INDEL" & str_detect(SNP,fixed("--")) ~ str_length(strsplit(SNP,"--")[[1]][2]) -1, # Longitud de los INDELS
-                                SNP_class == "INDEL" & str_detect(SNP,fixed("-+")) ~ str_length(strsplit(SNP,"-+")[[1]][2]) -1),
+          indel_len = case_when(NV_class == "INDEL" & str_detect(SNP,fixed("--")) ~ str_length(strsplit(SNP,"--")[[1]][2]) -1, # Longitud de los INDELS
+                                NV_class == "INDEL" & str_detect(SNP,fixed("-+")) ~ str_length(strsplit(SNP,"-+")[[1]][2]) -1),
           indel_class = case_when(gene == "Intergenic" ~ "Intergenic",  # Clasificación de los indels
-                                  SNP_class == "INDEL" & indel_len %% 3 == 0 ~ "In frame",
-                                  SNP_class == "INDEL" & indel_len %% 3 > 0 ~ "Frameshift")) %>%
+                                  NV_class == "INDEL" & indel_len %% 3 == 0 ~ "In frame",
+                                  NV_class == "INDEL" & indel_len %% 3 > 0 ~ "Frameshift")) %>%
   ungroup() %>%
   mutate(group = case_when(gene == "Intergenic" ~ "Intergenic", # Clasificación general
-                           SNP_class == "SNP" ~ Class,
-                           SNP_class == "INDEL" ~ indel_class))
+                           NV_class == "SNP" ~ Class,
+                           NV_class == "INDEL" ~ indel_class))
 
 
 # datos de nsps en ORF1ab
@@ -111,7 +111,7 @@ npc <- read_csv(snakemake@params[["nsp"]]) %>%
 variants <- vcf %>%
   filter(ALT_FREQ > 0) %>%
 ggplot() + 
-  aes(x = POS, y = factor(REGION,date_order), shape = factor(SNP_class,c("SNP","INDEL")), color = group, alpha = ALT_FREQ) +
+  aes(x = POS, y = factor(REGION,date_order), shape = factor(NV_class,c("SNP","INDEL")), color = group, alpha = ALT_FREQ) +
   geom_point(size = 3) + 
   geom_col(data = notation, aes(x = len,y = 0.3, fill = factor(gene,rev(names(SCov2_annotation)))), inherit.aes = F, width = 0.3) +
   scale_fill_manual(values = gene_colors) + 
@@ -137,7 +137,7 @@ window_plot_nsp <- window_plot +
   geom_text(data = npc, aes(x = (summaary_start + summaary_end)/2, y = max(window$fractions) + 0.002, label = summary_nsp), inherit.aes = F, size = 5, angle = 60)
 
 
-figura <-   ggarrange(window_plot_nsp,
+figura <- ggarrange(window_plot_nsp,
           variants,nrow = 3,
           align = "v" ,
           legend.grob = get_legend(variants)
@@ -175,8 +175,54 @@ ggsave(filename = snakemake@output[["fig_cor"]],
 
 # TABLA ####
 
-n_indels <- filter(vcf, SNP_class == "INDEL") %>% length()
+n_indels <- filter(vcf, NV_class == "INDEL") %>% length()
 n_snv <- length(unique(vcf$SNP)) - n_indels
 
 df <- data.frame(nv = c("SNP","INDEL"),n = c(n_snv,n_indels))
 write.csv(df, snakemake@output[["summary_nv"]], row.names = F)
+
+print("Saving tables")
+
+# figure 7b
+vcf %>%
+select(
+  REGION,
+  POS,
+  SNP,
+  ALT_FREQ,
+  NV_class,
+  group
+) %>% 
+rename(
+  sample = REGION,
+  NV = SNP,
+  Class = group
+) %>% filter(ALT_FREQ >0) %>%
+mutate(
+  Class = case_when(
+    Class == "yes" ~ "synonymous",
+    Class == "No" ~ "non_synonymous",
+    T ~ Class
+    )
+  ) %>% 
+write.csv(snakemake@output[["table_2"]], row.names = FALSE)
+
+# figure 7a
+
+window %>% 
+transmute(
+  POS = position,
+  feature = gen,
+  prop_PolimorphicSites = fractions
+) %>% 
+write.csv(snakemake@output[["table_1"]], row.names = FALSE)
+
+vcf_snp %>%
+  filter(ALT_FREQ <= 0.95) %>%
+  left_join(read_csv(snakemake@params[["metadata"]]), by = c("REGION" = "ID")) %>%
+  group_by(REGION) %>%
+  summarise(CollectionDate = min(as.Date(CollectionDate)),
+            n_PolimorphicSites = n()) %>%
+  ungroup() %>% 
+  rename(sample = REGION) %>% 
+  write.csv(snakemake@output[["table_3"]], row.names = FALSE)
