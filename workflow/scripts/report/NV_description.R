@@ -121,6 +121,10 @@ ggplot() +
                     values  = NV_colors) + 
   labs(x = "SARS-CoV-2 genome position", y = "Sample", shape = "Variant class", color = "Classification", alpha = "Frequency", fill = "Region") 
 
+#leg <- get_legend(variants)
+
+#variants <- variants + theme(legend.position = "none")
+
 # porcentaje por ventanas
 
 window_plot <- ggplot(window) + 
@@ -130,7 +134,8 @@ window_plot <- ggplot(window) +
   scale_y_continuous(label = scales::percent, limits = c(0,max(window$fractions) + 0.005)) + 
   xlim(c(0,29903)) + 
   scale_color_manual(values = gene_colors) +
-  labs(y = "Proportion of \n sites with SNV", x = "", color = "Gen")
+  labs(y = "Proportion of \n sites with SNV", x = "", color = "Gen") #+ 
+  #theme(legend.position = "none")
 
 
 window_plot_nsp <- window_plot + 
@@ -140,7 +145,7 @@ window_plot_nsp <- window_plot +
 
 
 figura <- ggarrange(window_plot_nsp,
-          variants,nrow = 3,
+          variants,nrow = 2,
           align = "v" ,
           legend.grob = get_legend(variants)
           , heights = c(2,6), 
@@ -213,7 +218,7 @@ variants_spike <- vcf %>%
 
 
 figura_spike <- ggarrange(window_plot_spike,
-                variants_spike,nrow = 3,
+                variants_spike,nrow = 2,
                 align = "v" ,
                 legend.grob = get_legend(variants)
                 , heights = c(2,6), 
