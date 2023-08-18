@@ -1,39 +1,52 @@
-# Jordi Sevilla
+#!/usr/bin/env Rscript
 
-# Cargar librerias ####
 library(tidyverse)
+library(logger)
+log_threshold(INFO)
 
 # Write stdout and stderr to log file
 log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
 
-# Leer variables de snakemake ####
-tsv <- snakemake@input[["tsv"]]
-output <- snakemake@output[["filtered_tsv"]]
 
-# Leer el tsv
-data <- read_tsv(tsv)
-
-#filtrar por p-valor 
-
-data <- filter(data, as.logical(PASS))
-
-# filtrar por más de dos lecturas por cadena
-
-is_deletion <- str_detect(data$ALT, "^[A-Z]", negate = T)
-inBothStrands <- data$ALT_RV > 2 & data$ALT_DP > 2 & (data$ALT_RV + data$ALT_DP) >= 20
-filter <- is_deletion | inBothStrands
-
-data <- filter(data, filter)
+data <- read_tsv(snakemake@input[["tsv"]])
 
 
-#Añadir algunas variables de interés
+# Filtering criteria:
+# - P-value < 0.05
+# - Depth >= 20
+# - For SNP more than 2 reads in each strand
+is.deletion <- str_detect(
+                        data$ALT,
+                        "^[A-Z]",
+                        negate = TRUE
+                        )
+inBothStrands <- data$ALT_RV > 2 & data$ALT_DP > 2
+Depth <- (data$ALT_RV + data$ALT_DP) >= 20
 
-data <- mutate(data,
-                synonimous = case_when(REF_AA == ALT_AA ~ "yes",
-                                        T ~"No"))
+
+log_info("Filtering variants")
+data <- filter(
+    data,
+    as.logical(PASS),
+    Depth,
+    inBothStrands | is.deletion
+    )
+
+log_info("Finding synonymous and non synonymous variants")
+# Adding synonymous variable
+data <- mutate(
+    data,
+    synonimous = case_when(
+        REF_AA == ALT_AA ~ "yes",
+        TRUE             ~  "No"
+    )
+)
 
 
-
-write_tsv(data,output)
+log_info("Saving results")
+write_tsv(
+    data,
+    snakemake@output[["filtered_tsv"]]
+)

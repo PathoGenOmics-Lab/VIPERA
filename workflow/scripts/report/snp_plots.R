@@ -1,148 +1,266 @@
-# LIBRERIAS #######
+#!/usr/bin/env Rscript
 
 library(tidyverse)
 library(stringi)
 library(ggrepel)
+library(logger)
+log_threshold(INFO)
+
+
+# Import file with plots style
+source(snakemake@params[["design"]])
 
 # Write stdout and stderr to log file
 log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
 
+# DATA PREPROCESSING #####
 
-# DISEÑO DE PLOTS ####
-source(snakemake@params[["design"]])
-
-# DATOS ####
 vcf <- read_delim(snakemake@input[["vcf"]])
 data <- read_csv(snakemake@params[["metadata"]]) %>%
-  filter(ID %in% vcf$REGION) %>%
-  dplyr::select(ID, CollectionDate)
+  filter(
+    ID %in% vcf$REGION
+  ) %>%
+  dplyr::select(
+    ID,
+    CollectionDate
+  )
 
-# ANÁLISIS ####
 
-# orden temporal 
+# Obtain sample names ordered by CollectionDate
 date_order <- read_csv(snakemake@params[["metadata"]]) %>%
-arrange(CollectionDate) %>%
-pull(ID) %>%
-unique()
+  arrange(CollectionDate) %>%
+  pull(ID) %>%
+  unique()
 
-# Modificar datos de variantes
-vcf <- vcf %>% 
-  mutate(GFF_FEATURE = gsub(":.*","",GFF_FEATURE),
-         SNP = case_when(!is.na(REF_AA) ~ paste(GFF_FEATURE,":",REF_AA,POS_AA,ALT_AA, sep = ""),
-                         T ~ paste(REF,POS,ALT, sep = ""))) %>%
-                         unique() %>%
-  dplyr::select(SNP,REGION,ALT_FREQ, POS)
+# Simplify features names and create SNP variable
+vcf <- vcf %>%
+  mutate(
+    GFF_FEATURE = gsub(":.*", "", GFF_FEATURE),
+    SNP = case_when(
+      !is.na(REF_AA) ~ paste(
+        GFF_FEATURE,
+        ":",
+        REF_AA,
+        POS_AA,
+        ALT_AA,
+        sep = ""
+        ),
+      TRUE ~ paste(
+        REF,
+        POS,
+        ALT,
+        sep = ""
+        )
+      )
+    ) %>%
+  unique() %>%
+  dplyr::select(
+    SNP,
+    REGION,
+    ALT_FREQ,
+    POS
+    )
 
-IDs <- pull(vcf,REGION) %>%
+# Get a list with studied samples ID
+IDs <- pull(
+    vcf,
+    REGION
+    ) %>%
   unique()
 
 vcf <- vcf %>%
-  pivot_wider(names_from = REGION, values_from = ALT_FREQ, values_fill = 0) %>% # Obtener los 0 en los puntos sin variantes
-  pivot_longer(IDs, names_to = "REGION", values_to = "ALT_FREQ") %>%
-  rowwise() %>%
-  ungroup() 
+  pivot_wider( # Obtain 0 in positions without freq
+    names_from = REGION,
+    values_from = ALT_FREQ,
+    values_fill = 0
+    ) %>%
+  pivot_longer(
+    IDs,
+    names_to = "REGION",
+    values_to = "ALT_FREQ"
+    ) %>%
+  ungroup()
 
-# Unir datos
-vcf <- left_join(vcf,data, by = c("REGION" = "ID"))
+# Join variants file and metadata file
+vcf <- left_join(vcf, data, by = c("REGION" = "ID"))
 
-# Tiempo en dias entre muestras
-vcf <- arrange(vcf,CollectionDate) %>%
-  mutate(interval = as.numeric(CollectionDate - min(CollectionDate)))
+# Calculate days since first sample
+vcf <- arrange(
+    vcf,
+    CollectionDate
+    ) %>%
+  mutate(
+    interval = as.numeric(CollectionDate - min(CollectionDate))
+  )
 
-# FIGURAS ####
+# PLOTS ####
 ## VOLCANO PLOT ####
 
-# Cálculo de la correlación en el tiempo para cada SNP
-SNPs <- pull(vcf,SNP) %>%
+# Get list with all different polymorphisms
+SNPs <- pull(
+    vcf,
+    SNP
+    ) %>%
   unique()
 
-cor.df <- data.frame(snp = "", cor = 0, p.value = 0) %>%
+# Create an empty dataframe to be filled
+cor.df <- data.frame(
+    snp = "",
+    cor = 0,
+    p.value = 0
+    ) %>%
   filter(p.value != 0)
 
-for (SNP_new in SNPs){
-  df <- filter(vcf, SNP == SNP_new)
-  
- test <- cor.test(df$ALT_FREQ,df$interval)
- pvalue <- p.adjust(test$p.value, method = "BH", n = length(SNPs))
- cor.df <- add_row(cor.df, snp = SNP_new, cor = test$estimate, p.value = pvalue)
-}
+cor.df.fill <- lapply(
+    SNPs,
+    function(snp) {
+      df <- filter(
+        vcf,
+        SNP == snp
+      )
 
-volcano <- cor.df %>%
-  mutate(trans.p = -log10(p.value),
-         label = case_when(p.value < 0.05 ~ snp)) %>%
-  ggplot() + 
-  aes(x = cor, y = trans.p) + 
-  geom_point() + 
+      test <- cor.test(
+        df$ALT_FREQ,
+        df$interval
+      )
+
+      pvalue <- p.adjust(
+        test$p.value,
+        method = "BH",
+        n = length(SNPs)
+      )
+      add_row(
+        cor.df,
+        snp = snp,
+        cor = test$estimate,
+        p.value = pvalue
+      )
+    }
+  ) %>%
+  bind_rows()
+
+
+# Plot a pseudo volcano plot with coorrelation index and p-value
+log_info("Plotting pseudovolcano figure")
+volcano <- cor.df.fill %>%
+  mutate(
+    trans.p = -log10(p.value),
+    label = case_when(p.value < 0.05 ~ snp)
+  ) %>%
+  ggplot() +
+  aes(
+    x = cor,
+    y = trans.p
+  ) +
+  geom_point() +
   geom_label_repel(aes(label = label)) +
-  xlim(c(-1,1)) +  
-  geom_hline(aes(yintercept = -log10(0.05) ), linetype = 2, color = "red") + 
-  labs(x = "Correlation", y = "-log10(p-value)")
+  xlim(c(-1, 1)) +
+  geom_hline(
+    aes(yintercept = -log10(0.05)),
+    linetype = 2,
+    color = "red"
+  ) +
+  labs(
+    x = "Correlation",
+    y = "-log10(p-value)"
+  )
 
-ggsave(filename = snakemake@output[["pseudovolcano"]], 
-        plot = volcano, width=159.2, 
-        height=119.4, units="mm", 
-        dpi=250)
+ggsave(
+  filename = snakemake@output[["pseudovolcano"]],
+  plot = volcano,
+  width = 159.2,
+  height = 119.4,
+  units = "mm",
+  dpi = 250
+)
 
 
 ## SNP PANEL ####
 
-sign <- filter(cor.df, p.value < 0.05) %>% # SNPs significativamente correlacionados
-    pull(snp) %>%
-    unique()
+# SNPs significatvly correlated with time
+sign <- filter(
+            cor.df.fill,
+            p.value < 0.05
+            ) %>%
+  pull(snp) %>%
+  unique()
 
-dup <- vcf %>% # SNPs que comparten posición
-  select(SNP,POS) %>%
+# SNPs which are in positions with more than one alternative allele
+dup <- vcf %>%
+  select(
+    SNP,
+    POS
+  ) %>%
   unique() %>%
   group_by(POS) %>%
   filter(n() > 1) %>%
   ungroup() %>%
-  pull(SNP) %>% 
+  pull(SNP) %>%
   unique()
 
-subset <- c(sign,dup) %>%
+subset <- c(sign, dup) %>%
   unique()
 
-plot.height = ceiling(length(subset)/4)*42 # Altura del plot para que se vea bién
+# Plot height depending on the number of SNPs assuming 4 columns in the plot
+plot.height <- ceiling(length(subset) / 4) * 42
 
+log_info("PLotting SNPs trends in time")
 panel <- vcf %>%
-        filter(SNP %in% subset) %>%
-        ggplot(aes(x = interval, y = ALT_FREQ, color = SNP)) + 
-        scale_color_viridis_d() + 
-        geom_point() + 
-        geom_line() + 
-        theme(legend.position = "bottom",
-        legend.text = element_text(size = 9)) + 
-        labs(x = "Days since first sample",
-             y = "Frequency") + 
-             guides(color = guide_legend(ncol = 4))
+  filter(SNP %in% subset) %>%
+  ggplot() +
+  aes(
+    x = interval,
+    y = ALT_FREQ,
+    color = SNP
+  ) +
+  scale_color_viridis_d() +
+  geom_point() +
+  geom_line() +
+  theme(
+    legend.position = "bottom",
+    legend.text = element_text(size = 9)
+  ) +
+  labs(
+    x = "Days since first sample",
+    y = "Frequency"
+  ) +
+  guides(color = guide_legend(ncol = 4))
 
 if (length(subset) > 1) {
-  panel <- panel + 
+  panel <- panel +
     facet_wrap(
       vars(POS),
-      nrow = ceiling(length(subset)/4),
+      nrow = ceiling(length(subset) / 4),
       ncol = 4
     )
 }
 
-ggsave(filename = snakemake@output[["snp_panel"]], 
-        plot = panel, width=159.2, 
-        height = max(100, plot.height), units = "mm",
-        dpi=250)
+ggsave(
+  filename = snakemake@output[["snp_panel"]],
+  plot = panel, width = 159.2,
+  height = max(100, plot.height),
+  units = "mm",
+  dpi = 250
+)
 
 
-print("saving tables")
+# PLOT TABLES ####
 
-cor.df %>% 
-transmute(
-  NV = snp,
-  PearsonCor = cor,
-  adj_pvalue = p.value
-) %>% 
-write.csv(snakemake@output[["table_1"]], row.names = F)
+log_info("Saving coorelation table")
+cor.df %>%
+  transmute(
+    NV = snp,
+    PearsonCor = cor,
+    adj_pvalue = p.value
+  ) %>%
+  write.csv(
+    snakemake@output[["table_1"]],
+    row.names = FALSE
+    )
 
+log_info("Saving SNPs trends table")
 vcf %>%
   filter(SNP %in% subset) %>%
   transmute(
@@ -151,6 +269,6 @@ vcf %>%
     NV = SNP,
     ALT_FREQ = ALT_FREQ,
     DaysSinceFirst = interval
-    ) %>% 
-    write.csv(snakemake@output[["table_2"]], row.names = F)
+    ) %>%
+    write.csv(snakemake@output[["table_2"]], row.names = FALSE)
 

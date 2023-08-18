@@ -3,7 +3,8 @@
 import logging
 import pandas as pd
  
-def parse_vcf():
+
+def parse_vcf() -> tuple:
     """
     Parse a VCF containing positions for masking. Assumes the VCF file is
     formatted as:
@@ -18,20 +19,20 @@ def parse_vcf():
         names=("CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO")
     )
     positions = tuple(vcf.loc[vcf.FILTER.isin(snakemake.params.mask_class), "POS"])
+
     return positions
 
 def main():
     logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
     
-    # parse VCF to get list of sites to mask
-    iffy_sites = parse_vcf()
+    logging.info("Getting sites to mask")
+    iffy_sites = parse_vcf() # parse VCF to get list of sites to mask
 
-    # open unmasked VCF 
-    f = open(snakemake.input.tsv,"r")
+    f = open(snakemake.input.tsv,"r") # Open unmasked VCF
 
-    # open masked vcf
-    mv = open(snakemake.output.masked_tsv,"w")
+    mv = open(snakemake.output.masked_tsv,"w") # Open masked VCF
 
+    logging.info("Masking VCF")
     for line in f:
         
         if line[0] == "R":
@@ -44,8 +45,6 @@ def main():
     mv.close()
     f.close()
 
-
-
-
+    
 if __name__ == "__main__":
     main()

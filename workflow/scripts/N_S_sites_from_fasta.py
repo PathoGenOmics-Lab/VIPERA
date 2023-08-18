@@ -7,7 +7,8 @@ from gb2seq.alignment import Gb2Alignment
 from gb2seq.features import Features
 from dark.fasta import FastaReads
 
-SCov2_features = [
+
+SCov2_features = [        # List with id names of SARS-CoV-2 features
      "ORF1ab polyprotein",
     "surface glycoprotein",
     "ORF3a protein",
@@ -21,22 +22,21 @@ SCov2_features = [
     "ORF10 protein"
 ]
 
-# Create alignment object
 
+# Create alignment object
 features = Features(snakemake.input.gb)
 seq = list(FastaReads(snakemake.input.fasta))[0]
 aln = Gb2Alignment(seq,features)
 
 
-
-def split_into_codons(seq):
+def split_into_codons(seq:str) -> list:
     """Split the complete CDS feature in to a list of codons."""
 
-    codons = [seq[i:i + 3] for i in range(0, len(seq), 3) if 'N' not in seq[i:i + 3] ]
+    codons = [ seq[i:i + 3] for i in range(0, len(seq), 3) if 'N' not in seq[i:i + 3] ]
     
     return codons
 
-def geneticCode(name):
+def geneticCode(name:str) -> dict:
 
     """ Dictionary that maps codons to amino acids """ 
 
@@ -47,9 +47,10 @@ def geneticCode(name):
                 'GAT':'D','GCA':'A','GCC':'A','GCG':'A','GCT':'A','GGA':'G','GGC':'G','GGG':'G','GGT':'G','GTA':'V','GTC':'V','GTG':'V', \
                 'GTT':'V','TAA':'*','TAC':'Y','TAG':'*','TAT':'Y','TCA':'S','TCC':'S','TCG':'S','TCT':'S','TGA':'*','TGC':'C','TGG':'W', \
                 'TGT':'C','TTA':'L','TTC':'F','TTG':'L','TTT':'F'  }
+        
     return gc
 
-def potential_changes_dict(nt_to_aa):
+def potential_changes_dict(nt_to_aa:dict) -> dict:
 
     """ Generate a dictionary, with S and N pre-calculated for all 
     possible codons (key:codon, value: (S,N).
@@ -102,13 +103,15 @@ def potential_changes_dict(nt_to_aa):
                     potential_changes['N'][codon]+=1.0/3.0
     return potential_changes
 
-def get_feature_codons(alignment:Gb2Alignment, annotation:list):
 
-    dct = {key:alignment.ntSequences(key)[1].sequence for key in annotation}
+def get_feature_codons(alignment:Gb2Alignment, annotation:list) -> dict:
 
-    return {key:split_into_codons(item) for key,item in dct.items()}
+    dct = { key:alignment.ntSequences(key)[1].sequence for key in annotation }
 
-def get_df(codons):
+    return { key:split_into_codons(item) for key,item in dct.items() }
+
+
+def get_df(codons:dict) -> pd.DataFrame:
 
     keys = []
     N_sites = []
@@ -117,24 +120,29 @@ def get_df(codons):
     values =  potential_changes_dict(geneticCode(snakemake.params.genetic_code))
 
     for key,item in codons.items():
+
         keys.append(key)
+
         N = sum([values['N'][x] for x in item if x in values['N'].keys()])
         S = sum([values['S'][x] for x in item if x in values['S'].keys()])
+
         N_sites.append(N)
         S_sites.append(S) 
     
-    df =pd.DataFrame({'gene':keys, 'N':N_sites, 'S':S_sites})
-
-    return df
+    return pd.DataFrame({ 'gene':keys, 'N':N_sites, 'S':S_sites })
 
 def main():
+
     logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
     
+    logging.info("Splitting ancestral sequence into codons")
     codons_dict =  get_feature_codons(aln,SCov2_features)
+
+    logging.info("Calculating synonymous and non synonymous sites")
     df = get_df(codons_dict)
 
+    logging.info("Saving results")
     df.to_csv(snakemake.output.csv,index= False)
-
 
 
 if __name__ == "__main__":

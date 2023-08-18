@@ -32,16 +32,19 @@ from Bio import SeqIO
 import pandas as pd
 
 
-def read_fasta_keep_name(file):
+def read_fasta_keep_name(file:str):
+
     sample_headers = []
     sample_sequences = []
+
     for record in SeqIO.parse(file, "fasta"):
         sample_headers.append(str(record.description))
         sample_sequences.append(str(record.seq))
+
     return sample_headers, sample_sequences
 
 
-def ref_coords_to_align_coords(ref_align_seq):
+def ref_coords_to_align_coords(ref_align_seq) -> dict:
     """
     Generate a dictionary of reference sequence coordinates mapped to MSA
     coordinates. Used to update the VCF positions in case the reference
@@ -49,8 +52,10 @@ def ref_coords_to_align_coords(ref_align_seq):
     """
     ref_coord_dic = {}
     ref_align_seq = "".join(ref_align_seq).strip()
+
     for i in range(len(ref_align_seq.replace("-",""))):
         ref_coord_dic[i] = 0
+    
     seq_count = 0
     align_count = 0
     for c in ref_align_seq:
@@ -60,10 +65,11 @@ def ref_coords_to_align_coords(ref_align_seq):
             align_count += 1
         else:
             align_count += 1
+    
     return ref_coord_dic
 
 
-def parse_vcf():
+def parse_vcf() -> tuple:
     """
     Parse a VCF containing positions for masking. Assumes the VCF file is
     formatted as:
@@ -78,15 +84,18 @@ def parse_vcf():
         names=("CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO")
     )
     positions = tuple(vcf.loc[vcf.FILTER.isin(snakemake.params.mask_class), "POS"])
+
     return positions
 
 
 def main():
     logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
     
+    logging.info("getting sites to mask")
     # parse VCF to get list of sites to mask
     iffy_sites = parse_vcf()
 
+    logging.info("Parsing Fasta file")
     # parse existing MSA FASTA file
     with open(snakemake.input.fasta, "r") as fasta_fi:
         headers, sequences = read_fasta_keep_name(fasta_fi)
@@ -104,6 +113,7 @@ def main():
     # Mask problematic sites from VCF and leading and trailing positions
     iffy_alignment_sites = tuple(ref_coord_dic[int(i)-1] for i in iffy_sites)
 
+    logging.info("Writing masked alignment")
     # using list of iffy alignment sites, mask corresponding positions
     # in the input MSA
     # Also: only mask sites with letters - no gaps!
@@ -111,7 +121,9 @@ def main():
         mask_sub_char = ""
     else:
         mask_sub_char = snakemake.params.mask_character
+
     f = open(snakemake.output.fasta, "w")
+
     for i in range(len(headers)):
         seq = list(sequences[i])
         for p in iffy_alignment_sites:
@@ -119,6 +131,7 @@ def main():
                 seq[p] = mask_sub_char
         seq = "".join(seq)
         f.write(">" + headers[i] + "\n" + seq + "\n")
+        
     f.close()
 
 
