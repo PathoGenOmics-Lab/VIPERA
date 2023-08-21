@@ -39,7 +39,8 @@ rule diversity:
         context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     output:
         fig = report((REPORT_DIR_PLOTS/"figure_2.png").resolve()),
-        json = temp((OUTDIR/"diversity.json").resolve())
+        json = temp((OUTDIR/"diversity.json").resolve()),
+        table = (REPORT_DIR_TABLES/"figure_2.csv").resolve()
     log:
         LOGDIR / "diversity" / "log.txt"
     script:
