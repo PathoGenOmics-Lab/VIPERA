@@ -92,3 +92,12 @@ list.div <- list(
 json <- toJSON(list.div)
 
 write(json, snakemake@output[["json"]])
+
+
+# PLOT TABLES
+
+data.frame(
+  pi = divs,
+  prop.value = diversity
+  ) %>%
+  write.csv(snakemake@output[["table"]], row.names = FALSE)
