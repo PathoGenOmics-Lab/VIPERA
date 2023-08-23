@@ -163,6 +163,8 @@ ggsave(filename = snakemake@output[["fig"]],
 
 figur_SNP_time <- vcf_snp %>%
                   filter(ALT_FREQ <= 0.95) %>%
+                  select(!GFF_FEATURE) %>% 
+                  unique() %>%
                   left_join(read_csv(snakemake@params[["metadata"]]), by = c("REGION" = "ID")) %>%
                   group_by(REGION) %>%
                   summarise(CollectionDate = min(as.Date(CollectionDate)),
@@ -268,6 +270,8 @@ write.csv(snakemake@output[["table_1"]], row.names = FALSE)
 
 vcf_snp %>%
   filter(ALT_FREQ <= 0.95) %>%
+  select(!GFF_FEATURE) %>%
+  unique() %>%
   left_join(read_csv(snakemake@params[["metadata"]]), by = c("REGION" = "ID")) %>%
   group_by(REGION) %>%
   summarise(CollectionDate = min(as.Date(CollectionDate)),
