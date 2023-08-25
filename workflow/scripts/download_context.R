@@ -38,6 +38,11 @@ if (!all(needed.columns.mask)) {
     print(glue("Please ensure column '{needed.columns[!needed.columns.mask]}' is present"))
     stop(glue("Missing columns in '{snakemake@input[['metadata']]}'. Alternatively:\n{CHKPT.ERROR.MSG}"))
 }
+# Get lineage
+lineage.samples <- read_csv(snakemake@input[["pango_report"]]) %>%
+    pull(lineage) %>%
+    unique()
+
 
 # Get time windows
 dates <- sample.metadata %>%
@@ -76,7 +81,8 @@ dataframes <- lapply(
             low_coverage_excl = snakemake@params[["exclude_low_coverage"]],
             complete = snakemake@params[["complete"]],
             collection_date_complete = snakemake@params[["collection_date_complete"]],
-            high_coverage = snakemake@params[["high_coverage"]]
+            high_coverage = snakemake@params[["high_coverage"]],
+            lineage = lineage.samples
         )
     }
 )
