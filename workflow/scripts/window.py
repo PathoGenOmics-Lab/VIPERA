@@ -23,7 +23,7 @@ replace_terry = {
 }
 
 
-def get_polimorphic_sites(df):
+def get_polymorphic_sites(df):
     return set(df.POS)
 
 
@@ -62,7 +62,7 @@ def main():
 
     # Process
     df = pd.read_table(snakemake.input.vcf)    
-    sites = get_polimorphic_sites(df)
+    sites = get_polymorphic_sites(df)
     frame = window_calculation(sites, snakemake.params.step, 29903, snakemake.input.gb)
     frame.replace(replace_terry, inplace = True)
     frame.to_csv(snakemake.output.window_df,index= False)

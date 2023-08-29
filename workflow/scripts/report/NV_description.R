@@ -175,7 +175,7 @@ figur_SNP_time <- vcf_snp %>%
                   geom_smooth(method = "lm",fill = "gray95", alpha = 0.6) + 
                   geom_point() +
                   stat_cor(geom = "label") + 
-                  labs(x = "Date", y = "Nº of polimorphic sites")
+                  labs(x = "Date", y = "Nº of polymorphic sites")
 
 ggsave(filename = snakemake@output[["fig_cor"]], 
         plot = figur_SNP_time, width=250, 
@@ -264,7 +264,7 @@ window %>%
 transmute(
   POS = position,
   feature = gen,
-  prop_PolimorphicSites = fractions
+  prop_PolymorphicSites = fractions
 ) %>% 
 write.csv(snakemake@output[["table_1"]], row.names = FALSE)
 
@@ -275,7 +275,7 @@ vcf_snp %>%
   left_join(read_csv(snakemake@params[["metadata"]]), by = c("REGION" = "ID")) %>%
   group_by(REGION) %>%
   summarise(CollectionDate = min(as.Date(CollectionDate)),
-            n_PolimorphicSites = n()) %>%
+            n_PolymorphicSites = n()) %>%
   ungroup() %>% 
   rename(sample = REGION) %>% 
   unique() %>%

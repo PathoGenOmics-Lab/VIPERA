@@ -115,7 +115,8 @@ panel <- vcf %>%
         theme(legend.position = "bottom",
         legend.text = element_text(size = 9)) + 
         labs(x = "Days since first sample",
-             y = "Frequency") + 
+             y = "Frequency",
+             color = "NV") + 
              guides(color = guide_legend(ncol = 4))
 
 if (length(subset) > 1) {
