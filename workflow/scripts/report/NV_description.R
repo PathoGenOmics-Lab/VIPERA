@@ -81,8 +81,8 @@ vcf <- vcf %>%
          POS = as.numeric(POS)) %>%
   rowwise() %>%
   mutate( gene = as.character(window[window$position == POS,"gen"]), # Anotación
-          indel_len = case_when(NV_class == "INDEL" & str_detect(SNP,fixed("--")) ~ str_length(strsplit(SNP,"--")[[1]][2]) -1, # Longitud de los INDELS
-                                NV_class == "INDEL" & str_detect(SNP,fixed("-+")) ~ str_length(strsplit(SNP,"-+")[[1]][2]) -1),
+          indel_len = case_when(NV_class == "INDEL" & str_detect(SNP,fixed("--")) ~ str_length(strsplit(SNP,"--")[[1]][2]), # Longitud de los INDELS
+                                NV_class == "INDEL" & str_detect(SNP,fixed("-+")) ~ str_length(strsplit(SNP,"-+")[[1]][2])),
           indel_class = case_when(gene == "Intergenic" ~ "Intergenic",  # Clasificación de los indels
                                   NV_class == "INDEL" & indel_len %% 3 == 0 ~ "In frame",
                                   NV_class == "INDEL" & indel_len %% 3 > 0 ~ "Frameshift")) %>%
@@ -278,6 +278,7 @@ vcf_snp %>%
             n_PolimorphicSites = n()) %>%
   ungroup() %>% 
   rename(sample = REGION) %>% 
+  unique() %>%
   write.csv(snakemake@output[["table_3"]], row.names = FALSE)
 
   print("saving stats")
