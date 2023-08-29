@@ -121,7 +121,7 @@ where:
 
 $M$ y $N$: Two sequences.
 
-$i = 1... I :$ Index over polimorphic sites.
+$i = 1... I :$ Index over polymorphic sites.
 
 $j = 1... J :$ Index over alleles.
 
