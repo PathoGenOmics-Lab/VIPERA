@@ -52,8 +52,14 @@ plan(sequential)
 st <- shapiro.test(divs)
 
 # Calculate p-value (assuming normal distribution)
-standardized.value <- (diversity - mean(divs)) / sd(divs)
-pvalue.norm <- pnorm(standardized.value)
+test <- t.test(
+  divs,
+  alternative = "greater",
+  mu = diversity,
+  conf.level = 0.95
+)
+
+pvalue.norm <- test$p.value
 
 # Estimate p-value empirically
 empirical.probs <- ecdf(divs)
