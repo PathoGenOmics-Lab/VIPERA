@@ -113,10 +113,10 @@ vcf <- vcf %>%
     indel_len = case_when(
       NV_class == "INDEL" &
         str_detect(SNP, fixed("--")) ~
-        str_length(strsplit(SNP, "--")[[1]][2]) - 1,
+        str_length(strsplit(SNP, "--")[[1]][2]),
       NV_class == "INDEL" &
         str_detect(SNP, fixed("-+")) ~
-        str_length(strsplit(SNP, "-+")[[1]][2]) - 1
+        str_length(strsplit(SNP, "-+")[[1]][2])
       ),
     indel_class = case_when(
       gene == "Intergenic" ~ "Intergenic",
@@ -359,6 +359,8 @@ ggsave(
 log_info("Plotting nº of heterozygus sites for each sample")
 figur_SNP_time <- vcf_snp %>%
   filter(ALT_FREQ <= 0.95) %>%
+  select(!GFF_FEATURE) %>%
+  unique() %>%
   left_join(
     read_csv(snakemake@params[["metadata"]]),
     by = c("REGION" = "ID")
@@ -394,8 +396,10 @@ ggsave(
   units = "mm",
   dpi = 250)
 
+
 # PLOT TABLES
 log_info("Saving plot tables")
+
 
 # Variants summary table
 vcf %>%
@@ -428,13 +432,14 @@ window %>%
   transmute(
     POS = position,
     feature = gen,
-    prop_PolimorphicSites = fractions
+    prop_PolymorphicSites = fractions
   ) %>%
   write.csv(snakemake@output[["table_1"]], row.names = FALSE)
 
 # Heterzygus sites per sample table
 vcf_snp %>%
   filter(ALT_FREQ <= 0.95) %>%
+  select(!GFF_FEATURE) %>%
   left_join(
     read_csv(snakemake@params[["metadata"]]),
     by = c("REGION" = "ID")
@@ -442,10 +447,11 @@ vcf_snp %>%
   group_by(REGION) %>%
   summarise(
     CollectionDate = min(as.Date(CollectionDate)),
-    n_PolimorphicSites = n()
+    n_PolymorphicSites = n()
     ) %>%
   ungroup() %>%
   rename(sample = REGION) %>%
+  unique() %>%
   write.csv(snakemake@output[["table_3"]], row.names = FALSE)
 
 

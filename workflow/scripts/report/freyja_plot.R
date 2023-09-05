@@ -36,18 +36,27 @@ date_order <- read_csv(snakemake@params[["metadata"]]) %>%
 log_info("Plotting summary demixing")
 demix_plot <- demix %>%
   mutate(
-    lin_2 = case_when(
-      lineages %in% main_lineages ~ lineages,
-      TRUE ~ "Other"
+    lineages = case_when(
+      lineages %in% main_lineages ~ lineages
     )
   ) %>%
+  group_by(lineages, sample) %>%
+  mutate(
+    abundances = sum(abundances)
+  ) %>%
+  unique() %>%
   ggplot() +
   aes(
     x = factor(sample, date_order),
     y = as.numeric(abundances),
-    fill = lin_2
+    fill = lineages
   ) +
-  scale_fill_viridis_d(option = "Mako") +
+  scale_fill_viridis_d(
+    na.value = "gray50",
+    labels = function(x) {
+      ifelse(is.na(x), "Other", x)
+        }
+  ) +
   geom_col() +
   theme(
     axis.text.x = element_text(angle = 60, hjust = 1),
@@ -68,7 +77,6 @@ ggsave(
   units = "mm",
   dpi = 250
 )
-
 
 
 # PLOT TABLES

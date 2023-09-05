@@ -143,11 +143,11 @@ With the neighbur-joining tree, partistic distances to root has been correlated 
 
 ## Characterizing within-host evolution
 
-### Number of polimorphic sites
+### Number of polymorphic sites
 
-Sites with minor allele frequency > 0.05  are considered as polimorphic sites.
+Sites with minor allele frequency > 0.05  are considered as polymorphic sites.
 
-![**Figure 6.** Number of polimorphisms over time for the studied samples.](`r params$fig_cor_snp`)
+![**Figure 6.** Number of polymorphisms over time for the studied samples.](`r params$fig_cor_snp`)
 
 ### Description for within-host nucleotide variants 
 
@@ -156,11 +156,11 @@ Sites with minor allele frequency > 0.05  are considered as polimorphic sites.
 ::: {.panel-tabset}
 
 ## Whole genome
-![**Figure 7a.** A\) Proportion of polimorphic sites along the genome calculated with 1000nt windows. B\) Nucleotide variants (NV) in the genomes of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV`)
+![**Figure 7a.** A\) Proportion of polymorphic sites along the genome calculated with 1000nt windows. B\) Nucleotide variants (NV) in the genomes of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV`)
 
 ## Spike sequence
 
-![**Figure 7b.** A\) Proportion of polimorphic sites along the spike nucleotide sequence calculated with 1000nt windows. B\) Nucleotide variants (NV) in the spike sequences of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV_s`)
+![**Figure 7b.** A\) Proportion of polymorphic sites along the spike nucleotide sequence calculated with 1000nt windows. B\) Nucleotide variants (NV) in the spike sequences of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV_s`)
 :::
 
 ### Time dependency for the within-host nucleotide variants

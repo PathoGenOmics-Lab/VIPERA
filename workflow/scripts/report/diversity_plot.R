@@ -70,9 +70,18 @@ log_info("Normality test for nucleotide diversity values")
 st <- shapiro.test(divs)
 
 # Calculate p-value (assuming normal distribution)
+
 log_info("Calculating p-value (assuming normal distribution)")
-standardized.value <- (diversity - mean(divs)) / sd(divs)
-pvalue.norm <- pnorm(standardized.value)
+
+test <- t.test(
+  divs,
+  alternative = "greater",
+  mu = diversity,
+  conf.level = 0.95
+)
+
+pvalue.norm <- test$p.value
+
 
 # Estimate p-value empirically
 log_info("Estimating p-value empirically")
@@ -127,3 +136,12 @@ list.div <- list(
 json <- toJSON(list.div)
 
 write(json, snakemake@output[["json"]])
+
+
+# PLOT TABLES
+
+data.frame(
+  pi = divs,
+  prop.value = diversity
+  ) %>%
+  write.csv(snakemake@output[["table"]], row.names = FALSE)

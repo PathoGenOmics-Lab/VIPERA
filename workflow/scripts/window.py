@@ -65,6 +65,7 @@ def main():
     sites = get_polimorphic_sites(df)
 
     logging.info("Sliding window calculation of proportion of polimorphic sites")
+
     frame = window_calculation(sites, snakemake.params.step, 29903, snakemake.input.gb)
     
     logging.info("Saving results")
