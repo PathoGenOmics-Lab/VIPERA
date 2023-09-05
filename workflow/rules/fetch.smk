@@ -11,6 +11,20 @@ rule fetch_alignment_reference:
         "esearch -db nucleotide -query {params.ref} | efetch -format fasta > {output.fasta} 2> {log}"
 
 
+rule fetch_alignment_gb:
+    threads: 1
+    conda: "../envs/fetch.yaml"
+    params:
+        ref = config["ALIGNMENT_REFERENCE"]
+    output:
+        fasta = temp(OUTDIR/"reference.gb")
+    log:
+        LOGDIR / "fetch_alignment_reference" / "log.txt"
+    shell:
+        "esearch -db nucleotide -query {params.ref} | efetch -format gb > {output.fasta} 2> {log}"
+
+
+
 rule fetch_mapping_references:
     threads: 1
     conda: "../envs/fetch.yaml"
@@ -33,7 +47,7 @@ rule fetch_alignment_annotation:
     params:
         ref = config["ALIGNMENT_REFERENCE"]
     output:
-        OUTDIR/"reference.gff3"
+        temp(OUTDIR/"reference.gff3")
     log:
         LOGDIR / "fetch_alignment_annotation" / "log.txt"
     shell:
@@ -47,6 +61,6 @@ rule fetch_problematic_vcf:
     log:
         LOGDIR / "fetch_problematic_vcf" / "log.txt"
     output:
-        OUTDIR / "problematic_sites.vcf"
+        temp(OUTDIR / "problematic_sites.vcf")
     shell:
         "curl {params.url} -o {output} -s 2> {log}"

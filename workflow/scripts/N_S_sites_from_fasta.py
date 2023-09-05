@@ -1,26 +1,33 @@
 #!/usr/bin/env python3
 
 import logging
-from Bio import SeqIO
-from Bio import Seq
 import copy
 import pandas as pd
+from gb2seq.alignment import Gb2Alignment
+from gb2seq.features import Features
+from dark.fasta import FastaReads
 
-SCov2_annotation = {
-# "SCov2_genome"    : [1, 29903],
-#"five_prime_UTR"  : [    1,   265],
-"orf1ab"          : [  266, 21555],
-"S"          : [21563, 25384],
-"ORF3a"           : [25393, 26220],
-"E"          : [26245, 26472],
-"M"          : [26523, 27191],
-"ORF6"            : [27202, 27387],
-"ORF7a"           : [27394, 27759],
-"ORF8"            : [27894, 28259],
-"N"          : [28274, 29533],
-"ORF10"           : [29558, 29674],
-#"three_prime_UTR" : [29675, 29903]
-}
+SCov2_features = [
+     "ORF1ab polyprotein",
+    "surface glycoprotein",
+    "ORF3a protein",
+    "envelope protein",
+    "membrane glycoprotein",
+    "ORF6 protein",
+    "ORF7a protein",
+    "ORF7b",
+    "ORF8 protein",
+    "nucleocapsid phosphoprotein",
+    "ORF10 protein"
+]
+
+# Create alignment object
+
+features = Features(snakemake.input.gb)
+seq = list(FastaReads(snakemake.input.fasta))[0]
+aln = Gb2Alignment(seq,features)
+
+
 
 def split_into_codons(seq):
     """Split the complete CDS feature in to a list of codons."""
@@ -95,9 +102,9 @@ def potential_changes_dict(nt_to_aa):
                     potential_changes['N'][codon]+=1.0/3.0
     return potential_changes
 
-def get_feature_codons(genome,annotation):
+def get_feature_codons(alignment:Gb2Alignment, annotation:list):
 
-    dct = {key:str(genome.seq)[(item[0] -1):item[1]] for key,item in annotation.items()}
+    dct = {key:alignment.ntSequences(key)[1].sequence for key in annotation}
 
     return {key:split_into_codons(item) for key,item in dct.items()}
 
@@ -123,8 +130,7 @@ def get_df(codons):
 def main():
     logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
     
-    sequence = list(SeqIO.parse(snakemake.input.fasta,"fasta"))[0]
-    codons_dict =  get_feature_codons(sequence,SCov2_annotation)
+    codons_dict =  get_feature_codons(aln,SCov2_features)
     df = get_df(codons_dict)
 
     df.to_csv(snakemake.output.csv,index= False)

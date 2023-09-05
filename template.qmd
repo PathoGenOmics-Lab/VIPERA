@@ -25,6 +25,7 @@ params:
   tree: ""
   tempest: ""
   SNV: ""
+  SNV_s: ""
   evo: ""
   div_value: ""
   panel: ""
@@ -34,6 +35,7 @@ params:
   stats_lm: ""
   table: ""
   sum_nv: ""
+  heat_tab: ""
 output-file: report.html
 ---
 <head>
@@ -45,41 +47,68 @@ output-file: report.html
 > Workflow: `r params$workflow_version`
 
 ```{r , echo= F,message= F, include = F}
-library(gdtools)
 library(jsonlite)
-register_gfont(family = "Montserrat")
-library(flextable)
-library(tidyverse)
+library(gt)
+library(tidyr)
+library(dplyr)
+library(heatmaply)
+library(readr)
+
+# values for diversity
 div_values <- fromJSON(params$div_value)
-stats <- read.csv(params$stats_lm)$value
 
-correlation <- as.numeric(stats[2])
-sub_rate <- as.numeric(stats[1])*365
+
+# values for temp-est
+
+stats <- fromJSON(params$stats_lm)
+
+correlation <- stats[["r2"]]
+sub_rate <- stats[["sub_rate"]]
 sub_rate <- round(sub_rate, digits = 2)
-p_value_lm <- as.numeric(stats[3])
-table <- read.csv(params$table)
-
+p_value_lm <- stats[["pvalue"]]
 
 # NV counts 
-counts <- read.csv(params$sum_nv)
+nv.counts <- fromJSON(params$sum_nv)
 
-n_SNV <- as.numeric(counts[counts$nv == "SNP","n"])
-n_INDELS <- as.numeric(counts[counts$nv == "INDEL","n"])
+n_SNV <- nv.counts[["SNV"]]
+n_INDELS <- nv.counts[["INDELS"]]
+
+# Summary table
+table <- read.csv(params$table)
+
+# heatmap
+
+vcf <- read_csv(params$heat_tab) 
+row.names(vcf) <- vcf$`...1`
+vcf <- vcf[-1]
+
+
+cor.mat <- cor(vcf)
 
 ```
 
 ## Samples summary
 ```{r, echo= F,message= F}
-flextable(table) %>%
-set_header_labels(
-  "Sample" = "Sample",
-  "Collection_Date" = "Collection Date",
-  "Lineaje" = "Lineaje"
+gt(table) %>%
+cols_label(
+  Sample = "Sample",
+  Collection_Date = "Collection Date",
+  Lineage = "Lineage"
 ) %>%
-bold(i = 1, bold = TRUE, part = "header") %>%
-flextable::align(align = "center") %>% 
-font(fontname = "Montserrat", part = "all") %>%
-autofit()
+tab_style(
+  style = list(
+    cell_text(weight = "bold")
+  ),
+  location = cells_column_labels()
+) %>%
+cols_align(
+  align = "center",
+  columns = everything()
+) %>% 
+opt_table_font(
+  font = google_font("Montserrat")
+)
+
 ```
 ## Evidence for chronic infection 
 
@@ -114,19 +143,27 @@ With the neighbur-joining tree, partistic distances to root has been correlated 
 
 ## Characterizing within-host evolution
 
-### Number of polimorphic sites
+### Number of polymorphic sites
 
-Sites with minor allele frequency > 0.05  are considered as polimorphic sites.
+Sites with minor allele frequency > 0.05  are considered as polymorphic sites.
 
-![**Figure 6.** Number of polimorphisms over time for the studied samples.](`r params$fig_cor_snp`)
+![**Figure 6.** Number of polymorphisms over time for the studied samples.](`r params$fig_cor_snp`)
 
 ### Description for within-host nucleotide variants 
 
-`r n_SNV` different SNV and `r n_INDELS` INDELS had been detected along the genome. In the **Figure 7** is shown their distribution along the genome and the variation in allele frequencies in the studied samples.
+`r n_SNV` different SNV and `r n_INDELS` INDELS had been detected along the genome. In the **Figure 7a** is shown their distribution along the genome and the variation in allele frequencies in the studied samples.
 
-![**Figure 7.** A\) Proportion of polimorphic sites along the genome calculated with 1000nt windows. B\) Nucleotide variants (NV) in the genomes of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV`)
+::: {.panel-tabset}
 
-### time dependency for the within-host nucleotide variants
+## Whole genome
+![**Figure 7a.** A\) Proportion of polymorphic sites along the genome calculated with 1000nt windows. B\) Nucleotide variants (NV) in the genomes of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV`)
+
+## Spike sequence
+
+![**Figure 7b.** A\) Proportion of polymorphic sites along the spike nucleotide sequence calculated with 1000nt windows. B\) Nucleotide variants (NV) in the spike sequences of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV_s`)
+:::
+
+### Time dependency for the within-host nucleotide variants
 
 The correlation with time is calculated for the allele frequency of each NV.
 
@@ -136,9 +173,24 @@ The significant correlated NV are swown in detail:
 
 ![**Figure 9.** Trend over time for the significantly correlated with time SNVs and for positions with more than 1 alternative allele. ](`r params$panel`)
 
+### Correlation between alternative alleles
+
+To see posible interactions between mutations, pairwise correlation between the alternative frequencies are calculated.
+
+```{r, echo= F,message= F, fig.align='center', fig.height= 150, fig.width= 180}
+
+heatmaply_cor(
+  cor.mat,
+  fontsize_row = 8, 
+  fontsize_col = 8,
+  column_text_angle = 90)
+
+```
+![**Figure 10.** Heatmap for pairwise correlation between frquencies for alternative alleles.]()
+
 ### dn/ds over time
 
-![**Figure 10.** Sinonymous mutations per sinonymous site **(dS)** and non sinonymous mutations mutations per non sinonymous site **(dN)** over time. The values are adjusted by the allele frequency.](`r params$evo`)
+![**Figure 11.** Sinonymous mutations per sinonymous site **(dS)** and non sinonymous mutations mutations per non sinonymous site **(dN)** over time. The values are adjusted by the allele frequency.](`r params$evo`)
 
 
 

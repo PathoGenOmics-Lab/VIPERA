@@ -5,6 +5,17 @@ library(ggtree)
 library(data.table)
 library(ggpubr)
 library(pegas)
+library(jsonlite)
+
+# legend thresholds for ml tree
+legend.names <- c(
+    tip_label = "Studied samples",
+    Bootstrap_pass = sprintf("bootstrap >= %s",snakemake@params[["boot_th"]]),
+    alrt_pass = sprintf("aLRT >= %s",snakemake@params[["alrt_th"]]),
+    boot_alrt_pass = sprintf("bootstrap >= %s & aLRT >= %s ",snakemake@params[["boot_th"]],snakemake@params[["alrt_th"]] )
+)
+
+
 
 # Write stdout and stderr to log file
 log <- file(snakemake@log[[1]], open = "wt")
@@ -81,20 +92,7 @@ tempest <- adephylo::distRoot(tree, "all", method = "patristic") %>% as.data.fra
                     left_join(select(metadata, ID,CollectionDate)) %>%
                      mutate(date_interval = as.numeric(as.Date(CollectionDate) - min(as.Date(CollectionDate))))
 
-### Datos modelo lineal
-model <- lm(distance ~ date_interval, data = tempest)
 
-df <- data.frame(
-  stat = c("sub_rate", "r2", "pvalue"),
-  values = c(
-    model$coefficients[[2]],
-    summary(model)$r.squared[[1]],
-    cor.test(tempest$distance, tempest$date_interval)$p.value
-  )
-)
-
-df <- column_to_rownames(df, var = "stat")
-write.csv(df, snakemake@output[["stats_lm"]], row.names = FALSE)
 
 # FIGURAS ####
 # Árbol por distancias ponderadas
@@ -117,7 +115,7 @@ ggsave(
 tempest_fig <- ggplot(tempest, aes(x = date_interval, y = distance)) +
   geom_smooth(method = "lm", fill = "gray95", alpha = 0.6, color = "red") +
   geom_point() +
-  labs(y = "Root to tip distance", x = "Time since first sample")
+  labs(y = "Root to tip distance", x = "Time since first sample (Days)")
 
 ggsave(filename = snakemake@output[["temest"]],
   plot = tempest_fig,
@@ -128,7 +126,7 @@ ggsave(filename = snakemake@output[["temest"]],
 )
 
 # ML tree para el contexto
-tip.color <- ifelse(tree_ml$tip.label %in% study_names, "blue", NA)
+tip.color <- ifelse(tree_ml$tip.label %in% study_names, "tip_label", NA)
 
 # Node labels contain SH-aLRT/UFboot values
 aLRT.values <- sapply(
@@ -147,19 +145,34 @@ aLRT.mask <- aLRT.values >= snakemake@params[["alrt_th"]]
 boot.mask <- bootstrap.values >= snakemake@params[["boot_th"]]
 
 node.color <- case_when(
-  aLRT.mask & boot.mask ~ "red",
-  !aLRT.mask & boot.mask ~ "#ff6600",
-  aLRT.mask & !boot.mask ~ "#ffbf51"
+  aLRT.mask & boot.mask ~ "boot_alrt_pass",
+  !aLRT.mask & boot.mask ~ "Bootstrap_pass",
+  aLRT.mask & !boot.mask ~ "alrt_pass"
 )
+
 
 study.mrca <- getMRCA(tree_ml, study_names)
 p <- ggtree(tree_ml, layout = "circular") +
           geom_highlight(node = study.mrca, colour = "red", fill = "red", alpha = 0.2) +
-          geom_tippoint(color = tip.color, shape = 1) +
+          geom_point(
+            aes(
+              color = c(tip.color,node.color), 
+              shape = c(rep("tip",length(tree_ml$tip.label)),rep("node",length(tree_ml$node.label)))
+              ),
+              show.legend = T
+              ) +
           geom_treescale(x = 0.0008) +
           geom_rootedge(0.0005) +
-          xlim(-0.0008, NA) +
-          geom_nodepoint(color = node.color, shape = 20)
+          xlim(-0.0008, NA) + 
+          scale_shape_manual(values = c(
+            tip = 1,
+            node = 20
+          ), guide = "none") + 
+          labs(color = "Class") + 
+          scale_color_manual(values = tree_colors,
+                            na.value = NA,
+                            labels = legend.names
+          )
 
 ggsave(
   filename = snakemake@output[["tree_ml"]],
@@ -169,3 +182,30 @@ ggsave(
   units = "mm",
   dpi = 250
 )
+
+print("saving tables")
+
+tempest %>% 
+  transmute(
+    sample = ID,
+    Distance = distance,
+    CollectionDate = CollectionDate,
+    DaysSinceFirst = date_interval
+  ) %>% 
+  write.csv(snakemake@output[["table"]], row.names = F)
+
+  print("saving stats")
+
+  ## Datos modelo lineal
+model <- lm(distance ~ date_interval, data = tempest)
+
+stats.lm <- list(
+  "sub_rate" = model$coefficients[[2]]*365,
+  "r2"       = summary(model)$r.squared[[1]],
+  "pvalue"   = cor.test(tempest$distance, tempest$date_interval)$p.value
+)
+
+json <- toJSON(stats.lm)
+
+write(json, snakemake@output[["json"]])
+

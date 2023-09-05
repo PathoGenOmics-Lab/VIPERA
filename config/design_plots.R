@@ -25,13 +25,6 @@ theme_update(text = element_text(size = 16,  family = "Montserrat"),
 
 # AJUSTES ####
 
-lineage_colors = c(B.1 = "#5CC7B2",
-                   B.1.165 = "#DB3A34",
-                   B.1.239 = "#E6913A",
-                   B.1.238= "#FBD966",
-                   B.1.399 = "#935FCA",
-                   B.1.400 = "#D5A6BD",
-                   Other = "gray39")
 
 gene_colors = c(M = "#B4D4B4",
                 N = "#B7B7B8",
@@ -41,7 +34,7 @@ gene_colors = c(M = "#B4D4B4",
                 S = "#F5CC9E",
                 E = "#B2E1EA",
                 ORF6 = "#F0D474",
-                ORF7a = "#AA88CB",
+                ORF7 = "#AA88CB",
                 ORF10 = "#CACB5D")
 
 snp_colors = c("C-26029-A" = "#e69138",
@@ -58,3 +51,26 @@ snp_colors = c("C-26029-A" = "#e69138",
                ,"C-4230-T" = "#93c47d",
                "Other" = "gray40")
 
+
+tree_colors = c(
+    tip_label = "blue",
+    Bootstrap_pass = "#ff6600",
+    alrt_pass = "#ffbf51",
+    boot_alrt_pass = "red"
+)
+
+NV_colors <- c(
+    Frameshift = "#568D63",
+    "In frame" = "black",
+    Intergenic = "#B27CF9",
+    No = "#AE584A",
+    yes = "#0248FD"
+)
+
+NV_names <- c(
+     Frameshift = "Frameshift",
+    "In frame" = "Inframe",
+    Intergenic = "Intergenic",
+    No = "Non synonymous",
+    yes = "Synonymous"
+)

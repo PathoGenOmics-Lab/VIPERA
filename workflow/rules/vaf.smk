@@ -83,7 +83,7 @@ rule mask_tsv:
         tsv = OUTDIR/f"{OUTPUT_NAME}.tsv",
         vcf = OUTDIR / "problematic_sites.vcf"
     output:
-        masked_tsv = OUTDIR/f"{OUTPUT_NAME}.masked.tsv"
+        masked_tsv = temp(OUTDIR/f"{OUTPUT_NAME}.masked.tsv")
     log:
         LOGDIR / "mask_tsv" / "log.txt"
     script:
