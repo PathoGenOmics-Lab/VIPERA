@@ -3,7 +3,8 @@ rule download_context:
     shadow: "shallow"
     conda: "../envs/gisaidr.yaml"
     input:
-        metadata = config["METADATA"]
+        metadata = config["METADATA"],
+        pango_report = OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv"
     params:
         gisaid_creds = config["GISAID_YAML"],
         date_window_span = 0.95,

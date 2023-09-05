@@ -44,8 +44,11 @@ else:
 LOGDIR = OUTDIR / "logs"
 
 ## report
-REPORT_DIR = Path(OUTDIR/"report")
-REPORT_DIR.mkdir(parents=True, exist_ok=True)
+REPORT_DIR_PLOTS = Path(OUTDIR/"report/plots")
+REPORT_DIR_PLOTS.mkdir(parents=True, exist_ok=True)
+
+REPORT_DIR_TABLES = Path(OUTDIR/"report/tables")
+REPORT_DIR_TABLES.mkdir(parents=True, exist_ok=True)
 
 
 # Rules

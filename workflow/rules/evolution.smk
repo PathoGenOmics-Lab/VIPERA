@@ -4,9 +4,10 @@ rule N_S_sites:
     params:
         genetic_code = "standard"
     input:
-        fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta"
+        fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
+        gb = OUTDIR/"reference.gb"
     output:
-        csv = OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv"
+        csv = temp(OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv")
     log:
         LOGDIR / "N_S_sites" / "log.txt"
     script:
