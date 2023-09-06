@@ -224,8 +224,8 @@ panel <- vcf %>%
   ) +
   labs(
     x = "Days since first sample",
-    y = "Frequency"
-    color = "NV) +
+    y = "Frequency",
+    color = "NV") +
   guides(color = guide_legend(ncol = 4))
 
 
