@@ -211,5 +211,5 @@ rule report:
                                                        table = '{input.table}',
                                                        sum_nv = '{input.sum_nv}',
                                                        heat_tab = '{input.heat_table}'))\" >{log} 2>&1
-        mv copy.qmd {output.html}
+        mv "$(dirname {input.qmd:q})/report.html" {output.html}
         """
