@@ -191,7 +191,8 @@ rule report:
     shell:
         """
         set +o pipefail
-        Rscript -e 'library(quarto)' -e \"quarto_render(input = '{input.qmd}',\
+        cp {input.qmd} copy.qmd
+        Rscript -e 'library(quarto)' -e \"quarto_render(input = copy.qmd,\
                                            execute_params=list( \
                                                        workflow_version='{params.workflow_version}',\
                                                        div='{input.diversity}',\
