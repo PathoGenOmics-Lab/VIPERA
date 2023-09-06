@@ -39,3 +39,12 @@ jobs:
           directory: ".test"
           snakefile: "workflow/Snakefile"
           args: "--configfile config/config.yaml .test/targets.yaml --cores 1 --use-conda"
+      - name: Pack logs
+        shell: bash
+        run: |
+          tar czf logs.tar.gz .test/output/logs
+      - name: Upload output file
+        uses: actions/upload-artifact@v3
+        with:
+          name: output-logs
+          path: logs.tar.gz
