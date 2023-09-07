@@ -4,6 +4,8 @@
 library(GISAIDR)
 library(tidyverse)
 library(glue)
+library(logger)
+log_threshold(INFO)
 
 CHKPT.ERROR.MSG <- paste(
     "Please provide a sequence dataset through the CONTEXT_FASTA parameter",
@@ -44,6 +46,7 @@ lineage.samples <- read_csv(snakemake@input[["pango_report"]]) %>%
     unique()
 
 
+log_info("Getting time windows for context samles")
 # Get time windows
 dates <- sample.metadata %>%
     pull(snakemake@params[["date_column"]]) %>%
@@ -56,6 +59,7 @@ padded.max.date <- max.date + snakemake@params[["date_window_paddding_days"]]
 print(glue("Time window (span={snakemake@params[['date_window_span']]}): {round(interval(min.date, max.date) / days(1))} days (from {min.date} to {max.date})"))
 print(glue("Padded time window (padding={snakemake@params[['date_window_paddding_days']]} days): {round(interval(padded.min.date, padded.max.date) / days(1))} days (from {padded.min.date} to {padded.max.date})"))
 
+log_info("Getting locations for context samples")
 # Get locations (if there are multiple, sample from all of them)
 locations <- sample.metadata %>%
     pull(snakemake@params[["location_column"]]) %>%
@@ -90,6 +94,7 @@ dataframes <- lapply(
 # Join results
 metadata <- bind_rows(dataframes)
 
+log_info("Removeing overlapping sequences")
 # Checkpoint: remove samples that overlap with target samples according to GISAID ID
 samples.accids <- sample.metadata %>%
     pull(snakemake@params[["samples_gisaid_accession_column"]])
@@ -145,6 +150,7 @@ downloads <- do.call(
 # Filter host
 downloads <- filter(downloads, host == snakemake@params[["host"]])
 
+log_info("Saving fasta file")
 # Export sequences in FASTA format
 cat("", file = snakemake@output[["fasta"]])
 for (i in seq_len(nrow(downloads))) {

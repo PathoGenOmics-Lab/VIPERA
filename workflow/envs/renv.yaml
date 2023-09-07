@@ -18,3 +18,4 @@ dependencies:
   - r-scales==1.2.1
   - r-showtext==0.9_6
   - r-jsonlite==1.8.5
+  - r-logger==0.2.2

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 
-
 import logging
 import pandas as pd
 from gb2seq.features import Features
@@ -23,20 +22,22 @@ replace_terry = {
 }
 
 
-def get_polymorphic_sites(df):
+def get_polimorphic_sites(df:pd.DataFrame) -> set:
+
     return set(df.POS)
 
 
-def window_calculation(sites, step, genome_size, coord):
+def window_calculation(sites:set, step:int, genome_size:int, coord:str) -> pd.DataFrame:
 
-    ft = Features(coord)
+    ft = Features(coord) # Create Features object to obtain annotations
     
     positions = []
     pct = []
     genes = []
     lim_sup = genome_size + 1
+
     for position in range(1, lim_sup):
-        # Add gene
+        
         if len(ft.getFeatureNames(position)) == 0:
             genes.append("Intergenic")
         else:
@@ -46,24 +47,28 @@ def window_calculation(sites, step, genome_size, coord):
         if position - step not in range(1, lim_sup):
             pct.append(0)
         else:
-            # Calculate SNPs
-            num_snp = 0
-            for x in sites:
-                if x in range(position - step, position + 1):
-                    num_snp += 1
+            # Calculate nº of polimorphisms in the window
+            num_snp = len([ x for x in sites if x in range(position - step, position + 1) ]) # Calculate nº of polimorphisms in the window
             pct.append(num_snp / step)
-        # Add positions
+        
         positions.append(position)
-    return pd.DataFrame({"position": positions, "fractions": pct, "gen": genes})
+
+    return pd.DataFrame({ "position": positions, "fractions": pct, "gen": genes })
 
 
 def main():
     logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
 
-    # Process
-    df = pd.read_table(snakemake.input.vcf)    
-    sites = get_polymorphic_sites(df)
+    df = pd.read_table(snakemake.input.vcf)
+
+    logging.info("Getting polimorphic sites")
+    sites = get_polimorphic_sites(df)
+
+    logging.info("Sliding window calculation of proportion of polimorphic sites")
+
     frame = window_calculation(sites, snakemake.params.step, 29903, snakemake.input.gb)
+    
+    logging.info("Saving results")
     frame.replace(replace_terry, inplace = True)
     frame.to_csv(snakemake.output.window_df,index= False)
 
