@@ -209,6 +209,6 @@ rule report:
                                                        stats_lm = '{input.stats_lm}',
                                                        table = '{input.table}',
                                                        sum_nv = '{input.sum_nv}',
-                                                       heat_tab = '{input.heat_table}'))\"
+                                                       heat_tab = '{input.heat_table}'))\" >{log} 2>&1
         mv "$(dirname {input.qmd:q})/report.html" {output.html}
         """
