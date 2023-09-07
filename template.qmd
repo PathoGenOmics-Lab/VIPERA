@@ -53,7 +53,6 @@ library(tidyr)
 library(dplyr)
 library(heatmaply)
 library(readr)
-
 # values for diversity
 div_values <- fromJSON(params$div_value)
 
@@ -84,7 +83,7 @@ vcf <- vcf[-1]
 
 
 cor.mat <- cor(vcf)
-
+cor.mat[is.na(cor.mat)] <- 0
 ```
 
 ## Samples summary
@@ -177,7 +176,7 @@ The significant correlated NV are swown in detail:
 
 To see posible interactions between mutations, pairwise correlation between the alternative frequencies are calculated.
 
-```{r, echo= F,message= F, fig.align='center', fig.height= 150, fig.width= 180}
+```{r, echo= F,message= F, fig.align='center'}
 
 heatmaply_cor(
   cor.mat,
