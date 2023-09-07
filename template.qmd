@@ -83,7 +83,7 @@ vcf <- vcf[-1]
 
 
 cor.mat <- cor(vcf)
-
+cor.mat[is.na(cor.mat)] <- 0
 ```
 
 ## Samples summary
