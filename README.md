@@ -1,8 +1,16 @@
-# Case-study-SARS-CoV-2
+# VIPERA
 
+<p align="center">
+  <img src="logo.jpg" title="VIPERA logo">
+</p>
+
+[![PGO badge](https://img.shields.io/badge/PathoGenOmics-Lab-yellow.svg)](https://pathogenomics.github.io/)
+[![Release](https://img.shields.io/github/v/release/PathoGenOmics-Lab/Case-study-SARS-CoV-2)](https://github.com/PathoGenOmics-Lab/Case-study-SARS-CoV-2/releases)
+[![Snakemake](https://img.shields.io/badge/snakemake-≥7.19-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
 ![Install workflow](https://github.com/PathoGenOmics-Lab/Case-study-SARS-CoV-2/actions/workflows/install.yml/badge.svg)
 ![Test workflow](https://github.com/PathoGenOmics-Lab/Case-study-SARS-CoV-2/actions/workflows/test.yml/badge.svg)
-[![Snakemake](https://img.shields.io/badge/snakemake-≥7.19-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
+
+A pipeline for SARS-CoV-2 Virus Intra-Patient Evolution Reporting and Analysis.
 
 ## Instructions
 
@@ -31,7 +39,7 @@ MAPPING_REFERENCES_FASTA:
   null
 ```
 
-You may also provide these information through the `--config` parameter.
+You may also provide this information through the `--config` parameter.
 
 Setting `CONTEXT_FASTA` to `null` will enable the automatic download of sequences
 from the GISAID SARS-CoV-2 database
@@ -106,7 +114,6 @@ snakemake --forceall --dag | dot -Tpng > .dag.png
 
 ![Snakemake rule graph](.dag.png)
 
-
 ## Methodology
 
 ### Pairwise distances between samples
@@ -127,5 +134,10 @@ $j = 1... J :$ Index over alleles.
 
 $M_{ij}$ : Frequency of allel $j$ in position $i$ for sequence $M$.
 
+## Contributors
 
+[![Contributors figure](https://contrib.rocks/image?repo=PathoGenOmics-Lab/Case-study-SARS-CoV-2)](https://github.com/PathoGenOmics-Lab/Case-study-SARS-CoV-2/graphs/contributors)
 
+## Citation
+
+Manuscript in progress.
