@@ -191,8 +191,7 @@ rule report:
     shell:
         """
         set +o pipefail
-        cp {input.qmd} copy.qmd
-        Rscript -e 'library(quarto)' -e \"quarto_render(input = copy.qmd,\
+        Rscript -e 'library(quarto)' -e \"quarto_render(input = '{input.qmd}',\
                                            execute_params=list( \
                                                        workflow_version='{params.workflow_version}',\
                                                        div='{input.diversity}',\
@@ -210,6 +209,6 @@ rule report:
                                                        stats_lm = '{input.stats_lm}',
                                                        table = '{input.table}',
                                                        sum_nv = '{input.sum_nv}',
-                                                       heat_tab = '{input.heat_table}'))\" >{log} 2>&1
+                                                       heat_tab = '{input.heat_table}'))\"
         mv "$(dirname {input.qmd:q})/report.html" {output.html}
         """
