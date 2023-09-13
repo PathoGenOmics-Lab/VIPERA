@@ -159,7 +159,8 @@ def main():
 
     logging.info("Reading input tables")
     df = read_and_concatenate_tsvs(snakemake.input.tsv, reference, outgroup, outgroup_name)
-    cov_list = df["REGION"].unique().tolist()
+    cov_list = snakemake.params.samples
+    cov_list.append(outgroup_name)
 
     logging.info(f"Parallelizing the calculation with {snakemake.threads} jobs")
     freq = create_freq_dict(snakemake.input.tsv)
