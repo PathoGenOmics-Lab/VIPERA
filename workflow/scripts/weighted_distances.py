@@ -106,11 +106,13 @@ def calc_fst_weir_cockerham(hs:float, ht:float) -> float:
 def get_dif_n(df:pd.DataFrame, COV1:str, COV2:str, reference:str, freq:dict) -> float:
 
     positions = df["POS"].unique().tolist()
-
+    if len(positions) == 0:
+        return 0
+    
     df1 = df[df["REGION"] == COV1]
     df2 = df[df["REGION"] == COV2]
 
-    return sum([calc_fst_weir_cockerham(*calc_heterozygosities(df1, df2, i -1, reference, freq)) 
+    return sum([calc_fst_weir_cockerham(*calc_heterozygosities(df1, df2, i-1, reference, freq)) 
                 for i in positions])
 
 
@@ -121,7 +123,6 @@ def _calculate_distance(df:pd.DataFrame, sample:str,reference:str, freq:dict, co
 def get_matrix(df:pd.DataFrame, cov_list:list, reference:str, freq:dict, num_jobs:int) -> pd.DataFrame:
 
     distance_matrix = {}
-
 
     with mp.Pool(num_jobs) as pool:
 
