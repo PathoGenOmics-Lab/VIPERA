@@ -105,7 +105,7 @@ def calc_fst_weir_cockerham(hs:float, ht:float) -> float:
 
 def get_dif_n(df:pd.DataFrame, COV1:str, COV2:str, reference:str, freq:dict) -> float:
 
-    positions = df["POS"].unique().tolist()
+    positions = df["POS"].astype("Int64").unique().tolist()
     if len(positions) == 0:
         return 0
     
