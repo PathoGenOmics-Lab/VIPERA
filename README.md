@@ -5,10 +5,10 @@
 </p>
 
 [![PGO badge](https://img.shields.io/badge/PathoGenOmics-Lab-yellow.svg)](https://pathogenomics.github.io/)
-[![Release](https://img.shields.io/github/v/release/PathoGenOmics-Lab/Case-study-SARS-CoV-2)](https://github.com/PathoGenOmics-Lab/Case-study-SARS-CoV-2/releases)
+[![Release](https://img.shields.io/github/v/release/PathoGenOmics-Lab/VIPERA)](https://github.com/PathoGenOmics-Lab/VIPERA/releases)
 [![Snakemake](https://img.shields.io/badge/snakemake-≥7.19-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
-![Install workflow](https://github.com/PathoGenOmics-Lab/Case-study-SARS-CoV-2/actions/workflows/install.yml/badge.svg)
-![Test workflow](https://github.com/PathoGenOmics-Lab/Case-study-SARS-CoV-2/actions/workflows/test.yml/badge.svg)
+![Install workflow](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/install.yml/badge.svg)
+![Test workflow](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/test.yml/badge.svg)
 
 A pipeline for SARS-CoV-2 Virus Intra-Patient Evolution Reporting and Analysis.
 
@@ -47,7 +47,7 @@ $M_{ij}$ : Frequency of allel $j$ in position $i$ for sequence $M$.
 
 ## Contributors
 
-[![Contributors figure](https://contrib.rocks/image?repo=PathoGenOmics-Lab/Case-study-SARS-CoV-2)](https://github.com/PathoGenOmics-Lab/Case-study-SARS-CoV-2/graphs/contributors)
+[![Contributors figure](https://contrib.rocks/image?repo=PathoGenOmics-Lab/VIPERA)](https://github.com/PathoGenOmics-Lab/VIPERA/graphs/contributors)
 
 ## Citation
 
