@@ -1,6 +1,5 @@
 # Snakemake
 /.snakemake/
-.snakemake*
 
 # Analysis files
 /data/bam/
@@ -13,7 +12,6 @@
 # report 
 *.html
 .ipynb_checkpoints/
-
 
 # Default credentials
 /config/gisaid.yaml
