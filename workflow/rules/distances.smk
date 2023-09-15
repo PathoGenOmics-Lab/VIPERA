@@ -2,6 +2,7 @@ rule weighted_distances:
     threads: 4
     conda: "../envs/biopython.yaml"
     params:
+        samples = expand("{sample}", sample = iter_samples()),
         mask_class = ["mask"],
         tsv_reference = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
         reference = OUTDIR/"reference.fasta"
