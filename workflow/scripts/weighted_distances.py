@@ -48,7 +48,7 @@ def tsv_from_seq(tsv_reference:str ,reference:str , reference_name:str) -> pd.Da
     pos = []
     alt = []
     for i in range(1,len(tsv_reference) + 1):
-        if i not in mask:
+        if i not in mask and tsv_reference[i -1] != reference[i-1]:
             pos.append(i)
             alt.append(reference[i -1])
 
@@ -103,29 +103,32 @@ def calc_fst_weir_cockerham(hs:float, ht:float) -> float:
     return (ht - hs) / ht if ht != 0 else 0
 
 
-def get_dif_n(df:pd.DataFrame, COV1:str, COV2:str, mask:tuple, reference:str, freq:dict) -> float:
+def get_dif_n(df:pd.DataFrame, COV1:str, COV2:str, reference:str, freq:dict) -> float:
 
+    positions = df["POS"].astype("Int64").unique().tolist()
+    if len(positions) == 0:
+        return 0
+    
     df1 = df[df["REGION"] == COV1]
     df2 = df[df["REGION"] == COV2]
 
-    return sum([calc_fst_weir_cockerham(*calc_heterozygosities(df1, df2, i, reference, freq)) 
-                for i in range(len(reference)) if i + 1 not in mask])
+    return sum([calc_fst_weir_cockerham(*calc_heterozygosities(df1, df2, i-1, reference, freq)) 
+                for i in positions])
 
 
-def _calculate_distance(df:pd.DataFrame, sample:str, mask_positions:tuple, reference:str, freq:dict, cov_list:list) -> list:
-    return [get_dif_n(df, sample, cov, mask_positions, reference, freq) for cov in cov_list]
+def _calculate_distance(df:pd.DataFrame, sample:str,reference:str, freq:dict, cov_list:list) -> list:
+    return [get_dif_n(df, sample, cov, reference, freq) for cov in cov_list]
 
 
 def get_matrix(df:pd.DataFrame, cov_list:list, reference:str, freq:dict, num_jobs:int) -> pd.DataFrame:
 
     distance_matrix = {}
-    mask_positions = parse_vcf()
 
     with mp.Pool(num_jobs) as pool:
 
         results = pool.starmap(
             _calculate_distance,
-            [ (df, sample, mask_positions, reference, freq, cov_list) for sample in cov_list ]
+            [ (df, sample, reference, freq, cov_list) for sample in cov_list ]
         )
 
     for i, sample in enumerate(cov_list):
@@ -156,7 +159,8 @@ def main():
 
     logging.info("Reading input tables")
     df = read_and_concatenate_tsvs(snakemake.input.tsv, reference, outgroup, outgroup_name)
-    cov_list = df["REGION"].unique().tolist()
+    cov_list = snakemake.params.samples
+    cov_list.append(outgroup_name)
 
     logging.info(f"Parallelizing the calculation with {snakemake.threads} jobs")
     freq = create_freq_dict(snakemake.input.tsv)
