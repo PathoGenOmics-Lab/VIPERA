@@ -66,6 +66,7 @@ rule freyja_plot:
 rule general_NV_description:
     conda: "../envs/renv.yaml"
     params:
+        samples = expand("{sample}", sample = iter_samples()),
         design = config["PLOTS"],
         nsp = config["NSP"],
         metadata = config["METADATA"]
