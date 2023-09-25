@@ -51,6 +51,7 @@ window <- read_csv(snakemake@input[["window"]])
 
 # Obtain sample names ordered by CollectionDate
 date_order <- read_csv(snakemake@params[["metadata"]]) %>%
+  filter(ID %in% snakemake@params[["samples"]]) %>%
   arrange(CollectionDate) %>%
   pull(ID) %>%
   unique()
@@ -190,6 +191,7 @@ variants <- vcf %>%
     labels = NV_names,
     values = NV_colors
     ) +
+  scale_y_discrete(drop = FALSE) +
   labs(
     x = "SARS-CoV-2 genome position",
     y = "Sample",
@@ -324,6 +326,7 @@ variants_spike <- vcf %>%
     labels = NV_names,
     values  = NV_colors
     ) +
+  scale_y_discrete(drop = FALSE) +
     labs(
       x = "SARS-CoV-2 genome position",
       y = "Sample",
