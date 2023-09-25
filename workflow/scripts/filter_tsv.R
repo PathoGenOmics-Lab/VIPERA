@@ -43,7 +43,9 @@ data <- mutate(
         TRUE             ~  "No"
     )
 )
+# Remove duplicated features
 
+data <- distinct(data, pick(!GFF_FEATURE), .keep_all = TRUE)
 
 log_info("Saving results")
 write_tsv(
