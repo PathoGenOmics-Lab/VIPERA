@@ -37,7 +37,6 @@ date_order <- read_csv(snakemake@params[["metadata"]]) %>%
 # Simplify features names and create SNP variable
 vcf <- vcf %>%
   mutate(
-    GFF_FEATURE = gsub(":.*", "", GFF_FEATURE),
     SNP = case_when(
       !is.na(REF_AA) ~ paste(
         GFF_FEATURE,
@@ -47,6 +46,13 @@ vcf <- vcf %>%
         ALT_AA,
         sep = ""
         ),
+      GFF_FEATURE != "Intergenic" ~ paste(
+        GFF_FEATURE,
+        ":",
+        POS - 1,
+        "-",
+        ALT
+      ),
       TRUE ~ paste(
         REF,
         POS,
