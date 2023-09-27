@@ -460,7 +460,12 @@ vcf_snp %>%
 
 # STATS FOR REPORTING
 
-n_indels <- filter(vcf, NV_class == "INDEL") %>% length()
+n_indels <- vcf %>%
+  filter(NV_class == "INDEL") %>%
+  pull(SNP) %>%
+  unique() %>%
+  length()
+
 n_snv <- length(unique(vcf$SNP)) - n_indels
 
 list(
