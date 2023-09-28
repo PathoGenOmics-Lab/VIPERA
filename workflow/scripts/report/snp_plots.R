@@ -256,7 +256,7 @@ ggsave(
 # PLOT TABLES ####
 
 log_info("Saving coorelation table")
-cor.df %>%
+cor.df.fill %>%
   transmute(
     NV = snp,
     PearsonCor = cor,
