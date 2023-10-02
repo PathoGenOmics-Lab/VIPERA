@@ -17,7 +17,6 @@ date_order <- read_csv(snakemake@params[["metadata"]]) %>%
 # Create SNP variable and select useful variables from vcf
 vcf <- vcf %>%
   mutate(
-    GFF_FEATURE = gsub(":.*", "", GFF_FEATURE),
     SNP = case_when(
       !is.na(REF_AA) ~ paste(
         GFF_FEATURE,

@@ -52,6 +52,19 @@ rule snps_to_ancestor:
         sed 's/'$ref'/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}
         """
 
+rule annotation:
+    threads:1
+    conda: "../envs/biopython.yaml"
+    shadow: "shallow"
+    input:
+        gb = OUTDIR/"reference.gb",
+        ref = OUTDIR/"reference.fasta"
+    output:
+        df = temp(OUTDIR/"annotation.csv")
+    log:
+        LOGDIR / "annotation" / "log.txt"
+    script:
+        "../scripts/report/get_annotation.py"
 
 rule format_tsv:
     threads:1
@@ -94,7 +107,8 @@ rule filter_tsv:
     threads: 1
     conda: "../envs/renv.yaml"
     input: 
-        tsv = OUTDIR/f"{OUTPUT_NAME}.masked.tsv"
+        tsv = OUTDIR/f"{OUTPUT_NAME}.masked.tsv",
+        annotation = OUTDIR/"annotation.csv"
     output:
         filtered_tsv = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     log:

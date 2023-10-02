@@ -51,6 +51,7 @@ window <- read_csv(snakemake@input[["window"]])
 
 # Obtain sample names ordered by CollectionDate
 date_order <- read_csv(snakemake@params[["metadata"]]) %>%
+  filter(ID %in% snakemake@params[["samples"]]) %>%
   arrange(CollectionDate) %>%
   pull(ID) %>%
   unique()
@@ -102,14 +103,13 @@ vcf <- vcf %>%
       TRUE ~ "SNP"
       ),
     Class = case_when(
-      is.na(GFF_FEATURE) ~ "Intergenic",
+      GFF_FEATURE == "Intergenic" ~ "Intergenic",
       TRUE ~ synonimous
       ),
     POS = as.numeric(POS)
     ) %>%
   rowwise() %>%
   mutate(
-    gene = as.character(window[window$position == POS, "gen"]),
     indel_len = case_when(
       NV_class == "INDEL" &
         str_detect(SNP, fixed("--")) ~
@@ -119,7 +119,7 @@ vcf <- vcf %>%
         str_length(strsplit(SNP, "-+")[[1]][2])
       ),
     indel_class = case_when(
-      gene == "Intergenic" ~ "Intergenic",
+      GFF_FEATURE == "Intergenic" ~ "Intergenic",
       NV_class == "INDEL" &
         indel_len %% 3 == 0 ~ "In frame",
       NV_class == "INDEL" &
@@ -129,7 +129,7 @@ vcf <- vcf %>%
   ungroup() %>%
   mutate(
     group = case_when(
-      gene == "Intergenic" ~ "Intergenic",
+      GFF_FEATURE == "Intergenic" ~ "Intergenic",
       NV_class == "SNP" ~ Class,
       NV_class == "INDEL" ~ indel_class
       )
@@ -190,6 +190,7 @@ variants <- vcf %>%
     labels = NV_names,
     values = NV_colors
     ) +
+  scale_y_discrete(drop = FALSE) +
   labs(
     x = "SARS-CoV-2 genome position",
     y = "Sample",
@@ -308,7 +309,7 @@ window_plot_spike <- window %>%
 variants_spike <- vcf %>%
   filter(
     ALT_FREQ > 0,
-      POS %in% spike.pos
+      POS %in% c(min(spike.pos):max(spike.pos))
       ) %>%
   ggplot() +
   aes(
@@ -324,6 +325,7 @@ variants_spike <- vcf %>%
     labels = NV_names,
     values  = NV_colors
     ) +
+  scale_y_discrete(drop = FALSE) +
     labs(
       x = "SARS-CoV-2 genome position",
       y = "Sample",
@@ -332,6 +334,7 @@ variants_spike <- vcf %>%
       alpha = "Frequency",
       fill = "Region"
       )
+
 
 
 figura_spike <- ggarrange(
@@ -368,7 +371,7 @@ figur_SNP_time <- vcf_snp %>%
   group_by(REGION) %>%
   summarise(
     CollectionDate = min(as.Date(CollectionDate)),
-    n = n()
+    n = n_distinct(POS)
     ) %>%
   ungroup() %>%
   ggplot() +
@@ -447,7 +450,7 @@ vcf_snp %>%
   group_by(REGION) %>%
   summarise(
     CollectionDate = min(as.Date(CollectionDate)),
-    n_PolymorphicSites = n()
+    n_PolymorphicSites = n_distinct(POS)
     ) %>%
   ungroup() %>%
   rename(sample = REGION) %>%
@@ -457,7 +460,12 @@ vcf_snp %>%
 
 # STATS FOR REPORTING
 
-n_indels <- filter(vcf, NV_class == "INDEL") %>% length()
+n_indels <- vcf %>%
+  filter(NV_class == "INDEL") %>%
+  pull(SNP) %>%
+  unique() %>%
+  length()
+
 n_snv <- length(unique(vcf$SNP)) - n_indels
 
 list(
