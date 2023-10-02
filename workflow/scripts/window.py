@@ -27,7 +27,7 @@ def get_polimorphic_sites(df:pd.DataFrame) -> set:
     return set(df.POS)
 
 
-def window_calculation(sites:set, step:int, genome_size:int, coord:str) -> pd.DataFrame:
+def window_calculation(sites:set, window:int, step:int, genome_size:int, coord:str) -> pd.DataFrame:
 
     ft = Features(coord) # Create Features object to obtain annotations
     
@@ -36,7 +36,7 @@ def window_calculation(sites:set, step:int, genome_size:int, coord:str) -> pd.Da
     genes = []
     lim_sup = genome_size + 1
 
-    for position in range(1, lim_sup):
+    for position in range(1, lim_sup, step):
         
         if len(ft.getFeatureNames(position)) == 0:
             genes.append("Intergenic")
@@ -44,12 +44,12 @@ def window_calculation(sites:set, step:int, genome_size:int, coord:str) -> pd.Da
             genes.append(list(ft.getFeatureNames(position))[0])
     
         # Add percent (excluding initial and final positions)
-        if position - step not in range(1, lim_sup):
+        if position - window not in range(1, lim_sup):
             pct.append(0)
         else:
             # Calculate nº of polimorphisms in the window
-            num_snp = len([ x for x in sites if x in range(position - step, position + 1) ]) # Calculate nº of polimorphisms in the window
-            pct.append(num_snp / step)
+            num_snp = len([ x for x in sites if x in range(position - window, position + 1) ]) # Calculate nº of polimorphisms in the window
+            pct.append(num_snp / window)
         
         positions.append(position)
 
@@ -66,7 +66,7 @@ def main():
 
     logging.info("Sliding window calculation of proportion of polimorphic sites")
 
-    frame = window_calculation(sites, snakemake.params.step, 29903, snakemake.input.gb)
+    frame = window_calculation(sites, snakemake.params.window, snakemake.params.step, 29903, snakemake.input.gb)
     
     logging.info("Saving results")
     frame.replace(replace_terry, inplace = True)

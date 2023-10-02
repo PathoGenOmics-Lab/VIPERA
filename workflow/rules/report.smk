@@ -14,7 +14,8 @@ rule heatmap:
 rule window:
     conda: "../envs/biopython.yaml"
     params:
-        step = 1000
+        window = 1000,
+        step = 1
     input:
         vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         gb = OUTDIR/"reference.gb"
@@ -66,6 +67,7 @@ rule freyja_plot:
 rule general_NV_description:
     conda: "../envs/renv.yaml"
     params:
+        samples = expand("{sample}", sample = iter_samples()),
         design = config["PLOTS"],
         nsp = config["NSP"],
         metadata = config["METADATA"]
