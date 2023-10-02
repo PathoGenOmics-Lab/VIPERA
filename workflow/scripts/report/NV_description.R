@@ -309,7 +309,7 @@ window_plot_spike <- window %>%
 variants_spike <- vcf %>%
   filter(
     ALT_FREQ > 0,
-      POS %in% spike.pos
+      POS %in% c(min(spike.pos):max(spike.pos))
       ) %>%
   ggplot() +
   aes(
@@ -334,6 +334,7 @@ variants_spike <- vcf %>%
       alpha = "Frequency",
       fill = "Region"
       )
+
 
 
 figura_spike <- ggarrange(
