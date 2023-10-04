@@ -20,7 +20,7 @@ tsv <- tsv %>%
     mutate(
         variant = case_when(
             is.na(variant) ~ paste(POS, REF, ">", ALT),
-            TRUE ~ variant
+            TRUE ~ paste(GFF_FEATURE, ":", variant)
         )
     )
 
