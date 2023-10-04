@@ -16,25 +16,11 @@ date_order <- read_csv(snakemake@params[["metadata"]]) %>%
 
 # Create SNP variable and select useful variables from vcf
 vcf <- vcf %>%
-  mutate(
-    SNP = case_when(
-      !is.na(REF_AA) ~ paste(
-        GFF_FEATURE,
-        ":",
-        REF_AA,
-        POS_AA,
-        ALT_AA,
-        sep = ""
-      ),
-      TRUE ~ paste(REF, POS, ALT, sep = "")
-    )
-  ) %>%
-  unique() %>%
-  dplyr::select(SNP, REGION, ALT_FREQ)
+  dplyr::select(variant, REGION, ALT_FREQ)
 
 vcf <- vcf %>%
   pivot_wider(
-    names_from = SNP,
+    names_from = variant,
     values_from = ALT_FREQ,
     values_fill = 0
   ) %>%
