@@ -14,7 +14,7 @@ log_info("Reading data")
 vcf <- read_tsv(snakemake@input[["ann_vcf"]], comment = "##")
 tsv <- read_tsv(snakemake@input[["pre_tsv"]])
 
-tsv["variant"] <- str_extract(vcf$INFO, "p\\.[^|]*")
+tsv["variant"] <- str_extract(vcf$INFO, "p\\.([^|]*)", group = 1)
 
 tsv <- tsv %>%
     mutate(
