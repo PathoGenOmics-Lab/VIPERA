@@ -142,7 +142,7 @@ rule variants_effect:
     shell:
         """
         snpeff {params.ref_name} {input.vcf} > {output.ann_vcf}
-        rm snpEff_genes.txt snpEff_summary.html
+        
         """
 
 rule vcf_to_tsv:
