@@ -98,7 +98,7 @@ cor.df.fill <- lapply(
     function(snp) {
       df <- filter(
         vcf,
-        SNP == snp
+        variant == snp
       )
 
       test <- cor.test(

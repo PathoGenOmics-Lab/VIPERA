@@ -137,6 +137,8 @@ rule variants_effect:
         vcf = OUTDIR/f"{OUTPUT_NAME}.vcf"
     output:
         ann_vcf = OUTDIR/f"{OUTPUT_NAME}.annotated.vcf"
+    log:
+        LOGDIR / "variants_effect" / "log.txt"
     shell:
         " snpeff {params.ref_name} {input.vcf} > {output.ann_vcf}"
 
@@ -148,6 +150,8 @@ rule vcf_to_tsv:
         pre_tsv = OUTDIR/f"{OUTPUT_NAME}.masked.prefiltered.tsv"
     output:
         tsv = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
+    log:
+        LOGDIR / "vcf_to_tsv" / "log.txt"
     script:
         "../scripts/vcf_to_tsv.R"
 
