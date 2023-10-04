@@ -22,18 +22,14 @@ N_S_position <- read_delim(snakemake@input[["N_S"]])
 
 # Create SNP variable and select useful variables
 vcf <- vcf %>%
-  mutate(
-    SNP = paste(REF, POS, ALT, sep = "-")) %>%
   dplyr::select(
-    SNP,
+    variant,
     REGION,
     ALT_FREQ,
     GFF_FEATURE,
-    synonimous
-  ) %>%
-  rowwise() %>%
-  mutate(POS = strsplit(SNP, "-")[[1]][2]) %>%
-  ungroup()
+    synonimous,
+    POS
+  ) 
 
 # Create variable for days sins first sample in metadata
 metadata <- metadata %>%
