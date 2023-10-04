@@ -14,13 +14,13 @@ log_info("Reading data")
 vcf <- read_tsv(snakemake@input[["ann_vcf"]], comment = "##")
 tsv <- read_tsv(snakemake@input[["pre_tsv"]])
 
-tsv["variant"] <- str_extract(a$INFO, "p\\.[^|]*")
+tsv["variant"] <- str_extract(vcf$INFO, "p\\.[^|]*")
 
 tsv <- tsv %>%
     mutate(
         variant = case_when(
-            is.na(variant) ~ paste(POS, REF, ">", ALT),
-            TRUE ~ paste(GFF_FEATURE, ":", variant)
+            is.na(variant) ~ paste(POS, REF, ">", ALT, sep = ""),
+            TRUE ~ paste(GFF_FEATURE, ":", variant, sep = "")
         )
     )
 

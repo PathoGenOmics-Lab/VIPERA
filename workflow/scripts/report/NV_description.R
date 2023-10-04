@@ -57,15 +57,17 @@ date_order <- read_csv(snakemake@params[["metadata"]]) %>%
   unique()
 
 # Create SNP variable and select useful variables
-vcf <- dplyr::select(
-  variant,
-  REGION,
-  ALT_FREQ,
-  GFF_FEATURE,
-  synonimous,
-  POS,
-  ALT
-    )
+
+vcf <- vcf %>%
+  dplyr::select(
+    variant,
+    REGION,
+    ALT_FREQ,
+    GFF_FEATURE,
+    synonimous,
+    POS,
+    ALT
+      )
 
 # Df with gene length for scheme
 notation_empty <- data.frame(
