@@ -147,7 +147,7 @@ rule vcf_to_tsv:
         ann_vcf = OUTDIR/f"{OUTPUT_NAME}.annotated.vcf",
         pre_tsv = OUTDIR/f"{OUTPUT_NAME}.masked.prefiltered.tsv"
     output:
-        tsv = OUTDIR/f"{OUTPUT_NAME}.masked.prefiltered.tsv"
+        tsv = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     script:
         "../scripts/vcf_to_tsv.R"
 
