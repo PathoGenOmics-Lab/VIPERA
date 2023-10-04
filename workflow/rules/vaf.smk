@@ -141,8 +141,8 @@ rule variants_effect:
         LOGDIR / "variants_effect" / "log.txt"
     shell:
         """
-        snpeff {params.ref_name} {input.vcf} > {output.ann_vcf}
-        
+        snpeff eff {params.ref_name} {input.vcf} > {output.ann_vcf}
+        rm snpEff_genes.txt snpEff_summary.html
         """
 
 rule vcf_to_tsv:
