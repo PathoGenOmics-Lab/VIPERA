@@ -116,7 +116,7 @@ opt_table_font(
 ### Lineage admixture
 The most probably lineage admixture for each sample has been calculated with software [Freyja](https://github.com/andersen-lab/Freyja).
 
-![**Figure 1.** Lineage composition of samples according to Freyja. Samples are ordered by collection date.](`r params$freyja`)
+![**Figure 1.** Lineage admixture calculated with Freyja for each sample. SSamples in the X-axis are ordered chronologically, from more ancient to newer.](`r params$freyja`)
 
 ### Nucleotide diversity comparison
 
