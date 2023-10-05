@@ -86,7 +86,7 @@ cor.mat <- cor(vcf)
 cor.mat[is.na(cor.mat)] <- 0
 ```
 
-## Samples summary
+## Summary of the target samples dataset 
 ```{r, echo= F,message= F}
 gt(table) %>%
 cols_label(
@@ -109,7 +109,7 @@ opt_table_font(
 )
 
 ```
-## Evidence for chronic infection 
+## Evidence for single, serially-sampled infection
 
 
 
@@ -140,7 +140,7 @@ With the neighbur-joining tree, partistic distances to root has been correlated 
 
 ![**Figure 5.** Partistic distance to root in the neighbour-joining tree against days since first sample. Red line indicates the adjusted linear regression model.](`r params$tempest`)
 
-## Characterizing within-host evolution
+## Evolutionary trajectory of the serially-sampled SARS-CoV-2 infection
 
 ### Number of polymorphic sites
 
@@ -187,7 +187,7 @@ heatmaply_cor(
 ```
 ![**Figure 10.** Heatmap for pairwise correlation between frquencies for alternative alleles.]()
 
-### dn/ds over time
+### Non-synonymous to synonymous rate ratio over time
 
 ![**Figure 11.** Sinonymous mutations per sinonymous site **(dS)** and non sinonymous mutations mutations per non sinonymous site **(dN)** over time. The values are adjusted by the allele frequency.](`r params$evo`)
 
