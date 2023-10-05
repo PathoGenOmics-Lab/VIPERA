@@ -122,13 +122,14 @@ ggsave(
 )
 
 # DATA JSON #####
+p.value <- ifelse(st$p.value >= 0.05, pvalue.norm,pvalue.emp)
 
 list.div <- list(
                 "diversity" = diversity,
-                "p.value" = ifelse(st$p.value >= 0.05, pvalue.norm,pvalue.emp),
-                "normal.pvalue" = st$p.value,
-                "norm.text" = ifelse(st$p.value >= 0.05, "","not"),
-                "type.test" = ifelse(st$p.value >= 0.05, "","empirical"),
+                "p.value" = ifelse(p.value >= 0.001, p.value, "< 0.001"),
+                "normal.pvalue" = ifelse(st$p.value >= 0.001, p.value, "< 0.001"),
+                "norm.text" = ifelse(st$p.value >= 0.05, "", "not"),
+                "type.test" = ifelse(st$p.value >= 0.05, "", "empirical"),
                 "boot.reps" = snakemake@params[["bootstrap_reps"]],
                 "sample.size" = length(study_aln)
 )
