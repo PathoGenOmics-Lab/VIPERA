@@ -144,7 +144,7 @@ rule variants_effect:
         exec >{log}                                                                    
         exec 2>&1
         
-        snpeff eff {params.ref_name} {input.vcf} > {output.ann_vcf} || true
+        snpEff eff {params.ref_name} {input.vcf} > {output.ann_vcf} || true
         rm snpEff_genes.txt snpEff_summary.html
         """
 
