@@ -22,7 +22,8 @@ vcf <- vcf %>%
   pivot_wider(
     names_from = variant,
     values_from = ALT_FREQ,
-    values_fill = 0
+    values_fill = 0,
+    values_fn = sum
   ) %>%
   arrange(factor(REGION, levels = date_order)) %>%
   column_to_rownames(var = "REGION")
