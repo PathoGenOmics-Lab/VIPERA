@@ -118,14 +118,6 @@ The most probably lineage admixture for each sample has been calculated with sof
 
 ![**Figure 1.** Lineage admixture calculated with Freyja for each sample. SSamples in the X-axis are ordered chronologically, from more ancient to newer.](`r params$freyja`)
 
-### Nucleotide diversity comparison
-
-Nucleotide diversity is has been calculated for $`r div_values[["boot.reps"]]`$ bootstrap replicates of $`r div_values[["sample.size"]]`$ samples in the context data. The distribution for the nuclotide diversity is assumed to `r div_values[["norm.text"]]` be normal with a p-value = $`r div_values[["normal.pvalue"]]`$ (*Shapiro-test*).
-
-The nucleotide diversity value for the studied samples is $`r div_values[["diversity"]] `$. Assuming the context samples to be patient-independent, the `r div_values[["type.test"]]` p-value for a reduced nucleotide diversity in the studied samples is $`r div_values[["p.value"]]`$.
-
-![**Figure 2.** Analysis of the nucleotide diversity (π). The orange line describe a normal distribution with the same mean and standard deviation as the distribution of π values obtained from $`r div_values[["boot.reps"]]`$ samples of $`r div_values[["sample.size"]]`$ sequences from the context. The red vertical line indicate the π value for the studied samples.](`r params$div`)
-
 ### Phylogeny and temporal signal
 
 A maximum likelihood tree has been adjusted with the context sequences. The studied samples `r stats[["monophyly"]]` monophyletic. The clade that contains all the studied samples is supported by a **UFBoot** score of $`r stats[["boot"]]`$% and a **SH-aLRT** score of  $`r stats[["alrt"]]`$%.
@@ -136,9 +128,18 @@ In addition, phylogeny has been reconstructed using pairwise distances between t
 
 ![**Figure 4.** Neighbor-joining trees constructed with the pairwise allele frequency-weighted distances.](`r params$tree`)
 
-With the neighbur-joining tree, partistic distances to root has been correlated with time obtaining a $R^2$ of **`r correlation`** with a p-value of $`r p_value_lm`$. The estimated substitution rate is **`r sub_rate`** substitutions per year.
+With the neighbor-joining tree, partistic distances to root has been correlated with time obtaining a $R^2$ of **`r correlation`** with a p-value of $`r p_value_lm`$. The estimated substitution rate is **`r sub_rate`** substitutions per year.
 
 ![**Figure 5.** Scatterplot showing the relationship between root-to-tip distances and the number of days passed since the first sample. The red line show the linear model fit.](`r params$tempest`)
+
+### Nucleotide diversity comparison
+
+Nucleotide diversity is has been calculated for $`r div_values[["boot.reps"]]`$ bootstrap replicates of $`r div_values[["sample.size"]]`$ samples in the context data. The distribution for the nuclotide diversity is assumed to `r div_values[["norm.text"]]` be normal with a p-value = $`r div_values[["normal.pvalue"]]`$ (*Shapiro-test*).
+
+The nucleotide diversity value for the studied samples is $`r div_values[["diversity"]] `$. Assuming the context samples to be patient-independent, the `r div_values[["type.test"]]` p-value for a reduced nucleotide diversity in the studied samples is $`r div_values[["p.value"]]`$.
+
+![**Figure 2.** Analysis of the nucleotide diversity (π). The orange line describe a normal distribution with the same mean and standard deviation as the distribution of π values obtained from $`r div_values[["boot.reps"]]`$ samples of $`r div_values[["sample.size"]]`$ sequences from the context. The red vertical line indicate the π value for the studied samples.](`r params$div`)
+
 
 ## Evolutionary trajectory of the serially-sampled SARS-CoV-2 infection
 
