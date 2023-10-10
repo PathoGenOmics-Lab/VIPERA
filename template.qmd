@@ -112,7 +112,7 @@ opt_table_font(
 
 
 ### Lineage admixture
-The most probably lineage admixture for each sample has been calculated with software [Freyja](https://github.com/andersen-lab/Freyja).
+The most probable lineage admixture for each sample has been calculated using the software [Freyja](https://github.com/andersen-lab/Freyja).
 
 ![**Figure 1.** Lineage admixture calculated with Freyja for each sample. SSamples in the X-axis are ordered chronologically, from more ancient to newer.](`r params$freyja`)
 
@@ -122,17 +122,17 @@ A maximum likelihood tree has been adjusted with the context sequences. The stud
 
 ![**Figure 2.** Maximum-likelihood phylogeny with 1000 support replicates of target datasets with their context samples. The clade that contains the studied samples is squared in red.](`r params$tree_ml`)
 
-In addition, phylogeny has been reconstructed using pairwise distances between target samples taking into account allele frequencies detected in sequencing data.
+In addition, a neighbor-joining tree has been constructed using pairwise distances between target samples taking into account allele frequencies detected in sequencing data.
 
 ![**Figure 3.** Neighbor-joining trees constructed with the pairwise allele frequency-weighted distances.](`r params$tree`)
 
-With the neighbor-joining tree, partistic distances to root has been correlated with time obtaining a $R^2$ of **`r correlation`** with a p-value of $`r p_value_lm`$. The estimated substitution rate is **`r sub_rate`** substitutions per year.
+With the neighbor-joining tree, patristic distances to root have been correlated with time, obtaining a $R^2$ of **`r correlation`** with a p-value of $`r p_value_lm`$. The estimated substitution rate is **`r sub_rate`** substitutions per year.
 
 ![**Figure 4.** Scatterplot showing the relationship between root-to-tip distances and the number of days passed since the first sample. The red line show the linear model fit.](`r params$tempest`)
 
 ### Nucleotide diversity comparison
 
-Nucleotide diversity is has been calculated for $`r div_values[["boot.reps"]]`$ bootstrap replicates of $`r div_values[["sample.size"]]`$ samples in the context data. The distribution for the nuclotide diversity is assumed to `r div_values[["norm.text"]]` be normal with a p-value = $`r div_values[["normal.pvalue"]]`$ (*Shapiro-test*).
+Nucleotide diversity has been calculated for $`r div_values[["boot.reps"]]`$ bootstrap replicates of $`r div_values[["sample.size"]]`$ samples in the context data. The distribution for the nuclotide diversity is assumed to `r div_values[["norm.text"]]` be normal with a p-value = $`r div_values[["normal.pvalue"]]`$ (*Shapiro-test*).
 
 The nucleotide diversity value for the studied samples is $`r div_values[["diversity"]] `$. Assuming the context samples to be patient-independent, the `r div_values[["type.test"]]` p-value for a reduced nucleotide diversity in the studied samples is $`r div_values[["p.value"]]`$.
 
@@ -149,7 +149,7 @@ Sites with minor allele frequency > 0.05  are considered as polymorphic sites. C
 
 ### Description for within-host nucleotide variants 
 
-`r n_SNV` different SNV and `r n_INDELS` INDELS had been detected along the genome. In the **Figure 7** is shown their distribution along the genome and the variation in allele frequencies in the studied samples.
+A total of `r n_SNV` different SNVs and `r n_INDELS` INDELs have been detected along the genome. **Figure 7** shows their distribution along the genome and the variation in allele frequencies in the studied samples.
 
 ::: {.panel-tabset}
 
@@ -167,13 +167,13 @@ The correlation with time is calculated for the allele frequency of each NV.
 
 ![**Figure 9.** Pearson’s correlation coefficients and BH-adjusted p-values for all detected nucleotide variants. Red dashed line indicates adjusted p = 0.05. Labeled dots represent nucleotide variants correlated with time (adjusted p < 0.05).](`r params$volcano`)
 
-The significant correlated NV are swown in detail:
+The significantly correlated NV are shown in detail:
 
 ![**Figure 10.** Time series of the relative allele frequencies for nucleotide variants (NV) with a significant time correlation, and for those that share their site in the genome. Each subplot depicts the progression of the allele frequencies in time for a given genome position.](`r params$panel`)
 
 ### Correlation between alternative alleles
 
-To see posible interactions between mutations, pairwise correlation between the alternative frequencies are calculated.
+To see possible interactions between mutations, pairwise correlation between the alternative frequencies are calculated.
 
 ```{r, echo= F,message= F, fig.align='center'}
 
