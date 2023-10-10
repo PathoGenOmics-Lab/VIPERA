@@ -125,7 +125,7 @@ ggsave(
 p.value <- ifelse(st$p.value >= 0.05, pvalue.norm,pvalue.emp)
 
 list.div <- list(
-                "diversity" = diversity,
+                "diversity" = format(diversity, scientific = TRUE),
                 "p.value" = ifelse(p.value >= 0.001, p.value, "< 0.001"),
                 "normal.pvalue" = ifelse(st$p.value >= 0.001, p.value, "< 0.001"),
                 "norm.text" = ifelse(st$p.value >= 0.05, "", "not"),
