@@ -277,7 +277,10 @@ monophyletic <- ifelse(is.monophyletic(tree_ml, study_names), "are", "are not")
 list(
   "sub_rate" = model$coefficients[[2]] * 365,
   "r2"       = summary(model)$r.squared[[1]],
-  "pvalue"   = cor.test(tempest$distance, tempest$date_interval)$p.value,
+  "pvalue"   = ifelse(cor.test(tempest$distance, tempest$date_interval)$p.value < 0.001,
+  "< 0.001",
+  cor.test(tempest$distance, tempest$date_interval)$p.value
+  ),
   "boot"     = strsplit(study.node, "/")[[1]][2] %>% as.numeric(),
   "alrt"     = strsplit(study.node, "/")[[1]][1] %>% as.numeric(),
   "monophyly"= monophyletic
