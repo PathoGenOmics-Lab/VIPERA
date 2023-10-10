@@ -70,7 +70,9 @@ rule general_NV_description:
         samples = expand("{sample}", sample = iter_samples()),
         design = config["PLOTS"],
         nsp = config["NSP"],
-        metadata = config["METADATA"]
+        metadata = config["METADATA"],
+        window = 1000,
+        step = 1
     input:
         window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
