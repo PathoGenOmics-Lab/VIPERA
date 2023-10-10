@@ -470,7 +470,9 @@ n_snv <- length(unique(vcf$SNP)) - n_indels
 
 list(
   "INDELS" = n_indels,
-  "SNV" = n_snv
+  "SNV" = n_snv,
+  "window" = snakemake@params[["window"]],
+  "step"   = snakemake@params[["step"]]
 ) %>%
 toJSON() %>%
 write(snakemake@output[["json"]])
