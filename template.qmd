@@ -1,7 +1,5 @@
 ---
-title: "Case-study-SARS-CoV-2" 
-author: "Jordi Sevilla"
-institute: "PathoGenOmics-lab"
+title: "VIPERA: report for the studied samples" 
 date: last-modified
 date-format: "DD-MM-YYYY"
 title-block-banner: true

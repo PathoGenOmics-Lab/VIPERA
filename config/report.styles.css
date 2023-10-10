@@ -8,6 +8,10 @@
     background-origin: content-box; 
   } 
 
+.title {
+  font-family: Montserrat;
+  color: #FFFFFF
+}
 html {
   font-family: Montserrat;
   color: #000000;
