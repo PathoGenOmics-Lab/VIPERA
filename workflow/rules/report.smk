@@ -20,7 +20,7 @@ rule window:
         vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         gb = OUTDIR/"reference.gb"
     output:
-        window_df = temp(OUTDIR/f"{OUTPUT_NAME}.window.csv"),
+        window_df = REPORT_DIR_TABLES/f"{OUTPUT_NAME}.window.csv",
     log:
         LOGDIR / "window" / "log.txt"
     script:
@@ -74,7 +74,7 @@ rule general_NV_description:
         window = 1000,
         step = 1
     input:
-        window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
+        window = REPORT_DIR_TABLES/f"{OUTPUT_NAME}.window.csv",
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     output:
         fig = report((REPORT_DIR_PLOTS/"figure_7a.png").resolve()),
