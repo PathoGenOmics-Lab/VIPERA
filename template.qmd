@@ -130,15 +130,15 @@ The nucleotide diversity value for the studied samples is $`r div_values[["diver
 
 A maximum likelihood tree has been adjusted with the context sequences. The studied samples `r stats[["monophyly"]]` monophyletic. The clade that contains all the studied samples is supported by a **UFBoot** score of $`r stats[["boot"]]`$% and a **SH-aLRT** score of  $`r stats[["alrt"]]`$%.
 
-![**Figure 3.** Maximum-likelihood tree whith studied and context sequence. Studied sequence are represented in red.](`r params$tree_ml`)
+![**Figure 3.** Maximum-likelihood phylogeny with 1000 support replicates of target datasets with their context samples. The clade that contains the studied samples is squared in red.](`r params$tree_ml`)
 
 In addition, phylogeny has been reconstructed using pairwise distances between target samples taking into account allele frequencies detected in sequencing data.
 
-![**Figure 4.** Neighbour-joining tree for studied samples.](`r params$tree`)
+![**Figure 4.** Neighbor-joining trees constructed with the pairwise allele frequency-weighted distances.](`r params$tree`)
 
 With the neighbur-joining tree, partistic distances to root has been correlated with time obtaining a $R^2$ of **`r correlation`** with a p-value of $`r p_value_lm`$. The estimated substitution rate is **`r sub_rate`** substitutions per year.
 
-![**Figure 5.** Partistic distance to root in the neighbour-joining tree against days since first sample. Red line indicates the adjusted linear regression model.](`r params$tempest`)
+![**Figure 5.** Scatterplot showing the relationship between root-to-tip distances and the number of days passed since the first sample. The red line show the linear model fit.](`r params$tempest`)
 
 ## Evolutionary trajectory of the serially-sampled SARS-CoV-2 infection
 
