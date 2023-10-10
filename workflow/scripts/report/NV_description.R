@@ -360,7 +360,7 @@ ggsave(
 
 # Figure for nº of heterozygus sites for each sample
 log_info("Plotting nº of heterozygus sites for each sample")
-figur_SNP_time <- vcf_snp %>%
+figur_SNP_table <- vcf_snp %>%
   filter(ALT_FREQ <= 0.95) %>%
   select(!GFF_FEATURE) %>%
   unique() %>%
@@ -373,7 +373,9 @@ figur_SNP_time <- vcf_snp %>%
     CollectionDate = min(as.Date(CollectionDate)),
     n = n_distinct(POS)
     ) %>%
-  ungroup() %>%
+  ungroup()
+
+figur_SNP_time <- figur_SNP_table %>%
   ggplot() +
   aes(
     x = CollectionDate,
@@ -385,7 +387,6 @@ figur_SNP_time <- vcf_snp %>%
     alpha = 0.6
     ) +
   geom_point() +
-  stat_cor(geom = "label") +
   labs(
     x = "Date",
     y = "Nº of polimorphic sites"
@@ -467,12 +468,15 @@ n_indels <- vcf %>%
   length()
 
 n_snv <- length(unique(vcf$SNP)) - n_indels
-
+model <- lm(n ~ CollectionDate, data = figur_SNP_table)
+cortest <- cor.test(figur_SNP_table$n, as.numeric(figur_SNP_table$CollectionDate))
 list(
   "INDELS" = n_indels,
   "SNV" = n_snv,
   "window" = snakemake@params[["window"]],
-  "step"   = snakemake@params[["step"]]
+  "step"   = snakemake@params[["step"]],
+  "r2"     = summary(model)$r.squared[[1]],
+  "value"  = ifelse(cortest$p.value < 0.001, "< 0.001", cortest$p.value)
 ) %>%
 toJSON() %>%
 write(snakemake@output[["json"]])
