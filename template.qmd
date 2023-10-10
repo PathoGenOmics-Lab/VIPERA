@@ -143,7 +143,7 @@ The nucleotide diversity value for the studied samples is $`r div_values[["diver
 
 ### Number of polymorphic sites
 
-Sites with minor allele frequency > 0.05  are considered as polymorphic sites.
+Sites with minor allele frequency > 0.05  are considered as polymorphic sites. Collection date explains the number of polymorphic sites with an $R^2$ of **`r nv.counts[["r2"]]`** with a p-value of $`r nv.counts[["value"]]`$.
 
 ![**Figure 6.**  Number of polymorphic sites depending on collection date. The red line shows the linear model fit.](`r params$fig_cor_snp`)
 
