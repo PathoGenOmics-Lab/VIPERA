@@ -128,7 +128,7 @@ The nucleotide diversity value for the studied samples is $`r div_values[["diver
 
 ### Phylogeny and temporal signal
 
-A maximum likelihood tree has been adjusted with the context sequences:
+A maximum likelihood tree has been adjusted with the context sequences. The studied samples `r stats[["monophyly"]]` monophyletic. The clade that contains all the studied samples is supported by a **UFBoot** score of $`r stats[["boot"]]`$% and a **SH-aLRT** score of  $`r stats[["alrt"]]`$%.
 
 ![**Figure 3.** Maximum-likelihood tree whith studied and context sequence. Studied sequence are represented in red.](`r params$tree_ml`)
 
