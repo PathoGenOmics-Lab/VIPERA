@@ -122,9 +122,9 @@ The most probably lineage admixture for each sample has been calculated with sof
 
 Nucleotide diversity is has been calculated for $`r div_values[["boot.reps"]]`$ bootstrap replicates of $`r div_values[["sample.size"]]`$ samples in the context data. The distribution for the nuclotide diversity is assumed to `r div_values[["norm.text"]]` be normal with a p-value = $`r div_values[["normal.pvalue"]]`$ (*Shapiro-test*).
 
-The nucleotide diversity value for the studied samples is $`r div_values[["diversity"]]`$. Assuming the context samples to be patient-independent, the `r div_values[["type.test"]]` p-value for a reduced nucleotide diversity in the studied samples is $`r div_values[["p.value"]]`$.
+The nucleotide diversity value for the studied samples is $`r div_values[["diversity"]] `$. Assuming the context samples to be patient-independent, the `r div_values[["type.test"]]` p-value for a reduced nucleotide diversity in the studied samples is $`r div_values[["p.value"]]`$.
 
-![**Figure 2.** Distribution of nucleotide diversity pi for 1000 randomly selected groups from context sequences. Red line indicates the pi value for the studied samples.](`r params$div`)
+![**Figure 2.** Analysis of the nucleotide diversity (π). The orange line describe a normal distribution with the same mean and standard deviation as the distribution of π values obtained from $`r div_values[["boot.reps"]]`$ samples of $`r div_values[["sample.size"]]`$ sequences from the context. The red vertical line indicate the π value for the studied samples.](`r params$div`)
 
 ### Phylogeny and temporal signal
 
