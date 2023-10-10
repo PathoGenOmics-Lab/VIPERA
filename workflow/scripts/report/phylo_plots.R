@@ -53,8 +53,12 @@ study_names <- read.dna(
   snakemake@input[["study_fasta"]],
   format = "fasta",
   as.matrix = FALSE,
-  ) %>%
-  names()
+  )
+
+study_names <- study_names[!startsWith(names(study_names), snakemake@config[["ALIGNMENT_REFERENCE"]])]
+
+study_names <- names(study_names)
+
 
 # Obtain sample names ordered by CollectionDate
 date_order <- read_csv(snakemake@params[["metadata"]]) %>%
@@ -268,10 +272,18 @@ tempest %>%
 # TEMPEST STATATS
 model <- lm(distance ~ date_interval, data = tempest)
 
+# TREE STATS
+study.node <- tree_ml$node.label[study.mrca - length(tip.color)]
+monophyletic <- ifelse(is.monophyletic(tree_ml, study_names), "are", "are not")
+
+
 list(
   "sub_rate" = model$coefficients[[2]] * 365,
   "r2"       = summary(model)$r.squared[[1]],
-  "pvalue"   = cor.test(tempest$distance, tempest$date_interval)$p.value
+  "pvalue"   = cor.test(tempest$distance, tempest$date_interval)$p.value,
+  "boot"     = strsplit(study.node, "/")[[1]][2] %>% as.numeric(),
+  "alrt"     = strsplit(study.node, "/")[[1]][1] %>% as.numeric(),
+  "monophyly"= monophyletic
 ) %>%
 toJSON() %>%
 write(snakemake@output[["json"]])
