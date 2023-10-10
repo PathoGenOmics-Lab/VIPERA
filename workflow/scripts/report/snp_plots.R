@@ -6,7 +6,9 @@ library(ggrepel)
 library(logger)
 log_threshold(INFO)
 
-
+# Get colors
+color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = TRUE)]
+color = color[grep('white', color, invert = TRUE)]
 # Import file with plots style
 source(snakemake@params[["design"]])
 
@@ -221,7 +223,7 @@ panel <- vcf %>%
     y = ALT_FREQ,
     color = SNP
   ) +
-  scale_color_viridis_d() +
+  scale_color_manual(values = sample(color, length(subset))) +
   geom_point() +
   geom_line() +
   theme(
