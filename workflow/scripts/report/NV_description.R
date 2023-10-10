@@ -198,6 +198,9 @@ variants <- vcf %>%
     color = "Classification",
     alpha = "Frequency",
     fill = "Region"
+    ) +
+    guides(
+      fill = guide_legend(reverse = TRUE)
     )
 
 
@@ -333,7 +336,10 @@ variants_spike <- vcf %>%
       color = "Classification",
       alpha = "Frequency",
       fill = "Region"
-      )
+      ) +
+    guides(
+      fill = guide_legend(reverse = TRUE)
+    )
 
 
 
