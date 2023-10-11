@@ -17,7 +17,7 @@ rule fetch_alignment_gb:
     params:
         ref = config["ALIGNMENT_REFERENCE"]
     output:
-        fasta = temp(OUTDIR/"reference.gb")
+        fasta = OUTDIR/"reference.gb"
     log:
         LOGDIR / "fetch_alignment_reference" / "log.txt"
     shell:
@@ -61,6 +61,6 @@ rule fetch_problematic_vcf:
     log:
         LOGDIR / "fetch_problematic_vcf" / "log.txt"
     output:
-        temp(OUTDIR / "problematic_sites.vcf")
+        OUTDIR / "problematic_sites.vcf"
     shell:
         "curl {params.url} -o {output} -s 2> {log}"
