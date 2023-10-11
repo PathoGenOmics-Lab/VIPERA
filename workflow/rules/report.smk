@@ -72,7 +72,7 @@ rule general_NV_description:
         nsp = config["NSP"],
         metadata = config["METADATA"],
         window = 1000,
-        step = 1
+        step = 50
     input:
         window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
