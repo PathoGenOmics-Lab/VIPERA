@@ -15,7 +15,7 @@ rule window:
     conda: "../envs/biopython.yaml"
     params:
         window = 1000,
-        step = 1
+        step = 50
     input:
         vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         gb = OUTDIR/"reference.gb"
