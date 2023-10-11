@@ -20,7 +20,7 @@ rule window:
         vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         gb = OUTDIR/"reference.gb"
     output:
-        window_df = temp(OUDIR/f"{OUTPUT_NAME}.window.csv"),
+        window_df = temp(OUTDIR/f"{OUTPUT_NAME}.window.csv"),
     log:
         LOGDIR / "window" / "log.txt"
     script:
