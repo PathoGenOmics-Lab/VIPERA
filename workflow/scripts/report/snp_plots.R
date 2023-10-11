@@ -38,34 +38,8 @@ date_order <- read_csv(snakemake@params[["metadata"]]) %>%
 
 # Simplify features names and create SNP variable
 vcf <- vcf %>%
-  mutate(
-    SNP = case_when(
-      !is.na(REF_AA) ~ paste(
-        GFF_FEATURE,
-        ":",
-        REF_AA,
-        POS_AA,
-        ALT_AA,
-        sep = ""
-        ),
-      GFF_FEATURE != "Intergenic" ~ paste(
-        GFF_FEATURE,
-        ":",
-        POS - 1,
-        "-",
-        ALT
-      ),
-      TRUE ~ paste(
-        REF,
-        POS,
-        ALT,
-        sep = ""
-        )
-      )
-    ) %>%
-  unique() %>%
   dplyr::select(
-    SNP,
+    variant,
     REGION,
     ALT_FREQ,
     POS
@@ -109,7 +83,7 @@ vcf <- arrange(
 # Get list with all different polymorphisms
 SNPs <- pull(
     vcf,
-    SNP
+    variant
     ) %>%
   unique()
 
@@ -126,7 +100,7 @@ cor.df.fill <- lapply(
     function(snp) {
       df <- filter(
         vcf,
-        SNP == snp
+        variant == snp
       )
 
       test <- cor.test(
@@ -198,14 +172,14 @@ sign <- filter(
 # SNPs which are in positions with more than one alternative allele
 dup <- vcf %>%
   select(
-    SNP,
+    variant,
     POS
   ) %>%
   unique() %>%
   group_by(POS) %>%
   filter(n() > 1) %>%
   ungroup() %>%
-  pull(SNP) %>%
+  pull(variant) %>%
   unique()
 
 subset <- c(sign, dup) %>%
@@ -216,12 +190,12 @@ plot.height <- ceiling(length(subset) / 4) * 42
 
 log_info("PLotting SNPs trends in time")
 panel <- vcf %>%
-  filter(SNP %in% subset) %>%
+  filter(variant %in% subset) %>%
   ggplot() +
   aes(
     x = interval,
     y = ALT_FREQ,
-    color = SNP
+    color = variant
   ) +
   scale_color_manual(values = sample(color, length(subset))) +
   geom_point() +
@@ -271,13 +245,14 @@ cor.df.fill %>%
 
 log_info("Saving SNPs trends table")
 vcf %>%
-  filter(SNP %in% subset) %>%
+  filter(variant %in% subset) %>%
   transmute(
     sample = REGION,
     POS = POS,
-    NV = SNP,
+    NV = variant,
     ALT_FREQ = ALT_FREQ,
     DaysSinceFirst = interval
     ) %>%
     write.csv(snakemake@output[["table_2"]], row.names = FALSE)
+
 
