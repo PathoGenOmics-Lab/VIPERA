@@ -1,5 +1,6 @@
 ---
 title: "VIPERA: report for the studied samples" 
+subtitle: "Workflow: `r params$workflow_version`"
 date: last-modified
 date-format: "DD-MM-YYYY"
 title-block-banner: true
@@ -42,7 +43,6 @@ output-file: report.html
   <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 </head>
 
-> Workflow: `r params$workflow_version`
 
 ```{r , echo= F,message= F, include = F}
 library(jsonlite)
