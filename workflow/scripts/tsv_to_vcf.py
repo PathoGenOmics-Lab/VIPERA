@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import pandas as pd
-import sys
+import logging
 
 def tsv_to_vcf(tsv_file, vcf_file):
     # Read the TSV file
@@ -34,6 +34,9 @@ def tsv_to_vcf(tsv_file, vcf_file):
             vcf.write(f'{chrom}\t{pos}\t.\t{ref}\t{alt}\t.\t.\n')
 
 def main():
+    logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
+
+    logging.info("Converting from TSV to VCF format")
     input_tsv_file = snakemake.input.tsv
     output_vcf_file = snakemake.output.vcf
     tsv_to_vcf(input_tsv_file, output_vcf_file)
