@@ -47,7 +47,7 @@ rule fetch_alignment_annotation:
     params:
         ref = config["ALIGNMENT_REFERENCE"]
     output:
-        OUTDIR/"reference.gff3"
+        temp(OUTDIR/"reference.gff3")
     log:
         LOGDIR / "fetch_alignment_annotation" / "log.txt"
     shell:
