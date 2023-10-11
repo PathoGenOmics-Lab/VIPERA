@@ -6,6 +6,8 @@ PROBLEMATIC_VCF_URL:
   "https://raw.githubusercontent.com/W-L/ProblematicSites_SARS-CoV2/da322c32004f7b16bdaa6a8ee7fd24d56e79d9dc/problematic_sites_sarsCov2.vcf"
 FEATURES_JSON:
   "config/sarscov2_features.json"
+GENETIC_CODE_JSON:
+  "config/standard_genetic_code.json"
 TREE_MODEL:
   "GTR+F+I+G4"
 UFBOOT_REPS:
