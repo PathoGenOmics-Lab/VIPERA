@@ -2,7 +2,7 @@
 
 import logging
 import json
-import copy
+import itertools as it
 import pandas as pd
 from gb2seq.alignment import Gb2Alignment
 from gb2seq.features import Features
@@ -15,36 +15,30 @@ def split_into_codons(seq: str) -> list:
     return codons
 
 
-def potential_changes_dict(genetic_code: dict) -> dict:
-    """Generate a dictionary with S and N pre-calculated for all possible codons (key:codon, value: (S,N)"""
-    potential_changes = {   "S": {  "AAA":0.0,"AAC":0.0,"AAG":0.0,"AAT":0.0,"ACA":0.0,"ACC":0.0,"ACG":0.0,"ACT":0.0,"AGA":0.0,"AGC":0.0, \
-                                    "AGG":0.0,"AGT":0.0,"ATA":0.0,"ATC":0.0,"ATG":0.0,"ATT":0.0,"CAA":0.0,"CAC":0.0,"CAG":0.0,"CAT":0.0, \
-                                    "CCA":0.0,"CCC":0.0,"CCG":0.0,"CCT":0.0,"CGA":0.0,"CGC":0.0,"CGG":0.0,"CGT":0.0,"CTA":0.0,"CTC":0.0,"CTG":0.0, \
-                                    "CTT":0.0,"GAA":0.0,"GAC":0.0,"GAG":0.0,"GAT":0.0,"GCA":0.0,"GCC":0.0,"GCG":0.0,"GCT":0.0,"GGA":0.0,"GGC":0.0, \
-                                    "GGG":0.0,"GGT":0.0,"GTA":0.0,"GTC":0.0,"GTG":0.0,"GTT":0.0,"TAA":0.0,"TAC":0.0,"TAG":0.0,"TAT":0.0,"TCA":0.0, \
-                                    "TCC":0.0,"TCG":0.0,"TCT":0.0,"TGA":0.0,"TGC":0.0,"TGG":0.0,"TGT":0.0,"TTA":0.0,"TTC":0.0,"TTG":0.0,"TTT":0.0},
-                            "N": {  "AAA":0.0,"AAC":0.0,"AAG":0.0,"AAT":0.0,"ACA":0.0,"ACC":0.0,"ACG":0.0,"ACT":0.0,"AGA":0.0,"AGC":0.0,"AGG":0.0, \
-                                    "AGT":0.0,"ATA":0.0,"ATC":0.0,"ATG":0.0,"ATT":0.0,"CAA":0.0,"CAC":0.0,"CAG":0.0,"CAT":0.0,"CCA":0.0,"CCC":0.0,"CCG":0.0, \
-                                    "CCT":0.0,"CGA":0.0,"CGC":0.0,"CGG":0.0,"CGT":0.0,"CTA":0.0,"CTC":0.0,"CTG":0.0,"CTT":0.0,"GAA":0.0,"GAC":0.0,"GAG":0.0, \
-                                    "GAT":0.0,"GCA":0.0,"GCC":0.0,"GCG":0.0,"GCT":0.0,"GGA":0.0,"GGC":0.0,"GGG":0.0,"GGT":0.0,"GTA":0.0,"GTC":0.0,"GTG":0.0, \
-                                    "GTT":0.0,"TAA":0.0,"TAC":0.0,"TAG":0.0,"TAT":0.0,"TCA":0.0,"TCC":0.0,"TCG":0.0,"TCT":0.0,"TGA":0.0,"TGC":0.0,"TGG":0.0, \
-                                    "TGT":0.0,"TTA":0.0,"TTC":0.0,"TTG":0.0,"TTT":0.0}}
-    # Mutate (substitutions) all possible codons in the given genetic code, and count proportions of mutations that are synonymous and non-synonmyous
+def calculate_potential_changes(genetic_code: dict) -> dict:
+    """Generate a dictionary with S and N pre-calculated for all possible codons"""
+    # Initialize structure
+    nts = set(["A", "G", "T", "C"])
+    potential_changes = {"S": {}, "N": {}}
+    for codon in it.product(nts, repeat=3):
+        potential_changes["S"]["".join(codon)] = 0.
+        potential_changes["N"]["".join(codon)] = 0.
+    # Mutate (substitutions) all possible codons in the given genetic code
+    # and count proportions of mutations that are synonymous and non-synonmyous
     for codon in genetic_code.keys():
         for codon_p in range(0, 3):
             nts = ["A", "G", "T", "C"]
             # Do not consider self substitutions, e.g. A->A
             nts.remove(codon[codon_p]) 
-            # ...and for each nucleotide that the bp can change 
             for nt in nts:
-                codon_mutated = list(copy.deepcopy(codon))
-                codon_mutated[codon_p] = nt  # mutate the basepair
-                codon_mutated = "".join(codon_mutated)
-                # ...count how many of them are synonymous.
-                if genetic_code[codon] == genetic_code[codon_mutated]:
-                    potential_changes["S"][codon]+=1.0/3.0 
+                codon_mutated = list(codon)
+                # Mutate the basepair
+                codon_mutated[codon_p] = nt
+                # Count how many of them are synonymous
+                if genetic_code[codon] == genetic_code["".join(codon_mutated)]:
+                    potential_changes["S"][codon] += 1/3.
                 else:
-                    potential_changes["N"][codon]+=1.0/3.0
+                    potential_changes["N"][codon] += 1/3.
     return potential_changes
 
 
@@ -57,15 +51,14 @@ def get_df(codons: dict, genetic_code: dict) -> pd.DataFrame:
     keys = []
     N_sites = []
     S_sites = []
-    values = potential_changes_dict(genetic_code)
-    for key,item in codons.items():
+    values = calculate_potential_changes(genetic_code)
+    for key, item in codons.items():
         keys.append(key)
         N = sum([values["N"][x] for x in item if x in values["N"].keys()])
         S = sum([values["S"][x] for x in item if x in values["S"].keys()])
         N_sites.append(N)
         S_sites.append(S) 
-    
-    return pd.DataFrame({ "gene":keys, "N":N_sites, "S":S_sites })
+    return pd.DataFrame({"gene": keys, "N": N_sites, "S": S_sites})
 
 
 def main():
