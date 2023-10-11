@@ -36,3 +36,7 @@ NSP:
   "../data/report_files/nsp_annotation.csv"
 REPORT_QMD:
   "../template.qmd"
+FEATURES_JSON:
+  "../config/sarscov2_features.json"
+GENETIC_CODE_JSON:
+  "../config/standard_genetic_code.json"
