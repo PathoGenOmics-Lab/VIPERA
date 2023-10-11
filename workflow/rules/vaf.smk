@@ -110,8 +110,55 @@ rule filter_tsv:
         tsv = OUTDIR/f"{OUTPUT_NAME}.masked.tsv",
         annotation = OUTDIR/"annotation.csv"
     output:
-        filtered_tsv = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
+        filtered_tsv = OUTDIR/f"{OUTPUT_NAME}.masked.prefiltered.tsv"
     log:
         LOGDIR / "filter_tsv" / "log.txt"
     script:
         "../scripts/filter_tsv.R"
+
+rule tsv_to_vcf:
+    threads: 1
+    conda: "../envs/biopython.yaml"
+    input: 
+        tsv = OUTDIR/f"{OUTPUT_NAME}.masked.prefiltered.tsv",
+    output:
+        vcf = OUTDIR/f"{OUTPUT_NAME}.vcf"
+    log:
+        LOGDIR / "tsv_to_vcf" / "log.txt"
+    script:
+        "../scripts/tsv_to_vcf.py"
+
+rule variants_effect:
+    threads: 1
+    conda: "../envs/snpeff.yaml"
+    params:
+        ref_name = config["ALIGNMENT_REFERENCE"]
+    input:
+        vcf = OUTDIR/f"{OUTPUT_NAME}.vcf"
+    output:
+        ann_vcf = OUTDIR/f"{OUTPUT_NAME}.annotated.vcf"
+    log:
+        LOGDIR / "variants_effect" / "log.txt"
+    shell:
+        """
+        exec >{log}                                                                    
+        exec 2>&1
+        
+        snpEff eff {params.ref_name} {input.vcf} > {output.ann_vcf} || true
+        rm snpEff_genes.txt snpEff_summary.html
+        """
+
+rule vcf_to_tsv:
+    threads: 1
+    conda: "../envs/renv.yaml"
+    input:
+        ann_vcf = OUTDIR/f"{OUTPUT_NAME}.annotated.vcf",
+        pre_tsv = OUTDIR/f"{OUTPUT_NAME}.masked.prefiltered.tsv"
+    output:
+        tsv = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
+    log:
+        LOGDIR / "vcf_to_tsv" / "log.txt"
+    script:
+        "../scripts/vcf_to_tsv.R"
+
+

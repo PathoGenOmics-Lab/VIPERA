@@ -57,21 +57,17 @@ date_order <- read_csv(snakemake@params[["metadata"]]) %>%
   unique()
 
 # Create SNP variable and select useful variables
+
 vcf <- vcf %>%
-  mutate(
-    SNP = paste(REF, POS, ALT, sep = "-")
-    ) %>%
   dplyr::select(
-    SNP,
+    variant,
     REGION,
     ALT_FREQ,
     GFF_FEATURE,
-    synonimous
-    ) %>%
-  rowwise() %>%
-  mutate(POS = strsplit(SNP, "-")[[1]][2]) %>%
-  ungroup()
-
+    synonimous,
+    POS,
+    ALT
+      )
 
 # Df with gene length for scheme
 notation_empty <- data.frame(
@@ -98,8 +94,8 @@ log_info("Classifying variants")
 vcf <- vcf %>%
   mutate(
     NV_class = case_when(
-      str_detect(SNP, fixed("--")) |
-      str_detect(SNP, fixed("+")) ~ "INDEL",
+      str_detect(ALT, fixed("-")) |
+      str_detect(ALT, fixed("+")) ~ "INDEL",
       TRUE ~ "SNP"
       ),
     Class = case_when(
@@ -111,12 +107,8 @@ vcf <- vcf %>%
   rowwise() %>%
   mutate(
     indel_len = case_when(
-      NV_class == "INDEL" &
-        str_detect(SNP, fixed("--")) ~
-        str_length(strsplit(SNP, "--")[[1]][2]),
-      NV_class == "INDEL" &
-        str_detect(SNP, fixed("-+")) ~
-        str_length(strsplit(SNP, "-+")[[1]][2])
+      NV_class == "INDEL"  ~
+        str_length(ALT) - 1
       ),
     indel_class = case_when(
       GFF_FEATURE == "Intergenic" ~ "Intergenic",
@@ -362,8 +354,6 @@ ggsave(
 log_info("Plotting nº of heterozygus sites for each sample")
 figur_SNP_time <- vcf_snp %>%
   filter(ALT_FREQ <= 0.95) %>%
-  select(!GFF_FEATURE) %>%
-  unique() %>%
   left_join(
     read_csv(snakemake@params[["metadata"]]),
     by = c("REGION" = "ID")
@@ -409,14 +399,14 @@ vcf %>%
   select(
     REGION,
     POS,
-    SNP,
+    variant,
     ALT_FREQ,
     NV_class,
     group
   ) %>%
   rename(
     sample = REGION,
-    NV = SNP,
+    Variant = variant,
     Class = group
   ) %>%
   filter(ALT_FREQ > 0) %>%
@@ -462,11 +452,11 @@ vcf_snp %>%
 
 n_indels <- vcf %>%
   filter(NV_class == "INDEL") %>%
-  pull(SNP) %>%
+  pull(variant) %>%
   unique() %>%
   length()
 
-n_snv <- length(unique(vcf$SNP)) - n_indels
+n_snv <- length(unique(vcf$variant)) - n_indels
 
 list(
   "INDELS" = n_indels,
