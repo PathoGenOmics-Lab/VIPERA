@@ -13,7 +13,7 @@ def main():
     logging.info("Reading features")
     ft = Features(snakemake.input.gb)
     with open(snakemake.input.features) as f:
-        feature_key = list(json.load(f))
+        feature_key = json.load(f)
 
     logging.info("Reading reference")
     reference = str(next(SeqIO.parse(snakemake.input.ref, "fasta")).seq)
