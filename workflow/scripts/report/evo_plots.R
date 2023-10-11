@@ -77,7 +77,10 @@ plot <- vcf %>%
   ) +
   geom_point() +
   geom_line() +
-  scale_color_hue(labels = c("dN", "dS")) +
+  scale_color_manual(
+    labels = dnds.labels,
+    values = dnds.colors
+    ) +
   labs(
     y = "",
     x = "Time since first sample",

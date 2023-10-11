@@ -1,7 +1,6 @@
 ---
-title: "Case-study-SARS-CoV-2" 
-author: "Jordi Sevilla"
-institute: "PathoGenOmics-lab"
+title: "VIPERA report" 
+subtitle: "Workflow: `r params$workflow_version`"
 date: last-modified
 date-format: "DD-MM-YYYY"
 title-block-banner: true
@@ -44,7 +43,6 @@ output-file: report.html
   <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 </head>
 
-> Workflow: `r params$workflow_version`
 
 ```{r , echo= F,message= F, include = F}
 library(jsonlite)
@@ -86,7 +84,7 @@ cor.mat <- cor(vcf)
 cor.mat[is.na(cor.mat)] <- 0
 ```
 
-## Samples summary
+## Summary of the target samples dataset 
 ```{r, echo= F,message= F}
 gt(table) %>%
 cols_label(
@@ -109,72 +107,73 @@ opt_table_font(
 )
 
 ```
-## Evidence for chronic infection 
+## Evidence for single, serially-sampled infection
 
 
 
 ### Lineage admixture
-The most probably lineage admixture for each sample has been calculated with software [Freyja](https://github.com/andersen-lab/Freyja).
+The most probable lineage admixture for each sample has been calculated using the software [Freyja](https://github.com/andersen-lab/Freyja).
 
-![**Figure 1.** Lineage composition of samples according to Freyja. Samples are ordered by collection date.](`r params$freyja`)
-
-### Nucleotide diversity comparison
-
-Nucleotide diversity is has been calculated for $`r div_values[["boot.reps"]]`$ bootstrap replicates of $`r div_values[["sample.size"]]`$ samples in the context data. The distribution for the nuclotide diversity is assumed to `r div_values[["norm.text"]]` be normal with a p-value = $`r div_values[["normal.pvalue"]]`$ (*Shapiro-test*).
-
-The nucleotide diversity value for the studied samples is $`r div_values[["diversity"]]`$. Assuming the context samples to be patient-independent, the `r div_values[["type.test"]]` p-value for a reduced nucleotide diversity in the studied samples is $`r div_values[["p.value"]]`$.
-
-![**Figure 2.** Distribution of nucleotide diversity pi for 1000 randomly selected groups from context sequences. Red line indicates the pi value for the studied samples.](`r params$div`)
+![**Figure 1.** Lineage admixture calculated with Freyja for each sample. SSamples in the X-axis are ordered chronologically, from more ancient to newer.](`r params$freyja`)
 
 ### Phylogeny and temporal signal
 
-A maximum likelihood tree has been adjusted with the context sequences:
+A maximum likelihood tree has been adjusted with the context sequences. The studied samples `r stats[["monophyly"]]` monophyletic. The clade that contains all the studied samples is supported by a **UFBoot** score of $`r stats[["boot"]]`$% and a **SH-aLRT** score of  $`r stats[["alrt"]]`$%.
 
-![**Figure 3.** Maximum-likelihood tree whith studied and context sequence. Studied sequence are represented in red.](`r params$tree_ml`)
+![**Figure 2.** Maximum-likelihood phylogeny with 1000 support replicates of target datasets with their context samples. The clade that contains the studied samples is squared in red.](`r params$tree_ml`)
 
-In addition, phylogeny has been reconstructed using pairwise distances between target samples taking into account allele frequencies detected in sequencing data.
+In addition, a neighbor-joining tree has been constructed using pairwise distances between target samples taking into account allele frequencies detected in sequencing data.
 
-![**Figure 4.** Neighbour-joining tree for studied samples.](`r params$tree`)
+![**Figure 3.** Neighbor-joining trees constructed with the pairwise allele frequency-weighted distances.](`r params$tree`)
 
-With the neighbur-joining tree, partistic distances to root has been correlated with time obtaining a $R^2$ of **`r correlation`** with a p-value of $`r p_value_lm`$. The estimated substitution rate is **`r sub_rate`** substitutions per year.
+With the neighbor-joining tree, patristic distances to root have been correlated with time, obtaining a $R^2$ of **`r correlation`** with a p-value of $`r p_value_lm`$. The estimated substitution rate is **`r sub_rate`** substitutions per year.
 
-![**Figure 5.** Partistic distance to root in the neighbour-joining tree against days since first sample. Red line indicates the adjusted linear regression model.](`r params$tempest`)
+![**Figure 4.** Scatterplot showing the relationship between root-to-tip distances and the number of days passed since the first sample. The red line show the linear model fit.](`r params$tempest`)
 
-## Characterizing within-host evolution
+### Nucleotide diversity comparison
+
+Nucleotide diversity has been calculated for $`r div_values[["boot.reps"]]`$ bootstrap replicates of $`r div_values[["sample.size"]]`$ samples in the context data. The distribution for the nuclotide diversity is assumed to `r div_values[["norm.text"]]` be normal with a p-value = $`r div_values[["normal.pvalue"]]`$ (*Shapiro-test*).
+
+The nucleotide diversity value for the studied samples is $`r div_values[["diversity"]] `$. Assuming the context samples to be patient-independent, the `r div_values[["type.test"]]` p-value for a reduced nucleotide diversity in the studied samples is $`r div_values[["p.value"]]`$.
+
+![**Figure 5.** Analysis of the nucleotide diversity (π). The orange line describe a normal distribution with the same mean and standard deviation as the distribution of π values obtained from $`r div_values[["boot.reps"]]`$ samples of $`r div_values[["sample.size"]]`$ sequences from the context. The red vertical line indicate the π value for the studied samples.](`r params$div`)
+
+
+## Evolutionary trajectory of the serially-sampled SARS-CoV-2 infection
 
 ### Number of polymorphic sites
 
-Sites with minor allele frequency > 0.05  are considered as polymorphic sites.
+Sites with minor allele frequency > 0.05  are considered as polymorphic sites. Collection date explains the number of polymorphic sites with an $R^2$ of **`r nv.counts[["r2"]]`** with a p-value of $`r nv.counts[["value"]]`$.
 
-![**Figure 6.** Number of polymorphisms over time for the studied samples.](`r params$fig_cor_snp`)
+![**Figure 6.**  Number of polymorphic sites depending on collection date. The red line shows the linear model fit.](`r params$fig_cor_snp`)
 
 ### Description for within-host nucleotide variants 
 
-`r n_SNV` different SNV and `r n_INDELS` INDELS had been detected along the genome. In the **Figure 7a** is shown their distribution along the genome and the variation in allele frequencies in the studied samples.
+A total of `r n_SNV` different SNVs and `r n_INDELS` INDELs have been detected along the genome. **Figure 7** shows their distribution along the genome and the variation in allele frequencies in the studied samples.
 
 ::: {.panel-tabset}
 
 ## Whole genome
-![**Figure 7a.** A\) Proportion of polymorphic sites along the genome calculated with 1000nt windows. B\) Nucleotide variants (NV) in the genomes of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV`)
+![**Figure 7.** Summary of the intra-host accumulation of nucleotide variants (NV), using the reconstructed dataset ancestor as reference. A) Nucleotide variants per site along the SARS-CoV-2 genome. Relative abundance of NVs is calculated with a sliding window of width $`r nv.counts[["window"]]`$ nucleotides and a step of $`r nv.counts[["step"]]`$. Labels indicate the coding regions of the non structural proteins (NSP) within ORF1ab. B) Genome variation along the genome for each sample. The Y-axis displays samples in chronological order, with the earliest collection date at the bottom, and the latest, at the top.](`r params$SNV`)
 
 ## Spike sequence
 
-![**Figure 7b.** A\) Proportion of polymorphic sites along the spike nucleotide sequence calculated with 1000nt windows. B\) Nucleotide variants (NV) in the spike sequences of the studied samples. The shape and color indicates the type of NV. Samples are ordered by collection date.](`r params$SNV_s`)
+![**Figure 8.** Summary of the intra-host accumulation of nucleotide variants (NV) in the spike sequence, using the reconstructed dataset ancestor as reference. A) Nucleotide variants per site along the spike sequence. Relative abundance of NVs is calculated with a sliding window of width $`r nv.counts[["window"]]`$ nucleotides and a step of $`r nv.counts[["step"]]`$. B) Genome variation along the spike sequence for each sample. The Y-axis displays samples in chronological order, with the earliest collection date at the bottom, and the latest, at the top.](`r params$SNV_s`)
 :::
 
 ### Time dependency for the within-host nucleotide variants
 
 The correlation with time is calculated for the allele frequency of each NV.
 
-![**Figure 8.** *Pearson* r and adjusted p-value (-log10) for the correlation with time for each SNV. Red line indicates a p-value of 0.05.](`r params$volcano`)
+![**Figure 9.** Pearson’s correlation coefficients and BH-adjusted p-values for all detected nucleotide variants. Red dashed line indicates adjusted p = 0.05. Labeled dots represent nucleotide variants correlated with time (adjusted p < 0.05).](`r params$volcano`)
 
-The significant correlated NV are swown in detail:
+The significantly correlated NV are shown in detail:
 
-![**Figure 9.** Trend over time for the significantly correlated with time SNVs and for positions with more than 1 alternative allele. ](`r params$panel`)
+![**Figure 10.** Time series of the relative allele frequencies for nucleotide variants (NV) with a significant time correlation, and for those that share their site in the genome. Each subplot depicts the progression of the allele frequencies in time for a given genome position.](`r params$panel`)
 
 ### Correlation between alternative alleles
 
-To see posible interactions between mutations, pairwise correlation between the alternative frequencies are calculated.
+To see possible interactions between mutations, pairwise correlation between the alternative frequencies are calculated.
 
 ```{r, echo= F,message= F, fig.align='center'}
 
@@ -185,11 +184,11 @@ heatmaply_cor(
   column_text_angle = 90)
 
 ```
-![**Figure 10.** Heatmap for pairwise correlation between frquencies for alternative alleles.]()
+![**Figure 10.** Hierarchically clustered heatmap of the pairwise Pearson’s correlation coefficients between the time series of allele frequencies in the case study.]()
 
-### dn/ds over time
+### Non-synonymous to synonymous rate ratio over time
 
-![**Figure 11.** Sinonymous mutations per sinonymous site **(dS)** and non sinonymous mutations mutations per non sinonymous site **(dN)** over time. The values are adjusted by the allele frequency.](`r params$evo`)
+![**Figure 11.** Time series of dN and dS. Each point corresponds to a different sample, sorted in chronological order.](`r params$evo`)
 
 
 

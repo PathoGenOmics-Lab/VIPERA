@@ -16,21 +16,13 @@ log_threshold(INFO)
 source(snakemake@params[["design"]])
 
 # legend thresholds for ml tree
+
 legend.names <- c(
   tip_label = "Studied samples",
-  Bootstrap_pass = sprintf(
-    "bootstrap >= %s",
-    snakemake@params[["boot_th"]]
-    ),
-  alrt_pass = sprintf(
-    "aLRT >= %s",
-    snakemake@params[["alrt_th"]]
-    ),
-  boot_alrt_pass = sprintf(
-    "bootstrap >= %s & aLRT >= %s ",
-    snakemake@params[["boot_th"]],
-    snakemake@params[["alrt_th"]]
-    )
+  boot_alrt_pass = sprintf("UFBoot ≥ %s%s & SH-aLRT ≥ %s%s ",
+  snakemake@params[["boot_th"]], "%",
+  snakemake@params[["alrt_th"]], "%"
+  )
 )
 
 
@@ -53,8 +45,12 @@ study_names <- read.dna(
   snakemake@input[["study_fasta"]],
   format = "fasta",
   as.matrix = FALSE,
-  ) %>%
-  names()
+  )
+
+study_names <- study_names[!startsWith(names(study_names), snakemake@config[["ALIGNMENT_REFERENCE"]])]
+
+study_names <- names(study_names)
+
 
 # Obtain sample names ordered by CollectionDate
 date_order <- read_csv(snakemake@params[["metadata"]]) %>%
@@ -212,9 +208,7 @@ aLRT.mask <- aLRT.values >= snakemake@params[["alrt_th"]]
 boot.mask <- bootstrap.values >= snakemake@params[["boot_th"]]
 
 node.color <- case_when(
-  aLRT.mask & boot.mask ~ "boot_alrt_pass",
-  !aLRT.mask & boot.mask ~ "Bootstrap_pass",
-  aLRT.mask & !boot.mask ~ "alrt_pass"
+  aLRT.mask & boot.mask ~ "boot_alrt_pass"
 )
 
 # MRCA for studied samples
@@ -222,26 +216,33 @@ study.mrca <- getMRCA(tree_ml, study_names)
 
 log_info("Plotting M-L tree with context samples")
 p <- ggtree(tree_ml, layout = "circular") +
-          geom_highlight(node = study.mrca, colour = "red", fill = "red", alpha = 0.2) +
-          geom_point(
-            aes(
-              color = c(tip.color, node.color), # First node points in the tree are tip points, then internal nodes
-              shape = c(rep("tip", length(tree_ml$tip.label)), rep("node", length(tree_ml$node.label)))
-              ),
-              show.legend = TRUE
-              ) +
-          geom_treescale(x = 0.0008) +
-          geom_rootedge(0.0005) +
-          xlim(-0.0008, NA) +
-          scale_shape_manual(values = c(
-            tip = 1,
-            node = 20
-          ), guide = "none") +
-          labs(color = "Class") +
-          scale_color_manual(values = tree_colors,
-                            na.value = NA,
-                            labels = legend.names
-          )
+  geom_highlight(node = study.mrca, colour = "red", fill = "red", alpha = 0) +
+    geom_point(
+      aes(
+        color = c(tip.color, node.color), # First node points in the tree are tip points, then internal nodes
+        size = c(rep("tip_label", length(tree_ml$tip.label)), rep("boot_alrt_pass", length(tree_ml$node.label))),
+        alpha = c(rep("tip_label", length(tree_ml$tip.label)), rep("boot_alrt_pass", length(tree_ml$node.label)))
+        ),
+        show.legend = TRUE
+        ) +
+    geom_treescale(x = 0.0008) +
+    geom_rootedge(0.0005) +
+    xlim(-0.0008, NA) +
+    scale_size_manual(
+      name = "Class",
+      values = node.size,
+      labels = legend.names
+      ) +
+    scale_alpha_manual(
+      name = "Class",
+      values = node.alpha,
+      labels = legend.names
+      ) +
+    labs(color = "Class") +
+    scale_color_manual(values = tree_colors,
+                      na.value = NA,
+                      labels = legend.names
+    )
 
 ggsave(
   filename = snakemake@output[["tree_ml"]],
@@ -268,10 +269,21 @@ tempest %>%
 # TEMPEST STATATS
 model <- lm(distance ~ date_interval, data = tempest)
 
+# TREE STATS
+study.node <- tree_ml$node.label[study.mrca - length(tip.color)]
+monophyletic <- ifelse(is.monophyletic(tree_ml, study_names), "are", "are not")
+
+
 list(
   "sub_rate" = model$coefficients[[2]] * 365,
   "r2"       = summary(model)$r.squared[[1]],
-  "pvalue"   = cor.test(tempest$distance, tempest$date_interval)$p.value
+  "pvalue"   = ifelse(cor.test(tempest$distance, tempest$date_interval)$p.value < 0.001,
+  "< 0.001",
+  cor.test(tempest$distance, tempest$date_interval)$p.value
+  ),
+  "boot"     = strsplit(study.node, "/")[[1]][2] %>% as.numeric(),
+  "alrt"     = strsplit(study.node, "/")[[1]][1] %>% as.numeric(),
+  "monophyly"= monophyletic
 ) %>%
 toJSON() %>%
 write(snakemake@output[["json"]])

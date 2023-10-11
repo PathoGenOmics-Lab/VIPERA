@@ -22,8 +22,7 @@ theme_update(text = element_text(size = 16,  family = "Montserrat"),
 
 
 
-
-# AJUSTES ####
+# CONFIG
 
 
 gene_colors = c(M = "#B4D4B4",
@@ -37,27 +36,26 @@ gene_colors = c(M = "#B4D4B4",
                 ORF7 = "#AA88CB",
                 ORF10 = "#CACB5D")
 
-snp_colors = c("C-26029-A" = "#e69138",
-               "G-21985-T" = "#ffd966",
-               "C-29421-T" = "#935fca",
-               "C-23043-T" = "#7c1d6f",
-               "C-28854-T" = "#ff4639"
-               ,"C-5178-T" = "#d5a6bd"
-               ,"C-4230-A" = "#1e3f9d"
-               ,"C-16375-T" = "#1EA0AE"
-               , "A-11923-C" = "#64acee"
-               ,"G-12761-A" = "#084c61"
-               ,"C-6033-T" = "chartreuse4"
-               ,"C-4230-T" = "#93c47d",
-               "Other" = "gray40")
 
-
+# M-L tree colors and labels
 tree_colors = c(
-    tip_label = "blue",
-    Bootstrap_pass = "#ff6600",
-    alrt_pass = "#ffbf51",
-    boot_alrt_pass = "red"
+  tip_label = "#D944AA",
+  boot_alrt_pass = "#64acee"
 )
+
+
+node.size <- c(
+  tip_label = 2,
+  boot_alrt_pass = 0.8
+)
+
+node.alpha <- c(
+  tip_label = 0.6,
+  boot_alrt_pass = 0.7
+)
+
+
+# Nucleotide variants classification colors and labels
 
 NV_colors <- c(
     Frameshift = "#568D63",
@@ -73,4 +71,15 @@ NV_names <- c(
     Intergenic = "Intergenic",
     No = "Non synonymous",
     yes = "Synonymous"
+)
+
+# dn ds colors and labels
+dnds.labels <- c(
+  dn = "dN",
+  ds = "dS"
+)
+
+dnds.colors <- c(
+  dn = "#E53E47",
+  ds = "#2C47F5"
 )
