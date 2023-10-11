@@ -19,7 +19,7 @@ rule window:
     input:
         vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         gb = OUTDIR/"reference.gb",
-        features = config["FEATURES_JSON"]
+        features = Path(config["FEATURES_JSON"]).resolve()
     output:
         window_df = temp(OUTDIR/f"{OUTPUT_NAME}.window.csv"),
     log:
