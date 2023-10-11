@@ -25,26 +25,6 @@ snakemake --use-conda -c4
 The pipeline also allows for its [execution in an HPC environment](config/README.md#run-modes).
 Please check [config/README.md](config/README.md) for in-detail setup instructions.
 
-## Methodology
-
-### Pairwise distances between samples
-
-In order to describe in a better way the relationship between samples, distances beween them are calculated tacking into account allele frequencies in sequencing data. Our aproach to compute the distance between sets of allele frequencies is based on FST formula and define the distance between two samples as:
-
-```math
-d(M,N)=\sum\limits_{i=1}^I \frac {\sum\limits_{j=1}^J (M_{ij} -N_{ij})^2 } {4 - \sum\limits_{j=1}^J (M_{ij} +N_{ij})^2 }
-```
-
-where:
-
-$M$ y $N$: Two sequences.
-
-$i = 1... I :$ Index over polymorphic sites.
-
-$j = 1... J :$ Index over alleles.
-
-$M_{ij}$ : Frequency of allel $j$ in position $i$ for sequence $M$.
-
 ## Contributors
 
 [![Contributors figure](https://contrib.rocks/image?repo=PathoGenOmics-Lab/VIPERA)](https://github.com/PathoGenOmics-Lab/VIPERA/graphs/contributors)
