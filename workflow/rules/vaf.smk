@@ -59,7 +59,7 @@ rule annotation:
     input:
         gb = OUTDIR/"reference.gb",
         ref = OUTDIR/"reference.fasta",
-        features = config["FEATURES_JSON"]
+        features = Path(config["FEATURES_JSON"]).resolve()
     output:
         df = temp(OUTDIR/"annotation.csv")
     log:
