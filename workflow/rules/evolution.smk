@@ -5,7 +5,8 @@ rule N_S_sites:
         genetic_code = "standard"
     input:
         fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
-        gb = OUTDIR/"reference.gb"
+        gb = OUTDIR/"reference.gb",
+        features = config["FEATURES_JSON"]
     output:
         csv = temp(OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv")
     log:

@@ -58,7 +58,8 @@ rule annotation:
     shadow: "shallow"
     input:
         gb = OUTDIR/"reference.gb",
-        ref = OUTDIR/"reference.fasta"
+        ref = OUTDIR/"reference.fasta",
+        features = config["FEATURES_JSON"]
     output:
         df = temp(OUTDIR/"annotation.csv")
     log:
