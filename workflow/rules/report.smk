@@ -14,8 +14,8 @@ rule heatmap:
 rule window:
     conda: "../envs/biopython.yaml"
     params:
-        window = 1000,
-        step = 50
+        window = config["WINDOW"]["WIDTH"],
+        step = config["WINDOW"]["STEP"]
     input:
         vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         gb = OUTDIR/"reference.gb"
@@ -71,8 +71,8 @@ rule general_NV_description:
         design = config["PLOTS"],
         nsp = config["NSP"],
         metadata = config["METADATA"],
-        window = 1000,
-        step = 50
+        window = config["WINDOW"]["WIDTH"],
+        step = config["WINDOW"]["STEP"]
     input:
         window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
