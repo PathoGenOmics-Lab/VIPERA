@@ -9,7 +9,13 @@ Modify the [target configuration file](config/targets.yaml)
 to point the `SAMPLES` and `METADATA` parameters to your data. The `OUTPUT_DIRECTORY`
 parameter should point to your desired results directory.
 
-It should look like this:
+The script [`build_targets.py`](build_targets.py) simplifies the process of creating
+the configuration file. To run this script, you need to have PyYAML installed. It
+takes a list of sample names, a directory with BAM and FASTA files, and the path to
+the metadata table as required inputs. Then, it searches the directory for files
+that have the appropriate extensions and sample names and adds them to the configuration file.
+
+The file should look like this:
 
 ```yaml
 SAMPLES:

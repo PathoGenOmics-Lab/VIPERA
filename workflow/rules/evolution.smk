@@ -1,11 +1,11 @@
 rule N_S_sites:
     threads: 1
     conda: "../envs/biopython.yaml"
-    params:
-        genetic_code = "standard"
     input:
         fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
-        gb = OUTDIR/"reference.gb"
+        gb = OUTDIR/"reference.gb",
+        features = Path(config["FEATURES_JSON"]).resolve(),
+        genetic_code = Path(config["GENETIC_CODE_JSON"]).resolve()
     output:
         csv = temp(OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv")
     log:

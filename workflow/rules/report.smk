@@ -18,7 +18,8 @@ rule window:
         step = config["WINDOW"]["STEP"]
     input:
         vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
-        gb = OUTDIR/"reference.gb"
+        gb = OUTDIR/"reference.gb",
+        features = Path(config["FEATURES_JSON"]).resolve()
     output:
         window_df = temp(OUTDIR/f"{OUTPUT_NAME}.window.csv"),
     log:
