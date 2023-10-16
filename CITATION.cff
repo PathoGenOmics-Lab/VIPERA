@@ -1,0 +1,112 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: VIPERA
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Jordi
+    family-names: Sevilla
+    affiliation: >-
+      PathoGenOmics Lab, Institute for Integrative Systems
+      Biology (I2SysBio, University of Valencia - CSIC),
+      FISABIO Joint Research Unit “Infection and Public
+      Health”, Paterna, Spain
+    orcid: 'https://orcid.org/0009-0001-3352-1537'
+    email: jordisevilla2001@gmail.com
+  - given-names: Miguel
+    family-names: Álvarez-Herrera
+    email: m.alvarez.herrera@csic.es
+    affiliation: >-
+      PathoGenOmics Lab, Institute for Integrative Systems
+      Biology (I2SysBio, University of Valencia - CSIC),
+      FISABIO Joint Research Unit “Infection and Public
+      Health”, Paterna, Spain
+    orcid: 'https://orcid.org/0000-0002-7922-3180'
+  - given-names: Paula
+    family-names: Ruiz-Rodríguez
+    email: paula.ruiz-rodriguez@uv.es
+    affiliation: >-
+      PathoGenOmics Lab, Institute for Integrative Systems
+      Biology (I2SysBio, University of Valencia - CSIC),
+      FISABIO Joint Research Unit “Infection and Public
+      Health”, Paterna, Spain
+    orcid: 'https://orcid.org/0000-0003-0727-5974'
+  - given-names: Andrea
+    family-names: Vergara
+    email: vergara@clinic.cat
+    orcid: 'https://orcid.org/0000-0002-5046-4490'
+    affiliation: >-
+      Department of Clinical Microbiology, CDB, Hospital
+      Clínic of Barcelona; University of Barcelona;
+      ISGlobal, Barcelona, Spain; CIBER of Infectious
+      Diseases (CIBERINFEC), Madrid, Spain
+  - given-names: Jordi
+    family-names: Vila
+    email: jvila@clinic.cat
+    orcid: 'https://orcid.org/0000-0002-8025-3926'
+    affiliation: >-
+      Department of Clinical Microbiology, CDB, Hospital
+      Clínic of Barcelona; University of Barcelona;
+      ISGlobal, Barcelona, Spain; CIBER of Infectious
+      Diseases (CIBERINFEC), Madrid, Spain
+  - given-names: Pablo
+    family-names: Cano-Jiménez
+    email: pcano@ibv.csic.es
+    orcid: 'https://orcid.org/0009-0007-4773-3198'
+    affiliation: >-
+      Institute of Biomedicine of Valencia (IBV-CSIC),
+      Valencia, Spain
+  - given-names: Fernando
+    family-names: González-Candelas
+    email: fernando.gonzalez@uv.es
+    orcid: 'https://orcid.org/0000-0002-0879-5798'
+    affiliation: >-
+      Institute for Integrative Systems Biology (I2SysBio,
+      University of Valencia - CSIC), FISABIO Joint Research
+      Unit “Infection and Public Health”, Paterna, Spain;
+      CIBER of Epidemiology and Public Health (CIBERESP),
+      Madrid, Spain
+  - given-names: Iñaki
+    family-names: Comas
+    affiliation: >-
+      Institute of Biomedicine of Valencia (IBV-CSIC),
+      Valencia, Spain; CIBER of Epidemiology and Public
+      Health (CIBERESP), Madrid, Spain
+    orcid: 'https://orcid.org/0000-0001-5504-9408'
+    email: icomas@ibv.csic.es
+  - given-names: Mireia
+    family-names: Coscolla
+    email: mireia.coscolla@uv.es
+    orcid: 'https://orcid.org/0000-0003-0752-0538'
+    affiliation: >-
+      Institute for Integrative Systems Biology (I2SysBio,
+      University of Valencia - CSIC), FISABIO Joint Research
+      Unit “Infection and Public Health”, Paterna, Spain
+repository-code: 'https://github.com/PathoGenOmics-Lab/VIPERA'
+abstract: >-
+  Viral mutations within patients nurture the adaptive
+  potential of SARS-CoV-2 during chronic infections, which
+  are a potential source of variants of concern. However,
+  there is no integrated framework for the evolutionary
+  analysis of intrapatient SARS-CoV-2 serial samples. Herein
+  we describe VIPERA (Viral Intra-Patient Evolution
+  Reporting and Analysis), a new software that integrates
+  the evaluation of the intra-patient ancestry of SARS-CoV-2
+  sequences with the analysis of evolutionary trajectories
+  of serial sequences from the same viral infection. We have
+  validated it using positive and negative control datasets
+  and have successfully applied it to a new case, thus
+  enabling an easy and automatic analysis of intra-patient
+  SARS-CoV-2 sequences.
+keywords:
+  - SARS-CoV-2
+  - Intra-host viral evolution
+  - Chronic infection
+  - Bioinformatics
+  - Snakemake
+license: GPL-3.0
+version: 1.0.0
