@@ -15,7 +15,7 @@ from Bio.Seq import Seq
 def read_monofasta(path: str) -> SeqRecord:
     fasta = SeqIO.parse(path, "fasta")
     record = next(fasta)
-    if next(fasta, None) is None:
+    if next(fasta, None) is not None:
         logging.warning(f"There are unread records left in '{path}'")
     return record
 
