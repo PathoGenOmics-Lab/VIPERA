@@ -1,5 +1,5 @@
 rule weighted_distances:
-    threads: 4
+    threads: 1
     conda: "../envs/biopython.yaml"
     params:
         samples = expand("{sample}", sample = iter_samples()),

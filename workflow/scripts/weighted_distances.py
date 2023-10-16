@@ -4,7 +4,6 @@
 # Adapted script from https://github.com/PathoGenOmics-Lab/genetic-distances
 
 import logging
-import multiprocessing as mp
 from typing import List, Tuple
 
 import pandas as pd
@@ -116,17 +115,12 @@ def calculate_sample_distances(positions: List[int], sample_name: str, samples: 
     return [calculate_pairwise_distance(positions, sample_name, other_sample_name, cache) for other_sample_name in samples]
 
 
-def calculate_distance_matrix(variant_table: pd.DataFrame, samples: List[str], reference: Seq, num_jobs: int) -> pd.DataFrame:
+def calculate_distance_matrix(variant_table: pd.DataFrame, samples: List[str], reference: Seq) -> pd.DataFrame:
     positions = variant_table["POS"].astype("Int64").unique().tolist()
     cache = build_cache(variant_table, reference)
     distance_matrix = {}
-    with mp.Pool(num_jobs) as pool:
-        results = pool.starmap(
-            calculate_sample_distances,
-            [(positions, sample_name, samples, cache) for sample_name in samples]
-        )
-    for i, sample in enumerate(samples):
-        distance_matrix[sample] = results[i]
+    for sample_name in samples:
+        distance_matrix[sample_name] = calculate_sample_distances(positions, sample_name, samples, cache)
     for i in range(len(samples)):
         for j in range(i+1, len(samples)):
             distance_matrix[samples[j]][i] = distance_matrix[samples[i]][j]
@@ -149,7 +143,7 @@ def main():
 
     logging.info(f"Parallelizing the calculation with {snakemake.threads} jobs")
     sample_names = snakemake.params.samples + [reference.id]
-    distances = calculate_distance_matrix(variant_table, sample_names, ancestor.seq, snakemake.threads)
+    distances = calculate_distance_matrix(variant_table, sample_names, ancestor.seq)
 
     logging.info("Writing results")
     distances.to_csv(snakemake.output.distances)
