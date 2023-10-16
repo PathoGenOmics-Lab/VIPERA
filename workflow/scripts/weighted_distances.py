@@ -71,17 +71,6 @@ def get_frequencies_in_position(variant_table: pd.DataFrame, sample_name: str, p
     return tuple(frequencies[base] for base in alt_keys)
 
 
-def calc_heterozygosities(variant_table: pd.DataFrame, sample1_name: str, sample2_name: str, pos: int, reference: Seq) -> Tuple[float]:
-    freqs1 = get_frequencies_in_position(variant_table, sample1_name, pos, reference)
-    freqs2 = get_frequencies_in_position(variant_table, sample2_name, pos, reference)
-    hs1 = heterozygosity(freqs1)
-    hs2 = heterozygosity(freqs2)
-    hs = (hs1 + hs2) / 2
-    total_freqs = [(f1 + f2) / 2 for f1, f2 in zip(freqs1, freqs2)]
-    ht = heterozygosity(total_freqs)
-    return hs, ht
-
-
 def heterozygosity(freqs: Tuple[float]) -> float:
     return 1 - sum([f ** 2 for f in freqs])
 
@@ -90,24 +79,51 @@ def calc_fst_weir_cockerham(hs: float, ht: float) -> float:
     return (ht - hs) / ht if ht != 0 else 0
 
 
-def get_dif_n(variant_table: pd.DataFrame, sample1_name: str, sample2_name: str, reference: Seq) -> float:
-    positions = variant_table["POS"].astype("Int64").unique().tolist()
+def build_cache(variant_table: pd.DataFrame, reference: Seq):
+    cache = {"freq": {}, "hz": {}}
+    for sample_name in variant_table["REGION"].unique():
+        for position in variant_table["POS"].unique():
+            if sample_name not in cache["freq"]:
+                cache["freq"][sample_name] = {}
+            if sample_name not in cache["hz"]:
+                cache["hz"][sample_name] = {}
+            cache["freq"][sample_name][position] = get_frequencies_in_position(variant_table, sample_name, position, reference)
+            cache["hz"][sample_name][position] = heterozygosity(cache["freq"][sample_name][position])
+    return cache
+
+
+def calc_heterozygosities(sample1_name: str, sample2_name: str, pos: int, cache: dict):
+    # Retrieve pre-computed values
+    freqs1 = cache["freq"][sample1_name][pos]
+    freqs2 = cache["freq"][sample2_name][pos]
+    hs1 = cache["hz"][sample1_name][pos]
+    hs2 = cache["hz"][sample2_name][pos]
+    # Calculate pairwise values
+    total_freqs = [(f1 + f2) / 2 for f1, f2 in zip(freqs1, freqs2)]
+    ht = heterozygosity(total_freqs)
+    hs = (hs1 + hs2) / 2
+    return hs, ht
+
+
+def calculate_pairwise_distance(positions: List[int], sample1_name: str, sample2_name: str, cache: dict) -> float:
     if len(positions) == 0:
         return 0
-    return sum([calc_fst_weir_cockerham(*calc_heterozygosities(variant_table, sample1_name, sample2_name, pos, reference)) 
-                for pos in positions])
+    else:
+        return sum([calc_fst_weir_cockerham(*calc_heterozygosities(sample1_name, sample2_name, pos, cache)) for pos in positions])
 
 
-def calculate_distance(variant_table: pd.DataFrame, sample_name: str, reference: str, samples: List[str]) -> List[float]:
-    return [get_dif_n(variant_table, sample_name, other_sample_name, reference) for other_sample_name in samples]
+def calculate_sample_distances(positions: List[int], sample_name: str, samples: List[str], cache: dict) -> List[float]:
+    return [calculate_pairwise_distance(positions, sample_name, other_sample_name, cache) for other_sample_name in samples]
 
 
 def calculate_distance_matrix(variant_table: pd.DataFrame, samples: List[str], reference: Seq, num_jobs: int) -> pd.DataFrame:
+    positions = variant_table["POS"].astype("Int64").unique().tolist()
+    cache = build_cache(variant_table, reference)
     distance_matrix = {}
     with mp.Pool(num_jobs) as pool:
         results = pool.starmap(
-            calculate_distance,
-            [(variant_table, sample_name, reference, samples) for sample_name in samples]
+            calculate_sample_distances,
+            [(positions, sample_name, samples, cache) for sample_name in samples]
         )
     for i, sample in enumerate(samples):
         distance_matrix[sample] = results[i]
