@@ -36,6 +36,6 @@ LOG_PY_FMT:
 PLOTS:
   "config/design_plots.R"
 NSP:
-  "data/report_files/nsp_annotation.csv"
+  "config/nsp_annotation.csv"
 REPORT_QMD:
   "template.qmd"

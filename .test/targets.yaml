@@ -33,7 +33,7 @@ DEMIX:
   COV_CUTOFF: 0
   MIN_ABUNDANCE: 0.0001
 NSP:
-  "../data/report_files/nsp_annotation.csv"
+  "../config/nsp_annotation.csv"
 REPORT_QMD:
   "../template.qmd"
 FEATURES_JSON:
