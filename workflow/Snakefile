@@ -11,10 +11,10 @@ configfile: "config/targets.yaml"
 
 include: "rules/common.smk"
 
+BASE_PATH = Path(".").resolve()
 
 # Workflow version
-repo_version = get_version_str('.')
-__version__ = "0.1" + f" (git: {repo_version})"
+__version__ = "1.0.0"
 
 # Targets
 ## Output

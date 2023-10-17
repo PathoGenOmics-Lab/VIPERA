@@ -188,7 +188,7 @@ rule report:
         sum_nv    = rules.general_NV_description.output.json,
         heat_table= rules.heatmap.output.table
     params:
-        workflow_version = __version__
+        workflow_version = get_repo_version(BASE_PATH.as_posix(), __version__)
     output:
         html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
     log:
