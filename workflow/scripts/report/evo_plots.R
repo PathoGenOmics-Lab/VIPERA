@@ -55,7 +55,7 @@ plot <- vcf %>%
     values_fill = 0
   )  %>%
   transmute(
-    dn = No / sum(N_S_position$S),
+    dn = No / sum(N_S_position$N),
     ds = Yes / sum(N_S_position$S)
   ) %>%
   ungroup() %>%
