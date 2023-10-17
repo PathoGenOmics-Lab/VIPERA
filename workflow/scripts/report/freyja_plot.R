@@ -26,7 +26,8 @@ main_lineages <- demix %>%
   unique()
 
 # Obtain sample names ordered by CollectionDate
-date_order <- read_csv(snakemake@params[["metadata"]]) %>%
+metadata <- read_csv(snakemake@input[["metadata"]])
+date_order <- metadata %>%
   arrange(CollectionDate) %>%
   filter(ID %in% demix$sample) %>%
   pull(ID) %>%
@@ -94,7 +95,7 @@ demix %>%
   ungroup() %>%
   left_join(
     select(
-      read_csv(snakemake@params[["metadata"]]),
+      metadata,
       ID,
       CollectionDate
     ),

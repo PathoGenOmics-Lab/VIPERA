@@ -46,11 +46,12 @@ SCov2_annotation <- list(
 vcf <- read_delim(snakemake@input[["vcf"]])
 vcf_snp <- vcf
 window <- read_csv(snakemake@input[["window"]])
+metadata <- read_csv(snakemake@input[["metadata"]])
 
 # DATA PROCESSING
 
 # Obtain sample names ordered by CollectionDate
-date_order <- read_csv(snakemake@params[["metadata"]]) %>%
+date_order <- metadata %>%
   filter(ID %in% snakemake@params[["samples"]]) %>%
   arrange(CollectionDate) %>%
   pull(ID) %>%
@@ -361,7 +362,7 @@ log_info("Plotting nº of heterozygus sites for each sample")
 figur_SNP_table <- vcf_snp %>%
   filter(ALT_FREQ <= 0.95) %>%
   left_join(
-    read_csv(snakemake@params[["metadata"]]),
+    metadata,
     by = c("REGION" = "ID")
     ) %>%
   group_by(REGION) %>%
@@ -441,7 +442,7 @@ vcf_snp %>%
   filter(ALT_FREQ <= 0.95) %>%
   select(!GFF_FEATURE) %>%
   left_join(
-    read_csv(snakemake@params[["metadata"]]),
+    metadata,
     by = c("REGION" = "ID")
     ) %>%
   group_by(REGION) %>%

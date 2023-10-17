@@ -1,15 +1,15 @@
 rule heatmap:
     conda: "../envs/renv.yaml"
-    params:
-        metadata = config["METADATA"]
     input:
-        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
+        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
+        metadata = config["METADATA"]
     output:
         table = report((REPORT_DIR_TABLES/"figure_10.csv").resolve())
     log:
         LOGDIR / "heatmap" / "log.txt"
     script:
         "../scripts/report/heatmap.R"
+
 
 rule window:
     conda: "../envs/biopython.yaml"
@@ -52,10 +52,10 @@ rule diversity:
 rule freyja_plot:
     conda: "../envs/renv.yaml"
     params:
-        design = config["PLOTS"],
-        metadata = config["METADATA"]
+        design = config["PLOTS"]
     input:
-        summary_demixing =  OUTDIR/"summary_freyja_demixing.csv"
+        summary_demixing =  OUTDIR/"summary_freyja_demixing.csv",
+        metadata = config["METADATA"]
     output:
         fig = report((REPORT_DIR_PLOTS/"figure_1.png").resolve()),
         table = report((REPORT_DIR_TABLES/"figure_1.csv").resolve())
@@ -71,12 +71,12 @@ rule general_NV_description:
         samples = expand("{sample}", sample = iter_samples()),
         design = config["PLOTS"],
         nsp = config["NSP"],
-        metadata = config["METADATA"],
         window = config["WINDOW"]["WIDTH"],
         step = config["WINDOW"]["STEP"]
     input:
         window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
-        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
+        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
+        metadata = config["METADATA"]
     output:
         fig = report((REPORT_DIR_PLOTS/"figure_7a.png").resolve()),
         fig_s = report((REPORT_DIR_PLOTS/"figure_7b.png").resolve()),
@@ -95,7 +95,6 @@ rule phylo_plots:
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"],
-        metadata = config["METADATA"],
         ref_name = config["ALIGNMENT_REFERENCE"],
         boot_th = 95,
         alrt_th = 80,
@@ -104,7 +103,8 @@ rule phylo_plots:
     input:
         dist = REPORT_DIR_TABLES/f"figure_4.csv",
         study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
-        ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile"
+        ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
+        metadata = config["METADATA"]
     output:
         temest = report((REPORT_DIR_PLOTS/"figure_5.png").resolve()),
         tree = report((REPORT_DIR_PLOTS/"figure_4.png").resolve()),
@@ -120,11 +120,11 @@ rule phylo_plots:
 rule evo_plots:
     conda: "../envs/renv.yaml"
     params: 
-        design = config["PLOTS"],
-        metadata = config["METADATA"]
+        design = config["PLOTS"]
     input: 
         N_S = OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv",
-        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
+        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
+        metadata = config["METADATA"]
     output:
         plot = report((REPORT_DIR_PLOTS/"figure_11.png").resolve()),
         table = report((REPORT_DIR_TABLES/"figure_11.csv").resolve())
@@ -137,10 +137,10 @@ rule evo_plots:
 rule snp_plots:
     conda: "../envs/renv.yaml"
     params:
-        design = config["PLOTS"],
-        metadata = config["METADATA"],
+        design = config["PLOTS"]
     input:
-         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
+        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
+        metadata = config["METADATA"]
     output:
         pseudovolcano = report((REPORT_DIR_PLOTS/"figure_8.png").resolve()),
         snp_panel = report((REPORT_DIR_PLOTS/"figure_9.png").resolve()),
@@ -154,10 +154,9 @@ rule snp_plots:
 
 rule summary_table:
     conda: "../envs/renv.yaml"
-    params:
-        metadata = config["METADATA"],
     input:
-        report = report(OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv")
+        report = report(OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv"),
+        metadata = config["METADATA"]
     output:
         table = temp((OUTDIR/"summary_table.csv").resolve())
     log:

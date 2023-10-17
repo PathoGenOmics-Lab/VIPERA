@@ -11,12 +11,12 @@ sink(log, type = "message")
 sink(log, type = "output")
 
 
-metadata <- read.csv(snakemake@params[["metadata"]])
+metadata <- read.csv(snakemake@input[["metadata"]])
 pango_report <- read.csv(snakemake@input[["report"]])
 
 
 # Obtain sample names ordered by CollectionDate
-date_order <- read_csv(snakemake@params[["metadata"]]) %>%
+date_order <- metadata %>%
     arrange(CollectionDate) %>%
     filter(
         ID %in% pango_report$taxon

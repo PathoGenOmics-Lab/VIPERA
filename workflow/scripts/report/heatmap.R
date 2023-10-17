@@ -6,10 +6,9 @@ log_threshold(INFO)
 
 
 vcf <- read_tsv(snakemake@input[["vcf"]])
-metadata <- read.csv(snakemake@params[["metadata"]])
 
 # Obtain sample names ordered by CollectionDate
-date_order <- read_csv(snakemake@params[["metadata"]]) %>%
+date_order <- read_csv(snakemake@input[["metadata"]]) %>%
   arrange(CollectionDate) %>%
   pull(ID) %>%
   unique()

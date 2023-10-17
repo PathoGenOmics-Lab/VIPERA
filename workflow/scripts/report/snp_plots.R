@@ -18,9 +18,10 @@ sink(log, type = "message")
 sink(log, type = "output")
 
 # DATA PREPROCESSING #####
+metadata <- read_csv(snakemake@input[["metadata"]])
 
 vcf <- read_delim(snakemake@input[["vcf"]])
-data <- read_csv(snakemake@params[["metadata"]]) %>%
+data <- metadata %>%
   filter(
     ID %in% vcf$REGION
   ) %>%
@@ -31,7 +32,7 @@ data <- read_csv(snakemake@params[["metadata"]]) %>%
 
 
 # Obtain sample names ordered by CollectionDate
-date_order <- read_csv(snakemake@params[["metadata"]]) %>%
+date_order <- metadata %>%
   arrange(CollectionDate) %>%
   pull(ID) %>%
   unique()

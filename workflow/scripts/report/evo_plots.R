@@ -15,7 +15,7 @@ source(snakemake@params[["design"]])
 
 
 vcf <- read_delim(snakemake@input[["vcf"]])
-metadata <- read_delim(snakemake@params[["metadata"]])
+metadata <- read_delim(snakemake@input[["metadata"]])
 N_S_position <- read_delim(snakemake@input[["N_S"]])
 
 # DATA PROCESSING

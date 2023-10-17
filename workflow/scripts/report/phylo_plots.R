@@ -34,7 +34,7 @@ sink(log, type = "output")
 
 
 matrix <- read_csv(snakemake@input[["dist"]])
-metadata <- read_csv(snakemake@params[["metadata"]])
+metadata <- read_csv(snakemake@input[["metadata"]])
 tree_ml <- read.tree(snakemake@input[["ml"]]) %>%
   root(
     snakemake@params[["ref_name"]],
@@ -53,7 +53,7 @@ study_names <- names(study_names)
 
 
 # Obtain sample names ordered by CollectionDate
-date_order <- read_csv(snakemake@params[["metadata"]]) %>%
+date_order <- metadata %>%
   arrange(CollectionDate) %>%
   filter(ID %in% study_names) %>%
   pull(ID) %>%
