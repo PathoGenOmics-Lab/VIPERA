@@ -52,6 +52,7 @@ rule snps_to_ancestor:
         sed 's/'$ref'/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}
         """
 
+
 rule annotation:
     threads:1
     conda: "../envs/biopython.yaml"
@@ -66,6 +67,7 @@ rule annotation:
         LOGDIR / "annotation" / "log.txt"
     script:
         "../scripts/report/get_annotation.py"
+
 
 rule format_tsv:
     threads:1
@@ -117,6 +119,7 @@ rule filter_tsv:
     script:
         "../scripts/filter_tsv.R"
 
+
 rule tsv_to_vcf:
     threads: 1
     conda: "../envs/biopython.yaml"
@@ -128,6 +131,7 @@ rule tsv_to_vcf:
         LOGDIR / "tsv_to_vcf" / "log.txt"
     script:
         "../scripts/tsv_to_vcf.py"
+
 
 rule variants_effect:
     threads: 1
@@ -149,6 +153,7 @@ rule variants_effect:
         rm snpEff_genes.txt snpEff_summary.html
         """
 
+
 rule vcf_to_tsv:
     threads: 1
     conda: "../envs/renv.yaml"
@@ -161,5 +166,3 @@ rule vcf_to_tsv:
         LOGDIR / "vcf_to_tsv" / "log.txt"
     script:
         "../scripts/vcf_to_tsv.R"
-
-
