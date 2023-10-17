@@ -39,8 +39,8 @@ log_info("Finding synonymous and non synonymous variants")
 data <- mutate(
     data,
     synonimous = case_when(
-        REF_AA == ALT_AA ~ "yes",
-        TRUE             ~  "No"
+        REF_AA == ALT_AA ~ "Yes",
+        TRUE             ~ "No"
     )
 )
 # Remove duplicated features

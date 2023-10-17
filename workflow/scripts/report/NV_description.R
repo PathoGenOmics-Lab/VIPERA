@@ -419,7 +419,7 @@ vcf %>%
   filter(ALT_FREQ > 0) %>%
   mutate(
     Class = case_when(
-      Class == "yes" ~ "synonymous",
+      Class == "Yes" ~ "synonymous",
       Class == "No" ~ "non_synonymous",
       TRUE ~ Class
       )

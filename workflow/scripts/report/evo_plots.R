@@ -60,7 +60,7 @@ plot <- vcf %>%
   )  %>%
   transmute(
     dn = No / sum(N_S_position$S),
-    ds = yes / sum(N_S_position$S)
+    ds = Yes / sum(N_S_position$S)
   ) %>%
   ungroup() %>%
   pivot_longer(
@@ -112,7 +112,7 @@ vcf %>%
   ) %>%
   transmute(
     dn = No / sum(N_S_position$S),
-    ds = yes / sum(N_S_position$S)
+    ds = Yes / sum(N_S_position$S)
   ) %>%
   ungroup() %>%
   left_join(unique(select(vcf, REGION, interval))) %>%

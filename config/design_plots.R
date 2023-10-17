@@ -62,7 +62,7 @@ NV_colors <- c(
     "In frame" = "black",
     Intergenic = "#B27CF9",
     No = "#AE584A",
-    yes = "#0248FD"
+    Yes = "#0248FD"
 )
 
 NV_names <- c(
@@ -70,7 +70,7 @@ NV_names <- c(
     "In frame" = "Inframe",
     Intergenic = "Intergenic",
     No = "Non synonymous",
-    yes = "Synonymous"
+    Yes = "Synonymous"
 )
 
 # dn ds colors and labels
