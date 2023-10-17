@@ -2,8 +2,7 @@
 /.snakemake/
 
 # Analysis files
-/data/bam/
-/data/fasta/
+/data/
 /output/
 
 # MAC

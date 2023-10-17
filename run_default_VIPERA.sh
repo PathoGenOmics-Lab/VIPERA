@@ -24,6 +24,7 @@ rm ${tmpdir}/zenodo.zip
 logthis "Organizing files"
 mv ${tmpdir}/*.bam data/bam
 mv ${tmpdir}/*.fa data/fasta
+mv ${tmpdir}/*.csv data
 
 logthis "Running VIPERA"
 snakemake --use-conda -c ${NCPU}
