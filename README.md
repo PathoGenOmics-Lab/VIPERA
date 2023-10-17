@@ -22,7 +22,8 @@ and [configuring inputs and outputs](config/README.md#inputs-and-outputs):
 snakemake --use-conda -c4
 ```
 
-The pipeline also allows for its [execution in an HPC environment](config/README.md#run-modes).
+This Snakemake workflow also allows for its [execution in an HPC environment](config/README.md#run-modes).
+
 Please check [config/README.md](config/README.md) for in-detail setup instructions.
 
 ## Contributors
