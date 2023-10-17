@@ -14,17 +14,20 @@ A pipeline for SARS-CoV-2 Virus Intra-Patient Evolution Reporting and Analysis.
 
 ## Instructions
 
-You can run VIPERA locally with the default configuration with one line of code after
+To run VIPERA locally with the default configuration, you only need one line of code after
 [installing Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
-and [configuring inputs and outputs](config/README.md#inputs-and-outputs):
+and [configuring the inputs and outputs](config/README.md#inputs-and-outputs):
 
 ```shell
-snakemake --use-conda -c4
+snakemake --use-conda -c4  # runs VIPERA on 4 cores (reccomended)
 ```
 
-This Snakemake workflow also allows for its [execution in an HPC environment](config/README.md#run-modes).
+Alternatively, you can use a simple script ([`run_default_VIPERA.sh`](run_default_VIPERA.sh))
+that downloads the data from our study and performs the analysis in one step.
 
-Please check [config/README.md](config/README.md) for in-detail setup instructions.
+This Snakemake workflow can be also [executed in an HPC environment](config/README.md#run-modes).
+
+Please refer to [config/README.md](config/README.md) for detailed setup instructions.
 
 ## Contributors
 
