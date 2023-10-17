@@ -76,10 +76,12 @@ NV_names <- c(
 # dn ds colors and labels
 dnds.labels <- c(
   dn = "dN",
-  ds = "dS"
+  ds = "dS",
+  w = "w (dN/dS)"
 )
 
 dnds.colors <- c(
   dn = "#E53E47",
-  ds = "#2C47F5"
+  ds = "#2C47F5",
+  w = "black"
 )

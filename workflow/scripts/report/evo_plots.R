@@ -44,7 +44,7 @@ vcf <- left_join(vcf, metadata)
 
 # PLOT
 log_info("Ploting dN and dS over time")
-plot <- vcf %>%
+plot_df <- vcf %>%
   group_by(REGION, synonimous) %>%
   summarise(
     Freq = sum(ALT_FREQ, na.rm = TRUE)
@@ -59,17 +59,26 @@ plot <- vcf %>%
     ds = Yes / sum(N_S_position$S)
   ) %>%
   ungroup() %>%
+  mutate(
+    w_raw = dn / ds,
+    w = w_raw * (mean(c(dn, ds)) / mean(w_raw[w_raw != Inf])),
+    mean_value = mean(c(dn, ds))
+    ) %>%
+  filter(w_raw != Inf) %>%
   pivot_longer(
-    c("dn", "ds"),
+    c("dn", "ds", "w"),
     values_to = "value",
     names_to = "d"
   ) %>%
-  left_join(unique(select(vcf, REGION, interval))) %>%
+  left_join(unique(select(vcf, REGION, interval)))
+
+  plot <- plot_df %>%
   ggplot() +
   aes(
     x = interval,
     y = value,
-    color = d
+    color = d,
+    linetype = d
   ) +
   geom_point() +
   geom_line() +
@@ -77,6 +86,14 @@ plot <- vcf %>%
     labels = dnds.labels,
     values = dnds.colors
     ) +
+  scale_linetype_manual(
+    values = c(dn = 2, ds = 2, w = 1),
+    guide = "none"
+    ) +
+  scale_y_continuous(
+    sec.axis = sec_axis(
+      ~ . * (mean(plot_df$w_raw)) / as.numeric(plot_df$mean_value[1]),
+      name = "w (dN/dS)")) +
   labs(
     y = "",
     x = "Days since the initial sampling",
@@ -106,7 +123,7 @@ vcf %>%
     values_fill = 0
   ) %>%
   transmute(
-    dn = No / sum(N_S_position$S),
+    dn = No / sum(N_S_position$N),
     ds = Yes / sum(N_S_position$S)
   ) %>%
   ungroup() %>%
@@ -115,6 +132,7 @@ vcf %>%
     sample = REGION,
     DaysSinceFirst = interval,
     dN = dn,
-    dS = ds
+    dS = ds,
+    w = dn / ds
   ) %>%
   write.csv(snakemake@output[["table"]], row.names = FALSE)
