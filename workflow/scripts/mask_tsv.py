@@ -4,7 +4,7 @@ import logging
 import pandas as pd
  
 
-def parse_vcf() -> tuple:
+def read_problematic_positions(path: str, mask_classes: list) -> tuple:
     """
     Parse a VCF containing positions for masking. Assumes the VCF file is
     formatted as:
@@ -13,35 +13,30 @@ def parse_vcf() -> tuple:
     Masked sites are specified with params.
     """
     vcf = pd.read_csv(
-        snakemake.input["vcf"],
+        path,
         delim_whitespace=True,
         comment="#",
         names=("CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO")
     )
-    positions = tuple(vcf.loc[vcf.FILTER.isin(snakemake.params.mask_class), "POS"])
+    return tuple(vcf.loc[vcf.FILTER.isin(mask_classes), "POS"])
 
-    return positions
 
 def main():
     logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
     
     logging.info("Getting sites to mask")
-    iffy_sites = parse_vcf() # parse VCF to get list of sites to mask
+    positions = read_problematic_positions(snakemake.input.vcf, snakemake.params.mask_class)
 
-    f = open(snakemake.input.tsv,"r") # Open unmasked VCF
-
-    mv = open(snakemake.output.masked_tsv,"w") # Open masked VCF
-
+    # Open unmasked VCF and masked VCF
+    f = open(snakemake.input.tsv,"r") 
+    mv = open(snakemake.output.masked_tsv,"w")
     logging.info("Masking VCF")
     for line in f:
-        
         if line[0] == "R":
             mv.write(line)
             continue
-        elif int(line.split("\t")[1]) not in iffy_sites:
-
+        elif int(line.split("\t")[1]) not in positions:
             mv.write(line)
-
     mv.close()
     f.close()
 

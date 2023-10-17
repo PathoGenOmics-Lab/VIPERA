@@ -16,7 +16,6 @@ log_threshold(INFO)
 source(snakemake@params[["design"]])
 
 # legend thresholds for ml tree
-
 legend.names <- c(
   tip_label = "Studied samples",
   boot_alrt_pass = sprintf("UFBoot ≥ %s%s & SH-aLRT ≥ %s%s ",
@@ -25,13 +24,10 @@ legend.names <- c(
   )
 )
 
-
-
 # Write stdout and stderr to log file
 log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
-
 
 matrix <- read_csv(snakemake@input[["dist"]])
 metadata <- read_csv(snakemake@input[["metadata"]])
@@ -48,9 +44,7 @@ study_names <- read.dna(
   )
 
 study_names <- study_names[!startsWith(names(study_names), snakemake@config[["ALIGNMENT_REFERENCE"]])]
-
 study_names <- names(study_names)
-
 
 # Obtain sample names ordered by CollectionDate
 date_order <- metadata %>%
@@ -59,7 +53,7 @@ date_order <- metadata %>%
   pull(ID) %>%
   unique()
 
-  tree_tiplab <- data.frame(
+tree_tiplab <- data.frame(
     ID = date_order,
     order = seq(1, length(date_order), 1)
   ) %>%
@@ -80,7 +74,6 @@ date_order <- metadata %>%
 
 
 # DATA PROCESSING ####
-
 # Resolve possible negative edge lengths in n-j tree
 fix_negative_edge_length <- function(nj.tree) {
   edge_infos <- cbind(
@@ -136,10 +129,8 @@ tempest <- adephylo::distRoot(
   )
 
 
-
 # PLOTS ####
-
-# n-j tree
+# nj tree
 log_info("Plotting n-j tree")
 tree_plot <- ggtree(tree) %<+% tree_tiplab +
   geom_tiplab(aes(label = tip_label)) +
@@ -157,7 +148,6 @@ ggsave(
 )
 
 # TempEst
-
 log_info("PLotting TempEst analysis")
 tempest_fig <- tempest %>%
   ggplot() +
@@ -185,10 +175,8 @@ ggsave(filename = snakemake@output[["temest"]],
 )
 
 # ML tree with context data
-
 # Tip node color
 tip.color <- ifelse(tree_ml$tip.label %in% study_names, "tip_label", NA)
-
 
 # Internal nodes color
 # Node labels contain SH-aLRT/UFboot values
@@ -198,12 +186,14 @@ aLRT.values <- sapply(
     as.numeric(x[1])
   }
 )
+
 bootstrap.values <- sapply(
   strsplit(tree_ml$node.label, "/"),
   function(x) {
     as.numeric(x[2])
   }
 )
+
 aLRT.mask <- aLRT.values >= snakemake@params[["alrt_th"]]
 boot.mask <- bootstrap.values >= snakemake@params[["boot_th"]]
 
@@ -254,7 +244,6 @@ ggsave(
 )
 
 # PLOT TABLES
-
 log_info("Saving TempEst table")
 tempest %>%
   transmute(
@@ -265,14 +254,12 @@ tempest %>%
   ) %>%
   write.csv(snakemake@output[["table"]], row.names = FALSE)
 
-
-# TEMPEST STATATS
+# TEMPEST STATS
 model <- lm(distance ~ date_interval, data = tempest)
 
 # TREE STATS
 study.node <- tree_ml$node.label[study.mrca - length(tip.color)]
 monophyletic <- ifelse(is.monophyletic(tree_ml, study_names), "are", "are not")
-
 
 list(
   "sub_rate" = model$coefficients[[2]] * 365,
@@ -285,5 +272,5 @@ list(
   "alrt"     = strsplit(study.node, "/")[[1]][1] %>% as.numeric(),
   "monophyly"= monophyletic
 ) %>%
-toJSON() %>%
-write(snakemake@output[["json"]])
+  toJSON() %>%
+  write(snakemake@output[["json"]])

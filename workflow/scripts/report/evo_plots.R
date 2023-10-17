@@ -13,13 +13,12 @@ sink(log, type = "output")
 # Import file with plots style
 source(snakemake@params[["design"]])
 
-
+# Read inputs
 vcf <- read_delim(snakemake@input[["vcf"]])
 metadata <- read_delim(snakemake@input[["metadata"]])
 N_S_position <- read_delim(snakemake@input[["N_S"]])
 
 # DATA PROCESSING
-
 # Create SNP variable and select useful variables
 vcf <- vcf %>%
   dplyr::select(
@@ -29,7 +28,7 @@ vcf <- vcf %>%
     GFF_FEATURE,
     synonimous,
     POS
-  ) 
+  )
 
 # Create variable for days sins first sample in metadata
 metadata <- metadata %>%
@@ -41,12 +40,9 @@ metadata <- metadata %>%
   select(ID, interval) %>%
   rename(REGION = ID)
 
-
 vcf <- left_join(vcf, metadata)
 
-
 # PLOT
-
 log_info("Ploting dN and dS over time")
 plot <- vcf %>%
   group_by(REGION, synonimous) %>%
@@ -98,7 +94,6 @@ ggsave(
 
 
 # PLOT TABLES
-
 log_info("Saving plot table")
 vcf %>%
   group_by(REGION, synonimous) %>%

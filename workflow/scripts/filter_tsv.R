@@ -9,9 +9,8 @@ log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
 
-
+# Read inputs
 data <- read_tsv(snakemake@input[["tsv"]])
-
 
 # Filtering criteria:
 # - P-value < 0.05
@@ -24,7 +23,6 @@ is.deletion <- str_detect(
                         )
 inBothStrands <- data$ALT_RV > 2 & data$ALT_DP > 2
 Depth <- (data$ALT_RV + data$ALT_DP) >= 20
-
 
 log_info("Filtering variants")
 data <- filter(
@@ -43,17 +41,17 @@ data <- mutate(
         TRUE             ~ "No"
     )
 )
-# Remove duplicated features
 
+# Remove duplicated features
 data <- distinct(data, pick(!GFF_FEATURE), .keep_all = TRUE)
 
 # Change annotation to gb2seq annotation
 features <- read_csv(snakemake@input[["annotation"]])
 
 data <- data %>% 
-select(!GFF_FEATURE) %>%
-left_join(features) %>%
-rename(GFF_FEATURE = GEN)
+    select(!GFF_FEATURE) %>%
+    left_join(features) %>%
+    rename(GFF_FEATURE = GEN)
 
 log_info("Saving results")
 write_tsv(

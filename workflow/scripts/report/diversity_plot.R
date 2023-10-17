@@ -79,9 +79,7 @@ test <- t.test(
   mu = diversity,
   conf.level = 0.95
 )
-
 pvalue.norm <- test$p.value
-
 
 # Estimate p-value empirically
 log_info("Estimating p-value empirically")
@@ -111,7 +109,6 @@ p <- data.frame(pi = divs) %>%
     x = "π",
     y = "Density")
 
-
 ggsave(
   filename = snakemake@output[["fig"]],
   plot = p,
@@ -125,22 +122,19 @@ ggsave(
 p.value <- ifelse(st$p.value >= 0.05, pvalue.norm,pvalue.emp)
 
 list.div <- list(
-                "diversity" = format(diversity, scientific = TRUE),
-                "p.value" = ifelse(p.value >= 0.001, p.value, "< 0.001"),
-                "normal.pvalue" = ifelse(st$p.value >= 0.001, p.value, "< 0.001"),
-                "norm.text" = ifelse(st$p.value >= 0.05, "", "not"),
-                "type.test" = ifelse(st$p.value >= 0.05, "", "empirical"),
-                "boot.reps" = snakemake@params[["bootstrap_reps"]],
-                "sample.size" = length(study_aln)
+  "diversity" = format(diversity, scientific = TRUE),
+  "p.value" = ifelse(p.value >= 0.001, p.value, "< 0.001"),
+  "normal.pvalue" = ifelse(st$p.value >= 0.001, p.value, "< 0.001"),
+  "norm.text" = ifelse(st$p.value >= 0.05, "", "not"),
+  "type.test" = ifelse(st$p.value >= 0.05, "", "empirical"),
+  "boot.reps" = snakemake@params[["bootstrap_reps"]],
+  "sample.size" = length(study_aln)
 )
 
 json <- toJSON(list.div)
-
 write(json, snakemake@output[["json"]])
 
-
 # PLOT TABLES
-
 data.frame(
   pi = divs,
   prop.value = diversity

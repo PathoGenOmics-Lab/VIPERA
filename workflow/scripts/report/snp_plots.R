@@ -7,8 +7,8 @@ library(logger)
 log_threshold(INFO)
 
 # Get colors
-color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = TRUE)]
-color = color[grep('white', color, invert = TRUE)]
+color <- grDevices::colors()[grep("gr(a|e)y", grDevices::colors(), invert = TRUE)]
+color <- color[grep("white", color, invert = TRUE)]
 # Import file with plots style
 source(snakemake@params[["design"]])
 
@@ -29,7 +29,6 @@ data <- metadata %>%
     ID,
     CollectionDate
   )
-
 
 # Obtain sample names ordered by CollectionDate
 date_order <- metadata %>%
@@ -124,7 +123,6 @@ cor.df.fill <- lapply(
   ) %>%
   bind_rows()
 
-
 # Plot a pseudo volcano plot with coorrelation index and p-value
 log_info("Plotting pseudovolcano figure")
 volcano <- cor.df.fill %>%
@@ -161,8 +159,7 @@ ggsave(
 
 
 ## SNP PANEL ####
-
-# SNPs significatvly correlated with time
+# SNPs significantly correlated with time
 sign <- filter(
             cor.df.fill,
             p.value < 0.05
@@ -211,7 +208,6 @@ panel <- vcf %>%
     color = "NV") +
   guides(color = guide_legend(ncol = 4))
 
-
 if (length(subset) > 1) {
   panel <- panel +
     facet_wrap(
@@ -231,7 +227,6 @@ ggsave(
 
 
 # PLOT TABLES ####
-
 log_info("Saving coorelation table")
 cor.df.fill %>%
   transmute(
@@ -255,5 +250,3 @@ vcf %>%
     DaysSinceFirst = interval
     ) %>%
     write.csv(snakemake@output[["table_2"]], row.names = FALSE)
-
-

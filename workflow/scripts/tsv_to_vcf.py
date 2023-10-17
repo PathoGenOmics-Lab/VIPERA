@@ -3,6 +3,7 @@
 import pandas as pd
 import logging
 
+
 def tsv_to_vcf(tsv_file, vcf_file):
     # Read the TSV file
     tsv_df = pd.read_csv(tsv_file, sep='\t')
@@ -32,6 +33,7 @@ def tsv_to_vcf(tsv_file, vcf_file):
 
             # Write the VCF row
             vcf.write(f'{chrom}\t{pos}\t.\t{ref}\t{alt}\t.\t.\n')
+
 
 def main():
     logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)

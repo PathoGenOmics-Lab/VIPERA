@@ -12,9 +12,8 @@ sink(log, type = "output")
 # Import file with plots style
 source(snakemake@params[["design"]])
 
-
+# Read inputs
 demix <- read_csv(snakemake@input[["summary_demixing"]])
-
 
 # DATA PROCESSING
 log_info("Obtaining main lineages")
@@ -69,7 +68,6 @@ demix_plot <- demix %>%
     fill = "Lineage"
   )
 
-
 ggsave(
   filename = snakemake@output[["fig"]],
   plot = demix_plot,
@@ -81,7 +79,6 @@ ggsave(
 
 
 # PLOT TABLES
-
 log_info("Saving plot table")
 demix %>%
   mutate(

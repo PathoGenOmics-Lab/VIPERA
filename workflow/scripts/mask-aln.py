@@ -18,13 +18,8 @@
 # ---------------------------------------------------------------------------------------
 
 """
-MSA reading consumes around 40% of the work load, and the last step
-(masking + writing) consumes around 60%. This last step could
-be parallelized by loading the MSA on a shared-memory array.
-
-Source of inspiration: https://github.com/W-L/ProblematicSites_SARS-CoV2
+Source: https://github.com/W-L/ProblematicSites_SARS-CoV2
 Modified by Miguel Alvarez <m.alvarez.herrera@csic.es>
-Date: 2023-03-23
 """
 
 import logging
@@ -33,14 +28,11 @@ import pandas as pd
 
 
 def read_fasta_keep_name(file:str):
-
     sample_headers = []
     sample_sequences = []
-
     for record in SeqIO.parse(file, "fasta"):
         sample_headers.append(str(record.description))
         sample_sequences.append(str(record.seq))
-
     return sample_headers, sample_sequences
 
 
@@ -52,10 +44,8 @@ def ref_coords_to_align_coords(ref_align_seq) -> dict:
     """
     ref_coord_dic = {}
     ref_align_seq = "".join(ref_align_seq).strip()
-
     for i in range(len(ref_align_seq.replace("-",""))):
         ref_coord_dic[i] = 0
-    
     seq_count = 0
     align_count = 0
     for c in ref_align_seq:
@@ -65,11 +55,10 @@ def ref_coords_to_align_coords(ref_align_seq) -> dict:
             align_count += 1
         else:
             align_count += 1
-    
     return ref_coord_dic
 
 
-def parse_vcf() -> tuple:
+def read_problematic_positions(path: str, mask_classes: list) -> tuple:
     """
     Parse a VCF containing positions for masking. Assumes the VCF file is
     formatted as:
@@ -78,14 +67,12 @@ def parse_vcf() -> tuple:
     Masked sites are specified with params.
     """
     vcf = pd.read_csv(
-        snakemake.input["vcf"],
+        path,
         delim_whitespace=True,
         comment="#",
         names=("CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO")
     )
-    positions = tuple(vcf.loc[vcf.FILTER.isin(snakemake.params.mask_class), "POS"])
-
-    return positions
+    return tuple(vcf.loc[vcf.FILTER.isin(mask_classes), "POS"])
 
 
 def main():
@@ -93,7 +80,7 @@ def main():
     
     logging.info("getting sites to mask")
     # parse VCF to get list of sites to mask
-    iffy_sites = parse_vcf()
+    positions = read_problematic_positions(snakemake.input.vcf, snakemake.params.mask_class)
 
     logging.info("Parsing Fasta file")
     # parse existing MSA FASTA file
@@ -111,7 +98,7 @@ def main():
     # convert list of iffy sites to corresponding alignment positions
     # using zero-based indexing
     # Mask problematic sites from VCF and leading and trailing positions
-    iffy_alignment_sites = tuple(ref_coord_dic[int(i)-1] for i in iffy_sites)
+    zb_sites = tuple(ref_coord_dic[int(i)-1] for i in positions)
 
     logging.info("Writing masked alignment")
     # using list of iffy alignment sites, mask corresponding positions
@@ -123,15 +110,13 @@ def main():
         mask_sub_char = snakemake.params.mask_character
 
     f = open(snakemake.output.fasta, "w")
-
     for i in range(len(headers)):
         seq = list(sequences[i])
-        for p in iffy_alignment_sites:
+        for p in zb_sites:
             if seq[p] != "-":
                 seq[p] = mask_sub_char
         seq = "".join(seq)
         f.write(">" + headers[i] + "\n" + seq + "\n")
-        
     f.close()
 
 

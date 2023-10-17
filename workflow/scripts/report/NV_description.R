@@ -16,7 +16,6 @@ log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
 
-
 # SARS-CoV-2 anotation for genome scheme
 SCov2_annotation <- list(
   "five_prime_UTR"  = c(1:265),
@@ -41,15 +40,12 @@ SCov2_annotation <- list(
   "ORF10"           = c(29558:29674),
   "three_prime_UTR" = c(29675:29903))
 
-
-
 vcf <- read_delim(snakemake@input[["vcf"]])
 vcf_snp <- vcf
 window <- read_csv(snakemake@input[["window"]])
 metadata <- read_csv(snakemake@input[["metadata"]])
 
 # DATA PROCESSING
-
 # Obtain sample names ordered by CollectionDate
 date_order <- metadata %>%
   filter(ID %in% snakemake@params[["samples"]]) %>%
@@ -58,7 +54,6 @@ date_order <- metadata %>%
   unique()
 
 # Create SNP variable and select useful variables
-
 vcf <- vcf %>%
   dplyr::select(
     variant,
@@ -88,7 +83,6 @@ notation <- lapply(
   }
 ) %>%
 bind_rows()
-
 
 # Classifying variants
 log_info("Classifying variants")
@@ -128,7 +122,6 @@ vcf <- vcf %>%
       )
     )
 
-
 # NSP data
 npc <- read_csv(snakemake@params[["nsp"]]) %>%
   mutate(
@@ -152,9 +145,7 @@ filter(NSP != "nsp1")
 
 
 # PLOTS
-
 ## SUMMARY FIGURE FOR WHOLE GENOME
-
 log_info("Plotting summary figure for whole genome")
 variants <- vcf %>%
   filter(ALT_FREQ > 0) %>%
@@ -195,7 +186,6 @@ variants <- vcf %>%
     guides(
       fill = guide_legend(reverse = TRUE)
     )
-
 
 # Window plot
 window_plot <- window %>%
@@ -245,7 +235,6 @@ window_plot_nsp <- window_plot +
     angle = 60
     )
 
-
 figura <- ggarrange(
   window_plot_nsp,
   variants,
@@ -256,7 +245,6 @@ figura <- ggarrange(
   legend = "right",
   labels = c("A", "B")
   )
-
 
 ggsave(
   filename = snakemake@output[["fig"]],
@@ -272,7 +260,6 @@ log_info("Plotting summary for variants in the spike")
 spike.pos <- window %>%
   filter(gen == "S") %>%
   pull(position)
-
 
 window_plot_spike <- window %>%
   filter(gen == "S") %>%
@@ -333,8 +320,6 @@ variants_spike <- vcf %>%
     guides(
       fill = guide_legend(reverse = TRUE)
     )
-
-
 
 figura_spike <- ggarrange(
   window_plot_spike,
@@ -401,7 +386,6 @@ ggsave(
 # PLOT TABLES
 log_info("Saving plot tables")
 
-
 # Variants summary table
 vcf %>%
   select(
@@ -426,7 +410,6 @@ vcf %>%
       )
     ) %>%
   write.csv(snakemake@output[["table_2"]], row.names = FALSE)
-
 
 # Window plot table
 window %>%
@@ -457,7 +440,6 @@ vcf_snp %>%
 
 
 # STATS FOR REPORTING
-
 n_indels <- vcf %>%
   filter(NV_class == "INDEL") %>%
   pull(variant) %>%
@@ -476,5 +458,5 @@ list(
   "r2"     = summary(model)$r.squared[[1]],
   "value"  = ifelse(cortest$p.value < 0.001, "< 0.001", cortest$p.value)
 ) %>%
-toJSON() %>%
-write(snakemake@output[["json"]])
+  toJSON() %>%
+  write(snakemake@output[["json"]])
