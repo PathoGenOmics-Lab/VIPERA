@@ -141,7 +141,7 @@ def main():
     ancestor_table = build_ancestor_variant_table(ancestor.seq, reference.seq, reference.id, masked_positions)
     variant_table = pd.concat([input_table, ancestor_table], ignore_index=True)
 
-    logging.info(f"Parallelizing the calculation with {snakemake.threads} jobs")
+    logging.info(f"Calculating distance matrix")
     sample_names = snakemake.params.samples + [reference.id]
     distances = calculate_distance_matrix(variant_table, sample_names, ancestor.seq)
 
