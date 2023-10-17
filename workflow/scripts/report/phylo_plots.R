@@ -163,8 +163,8 @@ tempest_fig <- tempest %>%
     ) +
   geom_point() +
   labs(
-    y = "Root to tip distance",
-    x = "Time since first sample (Days)")
+    y = "Root-to-tip distance",
+    x = "Days since the initial sampling")
 
 ggsave(filename = snakemake@output[["temest"]],
   plot = tempest_fig,

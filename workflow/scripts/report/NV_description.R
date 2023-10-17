@@ -207,7 +207,7 @@ window_plot <- window %>%
   xlim(c(0, 29903)) +
   scale_color_manual(values = gene_colors) +
   labs(
-    y = "Proportion of \n sites with SNV",
+    y = "Proportion of \n sites with NV",
     x = "",
     color = "Gen")
 
@@ -285,7 +285,7 @@ window_plot_spike <- window %>%
     guide = "none"
     ) +
   labs(
-    y = "Proportion of \n sites with SNV",
+    y = "Proportion of \n sites with NV",
     x = ""
     )
 
@@ -370,8 +370,8 @@ figur_SNP_time <- figur_SNP_table %>%
     ) +
   geom_point() +
   labs(
-    x = "Date",
-    y = "Nº of polimorphic sites"
+    x = "Collection date",
+    y = "No. of polimorphic sites"
     )
 
 ggsave(

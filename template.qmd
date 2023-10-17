@@ -131,7 +131,7 @@ read mappings.
 ![**Figure 3.** Neighbor-joining tree based on the pairwise allele
 frequency-weighted distances.](`r params$tree`)
 
-With the neighbor-joining tree, root-to-tip distances have been correlated
+Root-to-tip distances measured on this tree have been correlated
 with time, obtaining a $R^2$ of **`r correlation`** with a p-value of
 $`r p_value_lm`$. The estimated substitution rate is **`r sub_rate`**
 substitutions per year.

@@ -79,7 +79,7 @@ plot <- vcf %>%
     ) +
   labs(
     y = "",
-    x = "Time since first sample",
+    x = "Days since the initial sampling",
     color = "Parameter"
   )
 
