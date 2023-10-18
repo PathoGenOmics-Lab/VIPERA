@@ -132,7 +132,7 @@ read mappings.
 frequency-weighted distances.](`r params$tree`)
 
 Root-to-tip distances measured on this tree have been correlated
-with time, obtaining a $R^2$ of **`r correlation`** with a p-value of
+with time, obtaining a $R^2$ of **`r correlation`** and a p-value of
 $`r p_value_lm`$. The estimated substitution rate is **`r sub_rate`**
 substitutions per year.
 
@@ -165,7 +165,7 @@ target samples.](`r params$div`)
 
 Sites with minor allele frequency > 0.05  are considered polymorphic sites.
 The collection date explains the number of polymorphic sites with an $R^2$ of
-**`r nv.counts[["r2"]]`**, with a p-value of $`r nv.counts[["value"]]`$.
+**`r nv.counts[["r2"]]`** and a p-value of $`r nv.counts[["value"]]`$.
 
 ![**Figure 6.**  Number of polymorphic sites along time. The
 red line shows the linear model fit.](`r params$fig_cor_snp`)
