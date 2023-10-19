@@ -82,7 +82,7 @@ cor.mat[is.na(cor.mat)] <- 0
 
 ```{r summary_table, echo = F,message = F}
 #| label: tbl-summary
-#| tbl-cap: Summary of the target samples dataset
+#| tbl-cap: Target dataset summary
 
 gt(table) %>%
   cols_label(
@@ -112,7 +112,7 @@ gt(table) %>%
 The estimated lineage admixture for each sample has been calculated
 using [Freyja](https://github.com/andersen-lab/Freyja).
 
-![**Figure 1.** Estimated lineage admixture of each sample.
+![Estimated lineage admixture of each sample.
 Samples in the X-axis are ordered chronologically, from more ancient to newer.](`r params$freyja`){#fig-freyja}
 
 ### Phylogeny and temporal signal
@@ -123,7 +123,7 @@ The target samples `r stats[["monophyly"]]` monophyletic. The clade
 that contains all the target samples is supported by a **UFBoot** score of
 $`r stats[["boot"]]`$% and a **SH-aLRT** score of $`r stats[["alrt"]]`$%.
 
-![**Figure 2.** Maximum-likelihood phylogeny with 1000 support replicates of
+![Maximum-likelihood phylogeny with 1000 support replicates of
 target datasets with their context samples. The clade that contains the target
 samples is squared in red.](`r params$tree_ml`){#fig-tree_ml}
 
@@ -131,7 +131,7 @@ A neighbor-joining tree has been constructed using pairwise distances
 between target samples, based on the allele frequencies measured from
 read mappings.
 
-![**Figure 3.** Neighbor-joining tree based on the pairwise allele
+![Neighbor-joining tree based on the pairwise allele
 frequency-weighted distances.](`r params$tree`){#fig-tree}
 
 Root-to-tip distances measured on this tree have been correlated
@@ -139,7 +139,7 @@ with time, obtaining a $R^2$ of **`r correlation`** and a p-value of
 $`r p_value_lm`$. The estimated substitution rate is **`r sub_rate`**
 substitutions per year.
 
-![**Figure 4.** Scatterplot showing the relationship between root-to-tip
+![Scatterplot showing the relationship between root-to-tip
 distances and the number of days passed since the first sample. The red
 line show the linear model fit.](`r params$tempest`){#fig-tempest}
 
@@ -156,7 +156,7 @@ Assuming the independence of the context samples, the `r div_values[["type.test"
 p-value of the context samples having a nucleotide diversity as low as that
 of the target dataset is $`r div_values[["p.value"]]`$.
 
-![**Figure 5.** Analysis of the nucleotide diversity (π). The orange line describes
+![Analysis of the nucleotide diversity (π). The orange line describes
 a normal distribution with the same mean and standard deviation as the distribution
 of π from $`r div_values[["boot.reps"]]`$ subsets of $`r div_values[["sample.size"]]`$
 sequences from the context. The red vertical line indicates the π value of the
@@ -170,7 +170,7 @@ Sites with minor allele frequency > 0.05  are considered polymorphic sites.
 The collection date explains the number of polymorphic sites with an $R^2$ of
 **`r nv.counts[["r2"]]`** and a p-value of $`r nv.counts[["value"]]`$.
 
-![**Figure 6.**  Number of polymorphic sites along time. The
+![Number of polymorphic sites along time. The
 red line shows the linear model fit.](`r params$fig_cor_snp`){#fig-fig_cor_snp}
 
 ### Description for intra-host nucleotide variants
@@ -182,7 +182,7 @@ INDELs have been detected along the genome.
 
 ## Whole genome
 
-![**Figure 7.** Summary of the intra-host accumulation of nucleotide variants,
+![Summary of the intra-host accumulation of nucleotide variants,
 using the reconstructed dataset ancestor as reference. A) Nucleotide
 variants per site along the SARS-CoV-2 genome. Relative abundance of NVs is calculated
 with a sliding window of width $`r nv.counts[["window"]]`$ nucleotides and a step of
@@ -193,7 +193,7 @@ at the bottom, and the latest, at the top.](`r params$SNV`){#fig-SNV}
 
 ## S gene
 
-![**Figure 8.** Summary of the intra-host accumulation of nucleotide variants
+![Summary of the intra-host accumulation of nucleotide variants
 in the spike sequence, using the reconstructed dataset ancestor as reference. A) Nucleotide
 variants per site along the S gene. Relative abundance of NVs is calculated
 with a sliding window of width $`r nv.counts[["window"]]`$ nucleotides and a step of
@@ -208,14 +208,14 @@ at the bottom, and the latest, at the top.](`r params$SNV_s`){#fig-SNV_s}
 The correlation of the allele frequency of each NV with the time since the
 initial sampling has been calculated.
 
-![**Figure 9.** Pearson’s correlation coefficients and adjusted p-values of
+![Pearson’s correlation coefficients and adjusted p-values of
 allele frequencies with time. Red dashed line indicates adjusted $p = 0.05$.
 Labeled dots represent nucleotide variants correlated with time
 (adjusted $p < 0.05$).](`r params$volcano`){#fig-volcano}
 
 Significantly correlated nucleotide variants are described in more detail.
 
-![**Figure 10.** Time series of the relative allele frequencies of nucleotide variants
+![Time series of the relative allele frequencies of nucleotide variants
 with a significant correlation with time, and for those that share their site in the
 genome. Each subplot depicts the progression of the allele frequencies in time for a
 given genome position.](`r params$panel`){#fig-panel}
@@ -227,7 +227,7 @@ frequencies are calculated.
 
 ```{r heatmap, echo = F, message = F, fig.align = 'center'}
 #| label: fig-heatmap
-#| fig-heatmap: "Hierarchically clustered heatmap of the pairwise Pearson’s correlation coefficients between the time series of allele frequencies in the case study."
+#| fig-cap: "Hierarchically clustered heatmap of the pairwise Pearson’s correlation coefficients between the time series of allele frequencies in the case study."
 
 heatmaply_cor(
   cor.mat,
@@ -243,4 +243,4 @@ To track selection footprints, the substitutions per synonymous site (dS) and
 per non-synonymous site (dN) for each sample with respect to the reconstructed
 ancestral sequence have been calculated.
 
-![**Figure 11.** Time series of dN and dS. Each point corresponds to a different sample, sorted in chronological order.](`r params$evo`){#fig-evo}
+![Time series of dN and dS. Each point corresponds to a different sample, sorted in chronological order.](`r params$evo`){#fig-evo}
