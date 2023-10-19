@@ -1,5 +1,5 @@
 ---
-title: "VIPERA report" 
+title: "VIPERA report: `r params$name`" 
 subtitle: "Workflow: `r params$workflow_version`"
 date: last-modified
 date-format: "DD-MM-YYYY"
@@ -35,6 +35,8 @@ params:
   table: ""
   sum_nv: ""
   heat_tab: ""
+  omega_plot: ""
+  name: ""
 output-file: report.html
 ---
 <head>
@@ -118,17 +120,17 @@ Samples in the X-axis are ordered chronologically, from more ancient to newer.](
 ### Phylogeny and temporal signal
 
 A maximum likelihood tree of the target and context samples has been
-build using IQTREE.
+build using [IQTREE](http://www.iqtree.org/).
 The target samples `r stats[["monophyly"]]` monophyletic. The clade
 that contains all the target samples is supported by a **UFBoot** score of
-$`r stats[["boot"]]`$% and a **SH-aLRT** score of $`r stats[["alrt"]]`$%.
+$`r stats[["boot"]]`$% and a **SH-aLRT** score of $`r stats[["alrt"]]`$% (@fig-tree_ml).
 
 ![Maximum-likelihood phylogeny with 1000 support replicates of
 target datasets and their context samples. The clade that contains the target
 samples is squared in red.](`r params$tree_ml`){#fig-tree_ml}
 
 A neighbor-joining tree has been constructed using pairwise distances
-between target samples, based on the allele frequencies measured from
+between target samples (@fig-tree), based on the allele frequencies measured from
 read mappings.
 
 ![Neighbor-joining tree based on the pairwise allele
@@ -137,7 +139,7 @@ frequency-weighted distances.](`r params$tree`){#fig-tree}
 Root-to-tip distances measured on this tree have been correlated
 with time, obtaining a $R^2$ of **`r correlation`** and a p-value of
 $`r p_value_lm`$. The estimated substitution rate is **`r sub_rate`**
-substitutions per year.
+substitutions per year (@fig-tempest).
 
 ![Scatterplot depicting the relationship between root-to-tip
 distances and the number of days passed since the first sample. The red
@@ -168,15 +170,15 @@ target samples.](`r params$div`){#fig-div}
 
 Sites with minor allele frequency > 0.05 are considered polymorphic.
 The collection date explains the number of polymorphic sites with an $R^2$ of
-**`r nv.counts[["r2"]]`** and a p-value of $`r nv.counts[["value"]]`$.
+**`r nv.counts[["r2"]]`** and a p-value of $`r nv.counts[["value"]]`$ (@fig-fig_cor_snp).
 
 ![Number of polymorphic sites along time. The
-red line shows the linear model fit.](`r params$fig_cor_snp`){#fig-fig_cor_snp}
+blue line shows the linear model fit.](`r params$fig_cor_snp`){#fig-fig_cor_snp}
 
 ### Description for intra-host nucleotide variants
 
 A total of `r n_SNV` different single nucleotide variants (SNV) and `r n_INDELS`
-INDELs have been detected along the genome.
+INDELs have been detected along the genome (@fig-SNV).
 
 ::: {.panel-tabset}
 
@@ -191,7 +193,7 @@ proteins (NSP) within ORF1ab. B) Genome variation along the genome for each samp
 The Y-axis displays samples in chronological order, with the earliest collection date
 at the bottom, and the latest, at the top.](`r params$SNV`){#fig-SNV}
 
-## S gene
+## Spike ORF
 
 ![Summary of the intra-host accumulation of nucleotide variants
 in the spike sequence, using the reconstructed dataset ancestor as reference. A) Nucleotide
@@ -206,14 +208,14 @@ at the bottom, and the latest, at the top.](`r params$SNV_s`){#fig-SNV_s}
 ### Time dependency for the intra-host nucleotide variants
 
 The correlation of the allele frequency of each NV with the time since the
-initial sampling has been calculated.
+initial sampling has been calculated (@fig-volcano).
 
 ![Pearson’s correlation coefficients and adjusted p-values of
 allele frequencies with time. Red dashed line indicates adjusted $p = 0.05$.
 Labeled dots represent nucleotide variants correlated with time
 (adjusted $p < 0.05$).](`r params$volcano`){#fig-volcano}
 
-Significantly correlated nucleotide variants are described in more detail.
+Significantly correlated nucleotide variants are described in more detail in @fig-panel.
 
 ![Time series of relative allele frequencies. The shown positions include
 nucleotide variants with a significant correlation with time and sites with more
@@ -223,7 +225,7 @@ frequencies in time for a given genome position.](`r params$panel`){#fig-panel}
 ### Correlation between alternative alleles
 
 To detect possible interactions between mutations, pairwise correlation between allele
-frequencies are calculated.
+frequencies are calculated and shown in @fig-heatmap. This heatmap is an interactive figure in which it is posible to zoom in specific regions. 
 
 ```{r heatmap, echo = F, message = F, fig.align = 'center'}
 #| label: fig-heatmap
@@ -241,6 +243,16 @@ heatmaply_cor(
 
 To track selection footprints, the substitutions per synonymous site (dS) and
 per non-synonymous site (dN) for each sample with respect to the reconstructed
-ancestral sequence have been calculated.
+ancestral sequence have been calculated (@fig-evo). Also $\omega$ (dN/dS) is shown in @fig-omega.
 
+::: {.panel-tabset}
+
+## dN and dS
 ![Time series of dN and dS. Each point corresponds to a different sample, sorted in chronological order.](`r params$evo`){#fig-evo}
+
+## $\omega$ (dN /dS)
+
+![Time series of $\omega$ (dN/dS). Each point corresponds to a different sample, sorted in chronological order.](`r params$omega_plot`){#fig-omega}
+
+:::
+

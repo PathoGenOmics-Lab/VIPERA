@@ -127,6 +127,7 @@ rule evo_plots:
         metadata = config["METADATA"]
     output:
         plot = report((REPORT_DIR_PLOTS/"figure_11.png").resolve()),
+        plot_omega = report((REPORT_DIR_PLOTS/"figure_12.png").resolve()),
         table = report((REPORT_DIR_TABLES/"figure_11.csv").resolve())
     log:
         LOGDIR / "evo_plots" / "log.txt"
@@ -185,9 +186,11 @@ rule report:
         stats_lm  = rules.phylo_plots.output.json,
         table     = rules.summary_table.output.table,
         sum_nv    = rules.general_NV_description.output.json,
-        heat_table= rules.heatmap.output.table
+        heat_table= rules.heatmap.output.table,
+        omega_plot = report(rules.evo_plots.output.plot_omega)
     params:
-        workflow_version = get_repo_version(BASE_PATH.as_posix(), __version__)
+        workflow_version = get_repo_version(BASE_PATH.as_posix(), __version__),
+        name = config["OUTPUT_NAME"]
     output:
         html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
     log:
@@ -213,6 +216,8 @@ rule report:
                                                        stats_lm = '{input.stats_lm}',
                                                        table = '{input.table}',
                                                        sum_nv = '{input.sum_nv}',
-                                                       heat_tab = '{input.heat_table}'))\" >{log} 2>&1
+                                                       heat_tab = '{input.heat_table}',
+                                                       omega_plot = '{input.omega_plot}',
+                                                       name = '{params.name}'))\" >{log} 2>&1
         mv "$(dirname {input.qmd:q})/report.html" {output.html}
         """
