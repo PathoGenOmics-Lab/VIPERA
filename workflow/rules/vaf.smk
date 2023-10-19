@@ -113,7 +113,7 @@ rule filter_tsv:
         tsv = OUTDIR/f"{OUTPUT_NAME}.masked.tsv",
         annotation = OUTDIR/"annotation.csv"
     output:
-        filtered_tsv = OUTDIR/f"{OUTPUT_NAME}.masked.prefiltered.tsv"
+        filtered_tsv = temp(OUTDIR/f"{OUTPUT_NAME}.masked.prefiltered.tsv")
     log:
         LOGDIR / "filter_tsv" / "log.txt"
     script:
@@ -126,7 +126,7 @@ rule tsv_to_vcf:
     input: 
         tsv = OUTDIR/f"{OUTPUT_NAME}.masked.prefiltered.tsv",
     output:
-        vcf = OUTDIR/f"{OUTPUT_NAME}.vcf"
+        vcf = temp(OUTDIR/f"{OUTPUT_NAME}.vcf")
     log:
         LOGDIR / "tsv_to_vcf" / "log.txt"
     script:
@@ -141,7 +141,7 @@ rule variants_effect:
     input:
         vcf = OUTDIR/f"{OUTPUT_NAME}.vcf"
     output:
-        ann_vcf = OUTDIR/f"{OUTPUT_NAME}.annotated.vcf"
+        ann_vcf = temp(OUTDIR/f"{OUTPUT_NAME}.annotated.vcf")
     log:
         LOGDIR / "variants_effect" / "log.txt"
     shell:
