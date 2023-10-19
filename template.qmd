@@ -178,7 +178,7 @@ blue line shows the linear model fit.](`r params$fig_cor_snp`){#fig-fig_cor_snp}
 ### Description for intra-host nucleotide variants
 
 A total of `r n_SNV` different single nucleotide variants (SNV) and `r n_INDELS`
-INDELs have been detected along the genome (@fig-SNV).
+insertions and deletions (indels) have been detected along the genome (@fig-SNV).
 
 ::: {.panel-tabset}
 
@@ -225,11 +225,12 @@ frequencies in time for a given genome position.](`r params$panel`){#fig-panel}
 ### Correlation between alternative alleles
 
 To detect possible interactions between mutations, pairwise correlation between allele
-frequencies are calculated and shown in @fig-heatmap. This heatmap is an interactive figure in which it is posible to zoom in specific regions. 
+frequencies are calculated (@fig-heatmap). The heatmap is an interactive figure that allows
+zooming in on specific regions.
 
 ```{r heatmap, echo = F, message = F, fig.align = 'center'}
 #| label: fig-heatmap
-#| fig-cap: "Hierarchically clustered heatmap of the pairwise Pearson’s correlation coefficients between the time series of allele frequencies in the case study."
+#| fig-cap: "Interactive hierarchically clustered heatmap of the pairwise Pearson’s correlation coefficients between the time series of allele frequencies in the case study."
 
 heatmaply_cor(
   cor.mat,
@@ -241,18 +242,17 @@ heatmaply_cor(
 
 ### Non-synonymous to synonymous rate ratio over time
 
-To track selection footprints, the substitutions per synonymous site (dS) and
-per non-synonymous site (dN) for each sample with respect to the reconstructed
-ancestral sequence have been calculated (@fig-evo). Also $\omega$ (dN/dS) is shown in @fig-omega.
+To track selection footprints, the substitutions per synonymous site ($dS$) and
+per non-synonymous site ($dN$) for each sample with respect to the reconstructed
+ancestral sequence have been calculated (@fig-evo), as well as their ratio ($\omega = dN/dS$; @fig-omega).
 
 ::: {.panel-tabset}
 
 ## dN and dS
 ![Time series of dN and dS. Each point corresponds to a different sample, sorted in chronological order.](`r params$evo`){#fig-evo}
 
-## $\omega$ (dN /dS)
+## $\omega$ ($dN/dS$)
 
-![Time series of $\omega$ (dN/dS). Each point corresponds to a different sample, sorted in chronological order.](`r params$omega_plot`){#fig-omega}
+![Time series of $\omega$ ($dN/dS$). Each point corresponds to a different sample, sorted in chronological order.](`r params$omega_plot`){#fig-omega}
 
 :::
-
