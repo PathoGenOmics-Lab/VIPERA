@@ -1,8 +1,8 @@
 ---
 title: "VIPERA report: `r params$name`" 
-subtitle: "Workflow: `r params$workflow_version`"
+subtitle: "Workflow version: `r params$workflow_version`"
 date: last-modified
-date-format: "DD-MM-YYYY"
+date-format: "YYYY-MM-DD"
 title-block-banner: true
 format: 
   html: 
