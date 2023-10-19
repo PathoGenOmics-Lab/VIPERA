@@ -44,7 +44,7 @@ output-file: report.html
 </head>
 
 
-```{r read, echo= F,message= F, include = F}
+```{r read, echo = F, message = F, include = F}
 library(jsonlite)
 library(gt)
 library(tidyr)
@@ -80,7 +80,10 @@ cor.mat[is.na(cor.mat)] <- 0
 
 ## Summary of the target samples dataset
 
-```{r summary_table, echo= F,message= F}
+```{r summary_table, echo = F,message = F}
+#| label: tbl-summary
+#| tbl-cap: Summary of the target samples dataset
+
 gt(table) %>%
   cols_label(
     Sample = "Sample",
@@ -110,7 +113,7 @@ The estimated lineage admixture for each sample has been calculated
 using [Freyja](https://github.com/andersen-lab/Freyja).
 
 ![**Figure 1.** Estimated lineage admixture of each sample.
-Samples in the X-axis are ordered chronologically, from more ancient to newer.](`r params$freyja`)
+Samples in the X-axis are ordered chronologically, from more ancient to newer.](`r params$freyja`){#fig-freyja}
 
 ### Phylogeny and temporal signal
 
@@ -122,14 +125,14 @@ $`r stats[["boot"]]`$% and a **SH-aLRT** score of $`r stats[["alrt"]]`$%.
 
 ![**Figure 2.** Maximum-likelihood phylogeny with 1000 support replicates of
 target datasets with their context samples. The clade that contains the target
-samples is squared in red.](`r params$tree_ml`)
+samples is squared in red.](`r params$tree_ml`){#fig-tree_ml}
 
 A neighbor-joining tree has been constructed using pairwise distances
 between target samples, based on the allele frequencies measured from
 read mappings.
 
 ![**Figure 3.** Neighbor-joining tree based on the pairwise allele
-frequency-weighted distances.](`r params$tree`)
+frequency-weighted distances.](`r params$tree`){#fig-tree}
 
 Root-to-tip distances measured on this tree have been correlated
 with time, obtaining a $R^2$ of **`r correlation`** and a p-value of
@@ -138,7 +141,7 @@ substitutions per year.
 
 ![**Figure 4.** Scatterplot showing the relationship between root-to-tip
 distances and the number of days passed since the first sample. The red
-line show the linear model fit.](`r params$tempest`)
+line show the linear model fit.](`r params$tempest`){#fig-tempest}
 
 ### Nucleotide diversity comparison
 
@@ -157,7 +160,7 @@ of the target dataset is $`r div_values[["p.value"]]`$.
 a normal distribution with the same mean and standard deviation as the distribution
 of π from $`r div_values[["boot.reps"]]`$ subsets of $`r div_values[["sample.size"]]`$
 sequences from the context. The red vertical line indicates the π value of the
-target samples.](`r params$div`)
+target samples.](`r params$div`){#fig-div}
 
 ## Evolutionary trajectory of the serially-sampled SARS-CoV-2 infection
 
@@ -168,13 +171,12 @@ The collection date explains the number of polymorphic sites with an $R^2$ of
 **`r nv.counts[["r2"]]`** and a p-value of $`r nv.counts[["value"]]`$.
 
 ![**Figure 6.**  Number of polymorphic sites along time. The
-red line shows the linear model fit.](`r params$fig_cor_snp`)
+red line shows the linear model fit.](`r params$fig_cor_snp`){#fig-fig_cor_snp}
 
 ### Description for intra-host nucleotide variants
 
-A total of `r n_SNV` different single nucleotide variants (SNV) and `r n_INDELS` INDELs have been detected
-along the genome. **Figure 7** shows their distribution along the genome and
-the variation in allele frequencies in the target samples.
+A total of `r n_SNV` different single nucleotide variants (SNV) and `r n_INDELS`
+INDELs have been detected along the genome.
 
 ::: {.panel-tabset}
 
@@ -187,7 +189,7 @@ with a sliding window of width $`r nv.counts[["window"]]`$ nucleotides and a ste
 $`r nv.counts[["step"]]`$. Labels indicate the coding regions of the non structural
 proteins (NSP) within ORF1ab. B) Genome variation along the genome for each sample.
 The Y-axis displays samples in chronological order, with the earliest collection date
-at the bottom, and the latest, at the top.](`r params$SNV`)
+at the bottom, and the latest, at the top.](`r params$SNV`){#fig-SNV}
 
 ## S gene
 
@@ -197,7 +199,7 @@ variants per site along the S gene. Relative abundance of NVs is calculated
 with a sliding window of width $`r nv.counts[["window"]]`$ nucleotides and a step of
 $`r nv.counts[["step"]]`$. B) Genome variation along the S gene for each sample.
 The Y-axis displays samples in chronological order, with the earliest collection date
-at the bottom, and the latest, at the top.](`r params$SNV_s`)
+at the bottom, and the latest, at the top.](`r params$SNV_s`){#fig-SNV_s}
 
 :::
 
@@ -209,21 +211,24 @@ initial sampling has been calculated.
 ![**Figure 9.** Pearson’s correlation coefficients and adjusted p-values of
 allele frequencies with time. Red dashed line indicates adjusted $p = 0.05$.
 Labeled dots represent nucleotide variants correlated with time
-(adjusted $p < 0.05$).](`r params$volcano`)
+(adjusted $p < 0.05$).](`r params$volcano`){#fig-volcano}
 
 Significantly correlated nucleotide variants are described in more detail.
 
 ![**Figure 10.** Time series of the relative allele frequencies of nucleotide variants
 with a significant correlation with time, and for those that share their site in the
 genome. Each subplot depicts the progression of the allele frequencies in time for a
-given genome position.](`r params$panel`)
+given genome position.](`r params$panel`){#fig-panel}
 
 ### Correlation between alternative alleles
 
 To detect possible interactions between mutations, pairwise correlation between allele
 frequencies are calculated.
 
-```{r heatmap, echo= F,message= F, fig.align='center'}
+```{r heatmap, echo = F, message = F, fig.align = 'center'}
+#| label: fig-heatmap
+#| fig-heatmap: "Hierarchically clustered heatmap of the pairwise Pearson’s correlation coefficients between the time series of allele frequencies in the case study."
+
 heatmaply_cor(
   cor.mat,
   fontsize_row = 8, 
@@ -231,7 +236,6 @@ heatmaply_cor(
   column_text_angle = 90
 )
 ```
-![**Figure 10.** Hierarchically clustered heatmap of the pairwise Pearson’s correlation coefficients between the time series of allele frequencies in the case study.]()
 
 ### Non-synonymous to synonymous rate ratio over time
 
@@ -239,4 +243,4 @@ To track selection footprints, the substitutions per synonymous site (dS) and
 per non-synonymous site (dN) for each sample with respect to the reconstructed
 ancestral sequence have been calculated.
 
-![**Figure 11.** Time series of dN and dS. Each point corresponds to a different sample, sorted in chronological order.](`r params$evo`)
+![**Figure 11.** Time series of dN and dS. Each point corresponds to a different sample, sorted in chronological order.](`r params$evo`){#fig-evo}
