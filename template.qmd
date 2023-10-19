@@ -124,7 +124,7 @@ that contains all the target samples is supported by a **UFBoot** score of
 $`r stats[["boot"]]`$% and a **SH-aLRT** score of $`r stats[["alrt"]]`$%.
 
 ![Maximum-likelihood phylogeny with 1000 support replicates of
-target datasets with their context samples. The clade that contains the target
+target datasets and their context samples. The clade that contains the target
 samples is squared in red.](`r params$tree_ml`){#fig-tree_ml}
 
 A neighbor-joining tree has been constructed using pairwise distances
@@ -139,9 +139,9 @@ with time, obtaining a $R^2$ of **`r correlation`** and a p-value of
 $`r p_value_lm`$. The estimated substitution rate is **`r sub_rate`**
 substitutions per year.
 
-![Scatterplot showing the relationship between root-to-tip
+![Scatterplot depicting the relationship between root-to-tip
 distances and the number of days passed since the first sample. The red
-line show the linear model fit.](`r params$tempest`){#fig-tempest}
+line shows the linear model fit.](`r params$tempest`){#fig-tempest}
 
 ### Nucleotide diversity comparison
 
@@ -151,10 +151,10 @@ from the context dataset. The distribution of the nuclotide diversity is assumed
 `r div_values[["norm.text"]]` be normal after performing a Shapiro-Wilk test
 (p-value of $`r div_values[["normal.pvalue"]]`$).
 
-The nucleotide diversity of the target samples is $`r div_values[["diversity"]] `$.
+The nucleotide diversity of the target samples is $`r div_values[["diversity"]] `$ (red line in @fig-div).
 Assuming the independence of the context samples, the `r div_values[["type.test"]]`
-p-value of the context samples having a nucleotide diversity as low as that
-of the target dataset is $`r div_values[["p.value"]]`$.
+p-value of the context samples having a nucleotide diversity (in orange in @fig-div)
+as low as that of the target dataset is $`r div_values[["p.value"]]`$.
 
 ![Analysis of the nucleotide diversity (π). The orange line describes
 a normal distribution with the same mean and standard deviation as the distribution
@@ -166,7 +166,7 @@ target samples.](`r params$div`){#fig-div}
 
 ### Number of polymorphic sites
 
-Sites with minor allele frequency > 0.05  are considered polymorphic sites.
+Sites with minor allele frequency > 0.05 are considered polymorphic.
 The collection date explains the number of polymorphic sites with an $R^2$ of
 **`r nv.counts[["r2"]]`** and a p-value of $`r nv.counts[["value"]]`$.
 
@@ -215,10 +215,10 @@ Labeled dots represent nucleotide variants correlated with time
 
 Significantly correlated nucleotide variants are described in more detail.
 
-![Time series of the relative allele frequencies of nucleotide variants
-with a significant correlation with time, and for those that share their site in the
-genome. Each subplot depicts the progression of the allele frequencies in time for a
-given genome position.](`r params$panel`){#fig-panel}
+![Time series of relative allele frequencies. The shown positions include
+nucleotide variants with a significant correlation with time and sites with more
+than two possible states. Each subplot depicts the progression of the allele
+frequencies in time for a given genome position.](`r params$panel`){#fig-panel}
 
 ### Correlation between alternative alleles
 
