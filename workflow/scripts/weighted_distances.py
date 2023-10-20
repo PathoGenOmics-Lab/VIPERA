@@ -81,7 +81,7 @@ def calc_fst_weir_cockerham(hs: float, ht: float) -> float:
 def build_cache(variant_table: pd.DataFrame, reference: Seq):
     cache = {"freq": {}, "hz": {}}
     for sample_name in variant_table["REGION"].unique():
-        for position in variant_table["POS"].unique().astype("Int64"):
+        for position in variant_table["POS"].astype("Int64").unique():
             if sample_name not in cache["freq"]:
                 cache["freq"][sample_name] = {}
             if sample_name not in cache["hz"]:
