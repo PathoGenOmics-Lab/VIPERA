@@ -248,7 +248,7 @@ ancestral sequence have been calculated (@fig-evo), as well as their ratio ($\om
 
 ::: {.panel-tabset}
 
-## dN and dS
+## $dN$ and $dS$
 ![Time series of dN and dS. Each point corresponds to a different sample, sorted in chronological order.](`r params$evo`){#fig-evo}
 
 ## $\omega$ ($dN/dS$)
