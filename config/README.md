@@ -39,8 +39,9 @@ You may also provide this information through the `--config` parameter.
 Setting the `CONTEXT_FASTA` parameter to `null` (default) will enable
 the automatic download of sequences from the GISAID SARS-CoV-2 database
 (see [the following section](README.md#context-checkpoints) for further details).
-To enable this, you must also provide your GISAID credentials by creating and
-filling an additional configuration file `config/gisaid.yaml` as follows:
+To enable this, you must also [sign up to the GISAID platform](https://gisaid.org/register/)
+and provide your credentials by creating and filling an additional configuration
+file `config/gisaid.yaml` as follows:
 
 ```yaml
 USERNAME: "your-username"
