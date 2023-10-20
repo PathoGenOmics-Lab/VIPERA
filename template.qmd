@@ -169,8 +169,9 @@ target samples.](`r params$div`){#fig-div}
 ### Number of polymorphic sites
 
 Sites with minor allele frequency > 0.05 are considered polymorphic.
-The collection date explains the number of polymorphic sites with an $R^2$ of
-**`r nv.counts[["r2"]]`** and a p-value of $`r nv.counts[["value"]]`$ (@fig-fig_cor_snp).
+The linear association between the collection date of the samples and the number of
+polymorphic sites has an $R^2$ of **`r nv.counts[["r2"]]`** and a p-value of
+$`r nv.counts[["value"]]`$ (@fig-fig_cor_snp).
 
 ![Number of polymorphic sites along time. The
 blue line shows the linear model fit.](`r params$fig_cor_snp`){#fig-fig_cor_snp}
