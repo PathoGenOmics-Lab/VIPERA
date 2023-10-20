@@ -22,8 +22,12 @@ and [configuring the inputs and outputs](config/README.md#inputs-and-outputs):
 snakemake --use-conda -c4  # runs VIPERA on 4 cores (reccomended)
 ```
 
-Alternatively, you can use a simple script ([`run_default_VIPERA.sh`](run_default_VIPERA.sh))
-that downloads the data from our study and performs the analysis in one step.
+Alternatively, you can use a simple script that downloads the data from our study
+and performs the analysis in one step:
+
+```shell
+./run_default_VIPERA.sh
+```
 
 This Snakemake workflow can be also [executed in an HPC environment](config/README.md#run-modes).
 

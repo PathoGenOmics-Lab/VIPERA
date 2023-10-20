@@ -111,5 +111,5 @@ To run the analysis in an HPC environment using SLURM, we provide a
 to your needs, or used directly by running the following command:
 
 ```shell
-snakemake --slurm --use-conda --profile profile/default
+snakemake --use-conda --slurm --profile profile/default
 ```
