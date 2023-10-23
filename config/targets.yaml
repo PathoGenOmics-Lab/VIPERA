@@ -37,6 +37,8 @@ SAMPLES:
     fasta: "data/fasta/ERR5709463.fa"
 METADATA:
   "data/metadata.csv"
+OUTPUT_NAME:
+  "case_study"
 OUTPUT_DIRECTORY:
   "output"
 CONTEXT_FASTA:

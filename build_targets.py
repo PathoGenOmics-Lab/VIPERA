@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 
+"""build_targets.py
+
+This script simplifies the process of creating the configuration file.
+It takes a list of sample names, a directory with BAM and FASTA files, the path
+to the metadata table and the name of your dataset as required inputs. Then,
+it searches the directory for files that have the appropriate extensions
+and sample names and adds them to the YAML configuration file.
+"""
+
 import sys
 import argparse
 from pathlib import Path
@@ -20,7 +29,9 @@ def find_file_with_extension(directory: Path, prefix: str, extensions: List[str]
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
     parser.add_argument(
         "-i", "--sample-directory",
         help="Directory containing sample sequencing data",
@@ -48,15 +59,22 @@ if __name__ == "__main__":
         default=[".fa", ".fasta"]
     )
     parser.add_argument(
+        "-n", "--output-name",
+        help="Dataset name",
+        required=False,
+        default="case_study"
+    )
+    parser.add_argument(
         "-m", "--metadata-csv",
-        help="Metadata CSV file",
+        help="Dataset metadata CSV file",
         required=True,
         type=Path
     )
     parser.add_argument(
         "-o", "--output-yaml",
-        help="Output YAML file",
-        required=True
+        help="Output YAML target configuration file for VIPERA",
+        required=False,
+        default="targets.yaml"
     )
     args = parser.parse_args()
     
@@ -72,6 +90,7 @@ if __name__ == "__main__":
         targets["METADATA"] = args.metadata_csv.as_posix()
     else:
         sys.exit(f"ERROR: metadata file '{args.metadata_csv}' does not exist")
+    targets["OUTPUT_NAME"] = args.output_name
     targets["OUTPUT_DIRECTORY"] = "output"
     targets["CONTEXT_FASTA"] = None
     targets["MAPPING_REFERENCES_FASTA"] = None

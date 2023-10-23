@@ -11,13 +11,16 @@ parameter should point to your desired results directory.
 
 The script [`build_targets.py`](build_targets.py) simplifies the process of creating
 the configuration file. To run this script, you need to have PyYAML installed. It
-takes a list of sample names, a directory with BAM and FASTA files, and the path to
-the metadata table as required inputs. Then, it searches the directory for files
-that have the appropriate extensions and sample names and adds them to the configuration file.
+takes a list of sample names, a directory with BAM and FASTA files, the path to
+the metadata table and the name of your dataset as required inputs. Then, it searches the
+directory for files that have the appropriate extensions and sample names and adds them
+to the configuration file.
 
 The file should look like this:
 
 ```yaml
+OUTPUT_NAME:
+  "your-dataset-name"
 SAMPLES:
   sample1:
     bam: "path/to/sorted/bam1.bam"
