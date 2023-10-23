@@ -86,6 +86,12 @@ authors:
       Institute for Integrative Systems Biology (I2SysBio,
       University of Valencia - CSIC), FISABIO Joint Research
       Unit “Infection and Public Health”, Paterna, Spain
+identifiers:
+  - type: doi
+    value: 10.20350/digitalCSIC/15648
+    description: >-
+      Case study data: SARS-CoV-2 mapped reads and consensus
+      genomes of an intra-patient serially sampled infection
 repository-code: 'https://github.com/PathoGenOmics-Lab/VIPERA'
 abstract: >-
   Viral mutations within patients nurture the adaptive
