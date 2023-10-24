@@ -20,7 +20,7 @@ rule snps_to_ancestor:
     shell:
         """
         set -e
-        exec >{log}                                                                    
+        exec >{log}
         exec 2>&1
 
         ref=`samtools view -H {input.bam} | grep ^@SQ | cut -d"\t" -f2 | sed 's/SN://g'`
@@ -135,22 +135,31 @@ rule tsv_to_vcf:
 
 rule variants_effect:
     threads: 1
+    shadow: "minimal"
     conda: "../envs/snpeff.yaml"
     params:
-        ref_name = config["ALIGNMENT_REFERENCE"]
+        ref_name = config["ALIGNMENT_REFERENCE"],
+        snpeff_data_dir = (BASE_PATH / "config" / "snpeff").resolve()
     input:
         vcf = OUTDIR/f"{OUTPUT_NAME}.vcf"
     output:
         ann_vcf = temp(OUTDIR/f"{OUTPUT_NAME}.annotated.vcf")
     log:
         LOGDIR / "variants_effect" / "log.txt"
+    retries: 2
     shell:
         """
-        exec >{log}                                                                    
+        exec >{log}
         exec 2>&1
-        
-        snpEff eff {params.ref_name} {input.vcf} > {output.ann_vcf} || true
-        rm snpEff_genes.txt snpEff_summary.html
+
+        # Check if snpEff database is available
+        if [ -d "{params.snpeff_data_dir}/{params.ref_name}" ]; then
+            echo "Using local database at '{params.snpeff_data_dir}'"
+        else
+            echo "Local database not found at '{params.snpeff_data_dir}', downloading from repository"
+        fi
+
+        snpEff eff -dataDir {params.snpeff_data_dir} -noStats {params.ref_name} {input.vcf} > {output.ann_vcf}
         """
 
 
