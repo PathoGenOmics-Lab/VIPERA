@@ -206,7 +206,7 @@ panel <- vcf %>%
     x = "Days since first sample",
     y = "Frequency",
     color = "NV") +
-  guides(color = guide_legend(ncol = 4))
+  guides(color = guide_legend(ncol = 3))
 
 if (length(subset) > 1) {
   panel <- panel +
