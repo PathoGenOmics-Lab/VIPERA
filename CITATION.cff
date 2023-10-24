@@ -8,15 +8,6 @@ message: >-
   metadata from this file.
 type: software
 authors:
-  - given-names: Jordi
-    family-names: Sevilla
-    affiliation: >-
-      PathoGenOmics Lab, Institute for Integrative Systems
-      Biology (I2SysBio, University of Valencia - CSIC),
-      FISABIO Joint Research Unit “Infection and Public
-      Health”, Paterna, Spain
-    orcid: 'https://orcid.org/0009-0001-3352-1537'
-    email: jordisevilla2001@gmail.com
   - given-names: Miguel
     family-names: Álvarez-Herrera
     email: m.alvarez.herrera@csic.es
@@ -26,6 +17,15 @@ authors:
       FISABIO Joint Research Unit “Infection and Public
       Health”, Paterna, Spain
     orcid: 'https://orcid.org/0000-0002-7922-3180'
+  - given-names: Jordi
+    family-names: Sevilla
+    affiliation: >-
+      PathoGenOmics Lab, Institute for Integrative Systems
+      Biology (I2SysBio, University of Valencia - CSIC),
+      FISABIO Joint Research Unit “Infection and Public
+      Health”, Paterna, Spain
+    orcid: 'https://orcid.org/0009-0001-3352-1537'
+    email: jordisevilla2001@gmail.com
   - given-names: Paula
     family-names: Ruiz-Rodríguez
     email: paula.ruiz-rodriguez@uv.es
