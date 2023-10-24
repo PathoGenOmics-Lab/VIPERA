@@ -10,7 +10,7 @@
 ![Install workflow](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/install.yml/badge.svg)
 ![Test workflow](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/test.yml/badge.svg)
 
-A pipeline for SARS-CoV-2 Virus Intra-Patient Evolution Reporting and Analysis.
+A pipeline for SARS-CoV-2 Viral Intra-Patient Evolution Reporting and Analysis.
 
 ## Instructions
 
