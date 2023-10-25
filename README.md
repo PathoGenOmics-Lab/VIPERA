@@ -5,6 +5,7 @@
 </p>
 
 [![PGO badge](https://img.shields.io/badge/PathoGenOmics-Lab-yellow.svg)](https://pathogenomics.github.io/)
+[![DOI:10.1101/2023.10.24.561010](https://img.shields.io/badge/DOI-10.1101/2023.10.24.561010-blue.svg)](https://doi.org/10.1101/2023.10.24.561010)
 [![Release](https://img.shields.io/github/v/release/PathoGenOmics-Lab/VIPERA)](https://github.com/PathoGenOmics-Lab/VIPERA/releases)
 [![Snakemake](https://img.shields.io/badge/snakemake-≥7.19-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
 ![Install workflow](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/install.yml/badge.svg)
@@ -23,7 +24,7 @@ configuring [the inputs and outputs](config/README.md#inputs-and-outputs) and
 snakemake --use-conda -c4  # runs VIPERA on 4 cores (reccomended)
 ```
 
-Alternatively, you can use a simple script that downloads the data from our study
+Alternatively, you can use a simple script that downloads the [data](https://doi.org/10.20350/digitalCSIC/15648) from [our study](https://doi.org/10.1101/2023.10.24.561010)
 and performs the analysis in one step:
 
 ```shell
@@ -40,4 +41,18 @@ Please refer to [config/README.md](config/README.md) for detailed setup instruct
 
 ## Citation
 
-Manuscript in progress.
+Álvarez-Herrera & M., Sevilla, J., Ruiz-Rodriguez, P., Vergara, A., Vila, J., Cano-Jiménez, P., González-Candelas, F., Comas, I., & Coscolla, M. (2023). VIPERA: Viral Intra-Patient Evolution Reporting and Analysis. bioRxiv. https://doi.org/10.1101/2023.10.24.561010
+
+```bibtex
+@misc{AHS_VIPERA_2023,
+  title = {{VIPERA}: {Viral} {Intra}-{Patient} {Evolution} {Reporting} and {Analysis}},
+  shorttitle = {{VIPERA}},
+  author = {Álvarez-Herrera$^*$, Miguel and Sevilla$^*$, Jordi and Ruiz-Rodriguez, Paula and Vergara, Andrea and Vila, Jordi and Cano-Jiménez, Pablo and González-Candelas, Fernando and Comas, Iñaki and Coscolla, Mireia},
+  url = {https://www.biorxiv.org/content/10.1101/2023.10.24.561010},
+  doi = {10.1101/2023.10.24.561010},
+  language = {en},
+  urldate = {2023-10-25},
+  publisher = {bioRxiv},
+  note = {$^*$ indicates equal contribution}
+}
+```
