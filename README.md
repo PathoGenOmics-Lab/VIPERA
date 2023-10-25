@@ -41,7 +41,7 @@ Please refer to [config/README.md](config/README.md) for detailed setup instruct
 
 ## Citation
 
-Álvarez-Herrera & M., Sevilla, J., Ruiz-Rodriguez, P., Vergara, A., Vila, J., Cano-Jiménez, P., González-Candelas, F., Comas, I., & Coscolla, M. (2023). VIPERA: Viral Intra-Patient Evolution Reporting and Analysis. bioRxiv. https://doi.org/10.1101/2023.10.24.561010
+Álvarez-Herrera M. & Sevilla, J., Ruiz-Rodriguez, P., Vergara, A., Vila, J., Cano-Jiménez, P., González-Candelas, F., Comas, I., & Coscolla, M. (2023). VIPERA: Viral Intra-Patient Evolution Reporting and Analysis. bioRxiv. https://doi.org/10.1101/2023.10.24.561010
 
 ```bibtex
 @misc{AHS_VIPERA_2023,
