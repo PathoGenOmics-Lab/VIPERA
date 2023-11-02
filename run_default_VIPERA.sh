@@ -16,7 +16,7 @@ logthis () {
 
 NCPU=1
 DATA_URL="https://digital.csic.es/bitstream/10261/337461/1/data.zip"
-MD5_SUM="07447bdae794a6c82adbf79423b79c30"
+MD5_SUM="ff59d513309a3af47f2c9248f7f3518d"
 
 tmpdir=$(mktemp -d)
 
