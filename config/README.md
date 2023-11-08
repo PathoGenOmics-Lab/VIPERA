@@ -111,8 +111,8 @@ snakemake --use-conda -c8
 ```
 
 To run the analysis in an HPC environment using SLURM, we provide a
-[default profile configuration](profile/default/config.yaml) that can be adapted
-to your needs, or used directly by running the following command:
+[default profile configuration](profile/default/config.yaml) as an example that
+should be modified to fit your needs. To use it, run the following command:
 
 ```shell
 snakemake --use-conda --slurm --profile profile/default
