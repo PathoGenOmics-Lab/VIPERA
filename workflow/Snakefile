@@ -14,7 +14,7 @@ include: "rules/common.smk"
 BASE_PATH = Path(workflow.basedir).parent.resolve()
 
 # Workflow version
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 # Targets
 ## Output
