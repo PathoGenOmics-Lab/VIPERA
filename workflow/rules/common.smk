@@ -30,7 +30,8 @@ def get_repo_version(base_dir: str, default: str, warn=False) -> str:
     try:
         last_tag_description = subprocess.check_output(
             f"git --git-dir={base_dir}/.git describe --always",
-            shell=True
+            shell=True,
+            stderr=subprocess.DEVNULL
         ).strip().decode("utf-8")
         if last_tag_description.startswith("v"):
             if last_tag_description[1:] == default:
