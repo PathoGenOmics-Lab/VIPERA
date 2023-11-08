@@ -16,7 +16,7 @@ def get_input_fasta(wildcards):
     return config["SAMPLES"][wildcards.sample]["fasta"]
 
 
-def get_repo_version(base_dir: str, default: str) -> str:
+def get_repo_version(base_dir: str, default: str, warn=False) -> str:
     """Determines the workflow version from the git repository status.
     It first checks if the workflow is a git repository by looking for
     a .git folder. If it is, it reads the latest tag from the .git folder
@@ -40,5 +40,6 @@ def get_repo_version(base_dir: str, default: str) -> str:
         else:
             return f"commit {last_tag_description}"
     except subprocess.CalledProcessError as e:
-        print(f"Repository tag not found: '{e}'")
+        if warn:
+            print(f"Repository tag not found: '{e}'")
         return f"v{default} (no git)"
