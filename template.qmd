@@ -117,10 +117,10 @@ using [Freyja](https://github.com/andersen-lab/Freyja).
 ![Estimated lineage admixture of each sample.
 Samples in the X-axis are ordered chronologically, from more ancient to newer.](`r params$freyja`){#fig-freyja}
 
-### Phylogeny and temporal signal
+### Phylogenetic reconstruction
 
 A maximum likelihood tree of the target and context samples has been
-build using [IQTREE](http://www.iqtree.org/).
+built using [IQTREE](http://www.iqtree.org/).
 The target samples `r stats[["monophyly"]]` monophyletic. The clade
 that contains all the target samples is supported by a **UFBoot** score of
 $`r stats[["boot"]]`$% and a **SH-aLRT** score of $`r stats[["alrt"]]`$% (@fig-tree_ml).
@@ -128,22 +128,6 @@ $`r stats[["boot"]]`$% and a **SH-aLRT** score of $`r stats[["alrt"]]`$% (@fig-t
 ![Maximum-likelihood phylogeny with 1000 support replicates of
 target datasets and their context samples. The clade that contains the target
 samples is squared in red.](`r params$tree_ml`){#fig-tree_ml}
-
-A neighbor-joining tree has been constructed using pairwise distances
-between target samples (@fig-tree), based on the allele frequencies measured from
-read mappings.
-
-![Neighbor-joining tree based on the pairwise allele
-frequency-weighted distances.](`r params$tree`){#fig-tree}
-
-Root-to-tip distances measured on this tree have been correlated
-with time, obtaining a $R^2$ of **`r correlation`** and a p-value of
-$`r p_value_lm`$. The estimated substitution rate is **`r sub_rate`**
-substitutions per year (@fig-tempest).
-
-![Scatterplot depicting the relationship between root-to-tip
-distances and the number of days passed since the first sample. The red
-line shows the linear model fit.](`r params$tempest`){#fig-tempest}
 
 ### Nucleotide diversity comparison
 
@@ -206,7 +190,7 @@ at the bottom, and the latest, at the top.](`r params$SNV_s`){#fig-SNV_s}
 
 :::
 
-### Time dependency for the intra-host nucleotide variants
+### Temporal signal of the intra-host mutations
 
 The correlation of the allele frequency of each NV with the time since the
 initial sampling has been calculated (@fig-volcano).
@@ -222,6 +206,22 @@ Significantly correlated nucleotide variants are described in more detail in @fi
 nucleotide variants with a significant correlation with time and sites with more
 than two possible states. Each subplot depicts the progression of the allele
 frequencies in time for a given genome position.](`r params$panel`){#fig-panel}
+
+A neighbor-joining tree has been constructed using pairwise distances
+between target samples (@fig-tree), based on the allele frequencies measured from
+read mappings.
+
+![Neighbor-joining tree based on the pairwise allele
+frequency-weighted distances.](`r params$tree`){#fig-tree}
+
+To estimate the substitution rate, root-to-tip distances measured on the previous
+tree (@fig-tree) have been correlated with time, obtaining a $R^2$ of
+**`r correlation`** and a p-value of $`r p_value_lm`$. The estimated substitution
+rate is **`r sub_rate`** substitutions per year (@fig-tempest).
+
+![Scatterplot depicting the relationship between root-to-tip
+distances and the number of days passed since the first sample. The red
+line shows the linear model fit.](`r params$tempest`){#fig-tempest}
 
 ### Correlation between alternative alleles
 
