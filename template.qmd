@@ -98,7 +98,7 @@ table %>%
     Sample = "Sample",
     Collection_Date = "Collection date",
     Lineage = "Lineage",
-    DeltaTime = "Days since first sampling"
+    DeltaTime = "Days after first sampling"
   ) %>%
   tab_style(
     style = list(
