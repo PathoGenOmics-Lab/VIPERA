@@ -448,7 +448,16 @@ n_indels <- vcf %>%
 
 n_snv <- length(unique(vcf$variant)) - n_indels
 model <- lm(n ~ CollectionDate, data = figur_SNP_table)
-cortest <- cor.test(figur_SNP_table$n, as.numeric(figur_SNP_table$CollectionDate))
+
+# Calculate correlation, if possible
+if (nrow(figur_SNP_table) > 2) {
+  p.cor <- cor.test(
+    figur_SNP_table$n,
+    as.numeric(figur_SNP_table$CollectionDate)
+  )$p.value
+} else {
+  p.cor <- NA
+}
 
 list(
   "INDELS" = n_indels,
@@ -456,7 +465,7 @@ list(
   "window" = snakemake@params[["window"]],
   "step"   = snakemake@params[["step"]],
   "r2"     = summary(model)$r.squared[[1]],
-  "value"  = ifelse(cortest$p.value < 0.001, "< 0.001", cortest$p.value)
+  "value"  = ifelse(p.cor < 0.001, "< 0.001", p.cor)
 ) %>%
   toJSON() %>%
   write(snakemake@output[["json"]])

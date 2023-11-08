@@ -52,8 +52,8 @@ dates <- sample.metadata %>%
     pull(snakemake@params[["date_column"]]) %>%
     as.numeric
 window.quantile.offset <- (1 - snakemake@params[["date_window_span"]]) / 2
-min.date <- as_date(quantile(dates, window.quantile.offset))
-max.date <- as_date(quantile(dates, 1 - window.quantile.offset))
+min.date <- as_date(quantile(dates, window.quantile.offset, na.rm = TRUE))
+max.date <- as_date(quantile(dates, 1 - window.quantile.offset, na.rm = TRUE))
 padded.min.date <- min.date - snakemake@params[["date_window_paddding_days"]]
 padded.max.date <- max.date + snakemake@params[["date_window_paddding_days"]]
 print(glue("Time window (span={snakemake@params[['date_window_span']]}): {round(interval(min.date, max.date) / days(1))} days (from {min.date} to {max.date})"))
