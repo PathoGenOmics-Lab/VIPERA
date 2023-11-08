@@ -86,11 +86,19 @@ cor.mat[is.na(cor.mat)] <- 0
 #| label: tbl-summary
 #| tbl-cap: Target dataset summary
 
-gt(table) %>%
+table %>%
+  mutate(
+    DeltaTime = difftime(
+      as.Date(Collection_Date),
+      min(as.Date(Collection_Date), na.rm = TRUE), units = "days"
+    )
+  ) %>%
+  gt %>%
   cols_label(
     Sample = "Sample",
-    Collection_Date = "Collection Date",
-    Lineage = "Lineage"
+    Collection_Date = "Collection date",
+    Lineage = "Lineage",
+    DeltaTime = "Days since first sampling"
   ) %>%
   tab_style(
     style = list(
