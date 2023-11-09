@@ -40,9 +40,9 @@ rule diversity:
         study_fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
         context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     output:
-        fig = report((REPORT_DIR_PLOTS/"figure_2.png").resolve()),
+        fig = report((REPORT_DIR_PLOTS/"figure_3.png").resolve()),
         json = temp((OUTDIR/"diversity.json").resolve()),
-        table = (REPORT_DIR_TABLES/"figure_2.csv").resolve()
+        table = (REPORT_DIR_TABLES/"figure_3.csv").resolve()
     log:
         LOGDIR / "diversity" / "log.txt"
     script:
@@ -78,13 +78,13 @@ rule general_NV_description:
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         metadata = config["METADATA"]
     output:
-        fig = report((REPORT_DIR_PLOTS/"figure_7a.png").resolve()),
-        fig_s = report((REPORT_DIR_PLOTS/"figure_7b.png").resolve()),
-        fig_cor = report((REPORT_DIR_PLOTS/"figure_6.png").resolve()),
+        fig = report((REPORT_DIR_PLOTS/"figure_5a.png").resolve()),
+        fig_s = report((REPORT_DIR_PLOTS/"figure_5b.png").resolve()),
+        fig_cor = report((REPORT_DIR_PLOTS/"figure_4.png").resolve()),
         json = temp((OUTDIR/"summary_nv.json").resolve()),
-        table_1 = report((REPORT_DIR_TABLES/"figure_7a.csv").resolve()),
-        table_2 = report((REPORT_DIR_TABLES/"figure_7b.csv").resolve()),
-        table_3 = report((REPORT_DIR_TABLES/"figure_6.csv").resolve())
+        table_1 = report((REPORT_DIR_TABLES/"figure_5a.csv").resolve()),
+        table_2 = report((REPORT_DIR_TABLES/"figure_5b.csv").resolve()),
+        table_3 = report((REPORT_DIR_TABLES/"figure_4.csv").resolve())
     log:
         LOGDIR / "general_NV_description" / "log.txt"
     script:
@@ -106,10 +106,10 @@ rule phylo_plots:
         ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
         metadata = config["METADATA"]
     output:
-        temest = report((REPORT_DIR_PLOTS/"figure_5.png").resolve()),
-        tree = report((REPORT_DIR_PLOTS/"figure_4.png").resolve()),
-        tree_ml = report((REPORT_DIR_PLOTS/"figure_3.png").resolve()),
-        table = report((REPORT_DIR_TABLES/"figure_5.csv").resolve()),
+        temest = report((REPORT_DIR_PLOTS/"figure_9.png").resolve()),
+        tree = report((REPORT_DIR_PLOTS/"figure_8.png").resolve()),
+        tree_ml = report((REPORT_DIR_PLOTS/"figure_2.png").resolve()),
+        table = report((REPORT_DIR_TABLES/"figure_9.csv").resolve()),
         json = temp((OUTDIR/"stats.lm.json").resolve())
     log:
         LOGDIR / "phylo_plots" / "log.txt"
@@ -143,10 +143,10 @@ rule snp_plots:
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         metadata = config["METADATA"]
     output:
-        pseudovolcano = report((REPORT_DIR_PLOTS/"figure_8.png").resolve()),
-        snp_panel = report((REPORT_DIR_PLOTS/"figure_9.png").resolve()),
-        table_1 = report((REPORT_DIR_TABLES/"figure_8.csv").resolve()),
-        table_2 = report((REPORT_DIR_TABLES/"figure_9.csv").resolve())
+        pseudovolcano = report((REPORT_DIR_PLOTS/"figure_6.png").resolve()),
+        snp_panel = report((REPORT_DIR_PLOTS/"figure_7.png").resolve()),
+        table_1 = report((REPORT_DIR_TABLES/"figure_6.csv").resolve()),
+        table_2 = report((REPORT_DIR_TABLES/"figure_7.csv").resolve())
     log:
         LOGDIR / "snp_plots" / "log.txt"
     script:
