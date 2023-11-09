@@ -101,7 +101,7 @@ rule phylo_plots:
         plot_height_mm = 119.4,
         plot_width_mm = 159.2
     input:
-        dist = REPORT_DIR_TABLES/f"figure_4.csv",
+        dist = REPORT_DIR_TABLES/f"figure_8.csv",
         study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
         ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
         metadata = config["METADATA"]

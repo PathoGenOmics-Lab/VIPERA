@@ -10,7 +10,7 @@ rule weighted_distances:
         ancestor = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
         reference = OUTDIR/"reference.fasta"
     output:
-        distances = REPORT_DIR_TABLES/f"figure_4.csv"
+        distances = REPORT_DIR_TABLES/f"figure_8.csv"
     log:
         LOGDIR / "weighted_distances" / "log.txt"
     script:
