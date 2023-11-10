@@ -249,7 +249,7 @@ heatmaply_cor(
 )
 ```
 
-### Non-synonymous to synonymous rate ratio over time
+### Non-synonymous and synonymous substitution rate over time
 
 To track selection footprints, the substitutions per synonymous site ($dS$) and
 per non-synonymous site ($dN$) for each sample with respect to the reconstructed
