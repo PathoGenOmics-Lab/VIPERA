@@ -168,7 +168,7 @@ $`r nv.counts[["value"]]`$ (@fig-fig_cor_snp).
 ![Number of polymorphic sites along time. The
 blue line shows the linear model fit.](`r params$fig_cor_snp`){#fig-fig_cor_snp}
 
-### Description for intra-host nucleotide variants
+### Description of intra-host nucleotide variants
 
 A total of `r n_SNV` different single nucleotide variants (SNV) and `r n_INDELS`
 insertions and deletions (indels) have been detected along the genome (@fig-SNV).
