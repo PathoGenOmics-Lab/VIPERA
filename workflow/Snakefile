@@ -6,6 +6,8 @@ import subprocess
 
 min_version("7.19")
 
+containerized: "docker://ahmig/vipera:latest"
+
 configfile: "config/config.yaml"
 configfile: "config/targets.yaml"
 
@@ -14,7 +16,7 @@ include: "rules/common.smk"
 BASE_PATH = Path(workflow.basedir).parent.resolve()
 
 # Workflow version
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 
 # Targets
 ## Output
