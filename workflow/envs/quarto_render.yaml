@@ -10,4 +10,3 @@ dependencies:
   - r-quarto==1.2
   - r-heatmaply==1.4.2
   - r-readr==2.1.4
-  
