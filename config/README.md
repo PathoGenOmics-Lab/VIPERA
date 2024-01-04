@@ -154,7 +154,7 @@ To run the analysis with the default configuration, run the following command
 (change the `-c/--cores` argument to use a different number of CPUs):
 
 ```shell
-snakemake --use-conda -c8
+snakemake --use-conda -c4
 ```
 
 To run the analysis in an HPC environment using SLURM, we provide a
@@ -164,3 +164,10 @@ should be modified to fit your needs. To use it, run the following command:
 ```shell
 snakemake --use-conda --slurm --profile profile/default
 ```
+
+Additionally, we offer the option of running the workflow within a containerized
+environment using a [pre-built Docker image](https://hub.docker.com/r/ahmig/vipera),
+provided that [Singularity](https://en.wikipedia.org/wiki/Singularity_(software))
+is available on the system. This eliminates the need for further conda package
+downloads and environment configuration.
+To do that, simply add the option `--use-singularity` to any of the previous commands.
