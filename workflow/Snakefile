@@ -27,8 +27,8 @@ OUTDIR.mkdir(parents=True, exist_ok=True)
 ## Set context to be fetched automatically if CONTEXT_FASTA=null
 if "CONTEXT_FASTA" not in config.keys() or config["CONTEXT_FASTA"] is None:
     CONTEXT_FASTA = OUTDIR/"context"/"sequences.fasta"
-    if not Path(config["GISAID_YAML"]).is_file():
-        sys.exit(f"Tried to download a context dataset, but no GISAID credentials were found at '{config['GISAID_YAML']}' (see README.md).")
+    if not Path(config["GISAID"]["CREDENTIALS"]).is_file():
+        sys.exit(f"Tried to download a context dataset, but no GISAID credentials were found at '{config['GISAID']['CREDENTIALS']}' (see README.md).")
 elif Path(config["CONTEXT_FASTA"]).is_file():
     CONTEXT_FASTA = config["CONTEXT_FASTA"]
 else:

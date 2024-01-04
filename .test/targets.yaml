@@ -16,7 +16,7 @@ CONTEXT_FASTA:
   "data/context.fasta"
 OUTPUT_NAME:
   "test"
-DIVERSITY_BOOTSTRAP_REPS:
+DIVERSITY_REPS:
   10
 PLOTS:
   "../config/design_plots.R"

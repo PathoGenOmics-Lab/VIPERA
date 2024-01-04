@@ -25,9 +25,12 @@ DEMIX:
 WINDOW:
   WIDTH: 1000
   STEP: 50
-GISAID_YAML:
-  "config/gisaid.yaml"
-DIVERSITY_BOOTSTRAP_REPS:
+GISAID:
+  CREDENTIALS: "config/gisaid.yaml"
+  DATE_COLUMN: "CollectionDate"
+  LOCATION_COLUMN: "ResidenceCity"
+  ACCESSION_COLUMN: "GISAIDEPI"
+DIVERSITY_REPS:
   1000
 LOG_PY_FMT:
   "%(asctime)s - %(name)s - %(levelname)-8s - %(message)s"

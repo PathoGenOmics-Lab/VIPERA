@@ -6,12 +6,12 @@ rule download_context:
         metadata = config["METADATA"],
         pango_report = OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv"
     params:
-        gisaid_creds = config["GISAID_YAML"],
+        gisaid_creds = config["GISAID"]["CREDENTIALS"],
         date_window_span = 0.95,
         date_window_paddding_days = 14,
-        date_column = "CollectionDate",
-        location_column = "ResidenceCity",
-        samples_gisaid_accession_column = "GISAIDEPI",
+        date_column = config["GISAID"]["DATE_COLUMN"],
+        location_column = config["GISAID"]["LOCATION_COLUMN"],
+        samples_gisaid_accession_column = config["GISAID"]["ACCESSION_COLUMN"],
         context_gisaid_accession_column = "accession_id",
         host = "Human",
         exclude_low_coverage = True,
@@ -21,7 +21,7 @@ rule download_context:
         min_sleep = 1,
         max_sleep = 3,
         chunk_length = 3000,
-        min_theoretical_combinations = config["DIVERSITY_BOOTSTRAP_REPS"]
+        min_theoretical_combinations = config["DIVERSITY_REPS"]
     output:
         fasta = temp(OUTDIR/"context"/"sequences.fasta"),
         metadata = temp(OUTDIR/"context"/"metadata.csv"),
