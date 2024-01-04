@@ -1,19 +1,19 @@
 def iter_files(file_type: str):
-    for sample_name in config["SAMPLES"].keys():
-        yield config["SAMPLES"][sample_name][file_type]
+    for sample_name in config.get("SAMPLES", {}).keys():
+        yield config.get("SAMPLES", {})[sample_name][file_type]
 
 
 def iter_samples():
-    for sample_name in config["SAMPLES"].keys():
+    for sample_name in config.get("SAMPLES", {}).keys():
         yield sample_name
 
 
 def get_input_bam(wildcards):
-    return config["SAMPLES"][wildcards.sample]["bam"]
+    return config.get("SAMPLES", {})[wildcards.sample]["bam"]
 
 
 def get_input_fasta(wildcards):
-    return config["SAMPLES"][wildcards.sample]["fasta"]
+    return config.get("SAMPLES", {})[wildcards.sample]["fasta"]
 
 
 def get_repo_version(base_dir: str, default: str, warn=False) -> str:
