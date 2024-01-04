@@ -5,18 +5,21 @@ To run the pipeline, you will need an environment with `snakemake`
 
 ## Inputs and outputs
 
-Modify the [target configuration file](config/targets.yaml)
-to point the `SAMPLES` and `METADATA` parameters to your data. The `OUTPUT_DIRECTORY`
-parameter should point to your desired results directory.
+The workflow execution parameters are set in two configuration files in YAML format:
+[config.yaml](/config/config.yaml) (for general workflow settings) and
+[targets.yaml](/config/targets.yaml) (for specific dataset-related settings).
+The latter must be modified by the user to point the `SAMPLES` and `METADATA`
+parameters to your data. The `OUTPUT_DIRECTORY` parameter should point to your
+desired results directory.
 
-The script [`build_targets.py`](build_targets.py) simplifies the process of creating
-the configuration file. To run this script, you need to have PyYAML installed. It
+The script [`build_targets.py`](/build_targets.py) simplifies the process of creating
+the targets configuration file. To run this script, you need to have PyYAML installed. It
 takes a list of sample names, a directory with BAM and FASTA files, the path to
 the metadata table and the name of your dataset as required inputs. Then, it searches the
 directory for files that have the appropriate extensions and sample names and adds them
 to the configuration file.
 
-The file should look like this:
+An example file could look like this:
 
 ```yaml
 OUTPUT_NAME:
@@ -33,54 +36,98 @@ METADATA:
   "path/to/metadata.csv"
 OUTPUT_DIRECTORY:
   "output"
+CONTEXT_FASTA:
+  null
+MAPPING_REFERENCES_FASTA:
+  null
 ```
 
-You may also provide this information through the `--config` parameter.
+This information may also be provided through the `--config` parameter.
 
 ## Automated construction of a context dataset
 
 Setting the `CONTEXT_FASTA` parameter to `null` (default) will enable
 the automatic download of sequences from the GISAID SARS-CoV-2 database
-(see [the following section](README.md#context-checkpoints) for further details).
+(see [the following section](/config/README.md#context-checkpoints) for further details).
+An unset parameter has the same effect.
 To enable this, you must also [sign up to the GISAID platform](https://gisaid.org/register/)
 and provide your credentials by creating and filling an additional configuration
-file `config/gisaid.yaml` as follows:
+file (default: `config/gisaid.yaml`) as follows:
 
 ```yaml
 USERNAME: "your-username"
 PASSWORD: "your-password"
 ```
 
-## Mapping reference sequence
-
-Setting `MAPPING_REFERENCES_FASTA` to `null` (default) will enable the automatic download of the
-reference sequence(s) that were used to map the reads and generate the BAM files.
-If the required sequence is not available publically or you already have it
-at your disposal, it may be provided manually by setting the parameter to the
-path of the reference FASTA file.
-
-## Context checkpoints
-
-By default, a dataset of samples that meet the spatial
-and temporal criteria set through the [`download_context` rule](workflow/rules/context.smk):
+A set of samples that meet the spatial, temporal and phylogenetic criteria
+set through the [`download_context` rule](/workflow/rules/context.smk#L1)
+will be retrieved automatically from GISAID. These criteria are:
 
 - Location matching the place(s) of sampling of the target samples
 - Collection date within the time window that includes 95% of the date distribution of the
 target samples (2.5% is trimmed at each end to account for extreme values) ± 2 weeks
 - Pango lineage matching that of the target samples
 
-Then, a series of checkpoints are enforced:
+Then, a series of checkpoint steps are executed for quality assurance:
 
 - Remove context samples whose GISAID ID match any of the target samples
-- Enforce a minimum number of samples to have at least as many possible combinations as bootstrap replicates for the diversity assessment (set in [the configuration file](config/config.yaml))
+- Enforce a minimum number of samples to have at least as many possible
+  combinations as random subsample replicates for the diversity assessment
+  (set in [config.yaml](/config/config.yaml))
 
-If these requirements are not met, a custom sequence dataset must be
-provided through the `CONTEXT_FASTA` parameter by editing [the target configuration file](config/targets.yaml)
-or via the command line:
+The workflow will continue its execution until completion if the obtained
+context dataset passes these checkpoints. Otherwise, the execution will be
+terminated and, to continue the analysis. An external context dataset must
+be provided through the `CONTEXT_FASTA` parameter. This can be done
+by editing [targets.yaml](/config/targets.yaml) or via the command line:
 
 ```shell
 snakemake --config CONTEXT_FASTA="path/to/fasta"
 ```
+
+## Mapping reference sequence
+
+Setting `MAPPING_REFERENCES_FASTA` to `null` (default) will enable the automatic download of the
+reference sequence(s) that were used to map the reads and generate the BAM files.
+An unset parameter has the same effect.
+If the required sequence is not available publically or the user already has it
+at your disposal, it can be provided manually by setting the parameter to the
+path of the reference FASTA file.
+
+## Workflow configuration variables
+
+All of the following variables are pre-defined in [config.yaml](/config/config.yaml):
+
+- `ALIGNMENT_REFERENCE`: NCBI accession number of the reference record for sequence alignment.
+- `PROBLEMATIC_VCF_URL`: URL of a VCF file containing problematic genome positions for masking.
+- `FEATURES_JSON`: path of a JSON file containing name equivalences of genome features for data visualization.
+- `GENETIC_CODE_JSON`: path of a JSON file containing a genetic code for gene translation.
+- `TREE_MODEL`: substitution model used by IQTREE (see [docs](http://www.iqtree.org/doc/Substitution-Models)).
+- `UFBOOT_REPS`: ultrafast bootstrap replicates for IQTREE (see [UFBoot](https://doi.org/10.1093/molbev/msx281)).
+- `SHALRT_REPS`: Shimodaira–Hasegawa approximate likelihood ratio test bootstrap replicates for IQTREE (see [SH-aLRT](https://doi.org/10.1093/sysbio/syq010)).
+- `VC`: variant calling configuration:
+  - `MAX_DEPTH`: maximum depth at a position for `samtools mpileup` (option `-d`).
+  - `MIN_QUALITY`: minimum base quality for `samtools mpileup` (option `-Q`).
+  - `IVAR_QUALITY`: minimum base quality for `ivar variants` (option `-q`).
+  - `IVAR_FREQ`: minimum frequency threshold for `ivar variants` (option `-t`).
+  - `IVAR_DEPTH`: minimum read depth for `ivar variants` (option `-m`).
+- `DEMIX`: demixing configuration:
+  - `MIN_QUALITY`: minimum quality for `freyja variants` (option `--minq`).
+  - `COV_CUTOFF`: minimum depth for `freyja demix` (option `--covcut`).
+  - `MIN_ABUNDANCE`: minimum lineage estimated abundance for `freyja demix` (option `--eps`).
+- `WINDOW`: sliding window of nucleotide variants per site configuration:
+  - `WIDTH`: number of sites within windows.
+  - `STEP`: number of sites between windows.
+- `GISAID`: automatic context download configuration.
+  - `CREDENTIALS`: path of the GISAID credentials in YAML format.
+  - `DATE_COLUMN`: name of the column that contains sampling dates (YYYY-MM-DD) in the input target metadata.
+  - `LOCATION_COLUMN`: name of the column that contains sampling locations (e.g. city names) in the input target metadata.
+  - `ACCESSION_COLUMN`: name of the column that contains GISAID EPI identifiers in the input target metadata.
+- `DIVERSITY_REPS`: number of random sample subsets of the context dataset for the nucleotide diversity comparison.
+- `LOG_PY_FMT`: logging format string for Python scripts.
+- `PLOTS`: path of the R script that sets the design and style of data visualizations.
+- `NSP`: path of a CSV file containing the SARS-CoV-2 non-structural protein coordinates for data visualization.
+- `REPORT_QMD`: path of the report template in Quarto markdown (QMD) format.
 
 ## Workflow graphs
 
@@ -103,7 +150,7 @@ snakemake --forceall --dag | dot -Tpng > .dag.png
 
 ## Run modes
 
-To run the analysis with the default configuration, just run the following command
+To run the analysis with the default configuration, run the following command
 (change the `-c/--cores` argument to use a different number of CPUs):
 
 ```shell
@@ -111,7 +158,7 @@ snakemake --use-conda -c8
 ```
 
 To run the analysis in an HPC environment using SLURM, we provide a
-[default profile configuration](profile/default/config.yaml) as an example that
+[default profile configuration](/profile/default) as an example that
 should be modified to fit your needs. To use it, run the following command:
 
 ```shell
