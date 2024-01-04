@@ -140,7 +140,7 @@ samples is squared in red.](`r params$tree_ml`){#fig-tree_ml}
 ### Nucleotide diversity comparison
 
 Nucleotide diversity (π) has been calculated for $`r div_values[["boot.reps"]]`$ random
-sample subsets of size $`r div_values[["sample.size"]]`$, extracted with replacement
+sample subsets of size $`r div_values[["sample.size"]]`$, extracted
 from the context dataset. The distribution of the nuclotide diversity is assumed to
 `r div_values[["norm.text"]]` be normal after performing a Shapiro-Wilk test
 (p-value of $`r div_values[["normal.pvalue"]]`$).

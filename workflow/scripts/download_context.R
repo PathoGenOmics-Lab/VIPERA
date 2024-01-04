@@ -94,7 +94,7 @@ dataframes <- lapply(
 # Join results
 metadata <- bind_rows(dataframes)
 
-log_info("Removeing overlapping sequences")
+log_info("Removing overlapping sequences")
 # Checkpoint: remove samples that overlap with target samples according to GISAID ID
 samples.accids <- sample.metadata %>%
     pull(snakemake@params[["samples_gisaid_accession_column"]])
@@ -103,10 +103,10 @@ metadata <- metadata %>% filter(!accession_id %in% samples.accids)
 print(glue("{nrow(metadata)} accession_ids remaining after GISAID ID filter"))
 
 # Checkpoint: enforce a minimum number of samples to have at least
-# as many possible combinations as bootstrap replicates.
+# as many possible combinations as random subsample replicates.
 # This is done by calculating the root of a function based on the
-# formula for calculating combinations with replacement
-# for n ≥ r ≥ 0: combinations with replacement = n! / (r! (n-r)!)
+# formula for calculating combinations for n ≥ r ≥ 0:
+# combinations = n! / (r! (n-r)!)
 r <- nrow(sample.metadata)
 min.comb <- snakemake@params[["min_theoretical_combinations"]]
 solution <- uniroot(

@@ -60,7 +60,7 @@ diversity <- nuc.div(study_aln)
 
 
 # Perform bootstrap
-log_info("Performing bootstraped calculation for nucleotide diversity in oontext samples")
+log_info("Performing calculation for nucleotide diversity in context samples")
 plan(multisession, workers = snakemake@threads)
 divs <- boot.nd.parallel(gene_ex, length(study_aln), snakemake@params[["bootstrap_reps"]])
 plan(sequential)
