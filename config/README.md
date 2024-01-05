@@ -177,6 +177,6 @@ may encounter errors due to the default file permissions configuration, which
 conflicts with Snakemake's containerized conda environment activation mechanism.
 Thus, running the containerized VIPERA workflow on the WSL is not advised.
 Additionally, certain known issues arise when utilizing non-default temporary
-directories and Snakemake shadow directories. To address this issue,  use the
+directories and Snakemake shadow directories. To address this issue, use the
 default temporary directory (e.g. `export TMPDIR=/tmp` in Linux machines) and
-specified the shadow prefix (`--shadow-prefix /tmp`) before executing the workflow.
+specify the shadow prefix (`--shadow-prefix /tmp`) before executing the workflow.
