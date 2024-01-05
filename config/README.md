@@ -179,4 +179,4 @@ Thus, running the containerized VIPERA workflow on the WSL is not advised.
 Additionally, certain known issues arise when utilizing non-default temporary
 directories and Snakemake shadow directories. To address this issue, use the
 default temporary directory (e.g. `export TMPDIR=/tmp` in Linux machines) and
-specify the shadow prefix (`--shadow-prefix /tmp`) before executing the workflow.
+specify the shadow prefix (`--shadow-prefix /tmp`) before executing the containerized workflow.
