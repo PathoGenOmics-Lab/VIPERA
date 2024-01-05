@@ -171,3 +171,11 @@ provided that [Singularity](https://en.wikipedia.org/wiki/Singularity_(software)
 is available on the system. This eliminates the need for further conda package
 downloads and environment configuration.
 To do that, simply add the option `--use-singularity` to any of the previous commands.
+
+Using Singularity for running VIPERA in the Windows Subsystem for Linux (WSL)
+may encounter errors due to the default file permissions configuration, which
+conflicts with Snakemake's containerized conda environment activation mechanism.
+Thus, running the containerized VIPERA workflow on the WSL is not advised.
+Additionally, certain known issues arise when utilizing non-default temporary
+directories. To address this issue, set the temporary directory to the default
+before executing the workflow (e.g. `export TMPDIR=/tmp` in Linux machines).
