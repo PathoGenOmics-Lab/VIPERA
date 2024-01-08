@@ -190,6 +190,9 @@ rule report:
         omega_plot = report(rules.evo_plots.output.plot_omega)
     params:
         workflow_version = get_repo_version(BASE_PATH.as_posix(), __version__),
+        min_ivar_freq = config["VC"]["IVAR_FREQ"],
+        ufboot_reps = config["UFBOOT_REPS"],
+        shalrt_reps = config["SHALRT_REPS"],
         name = config["OUTPUT_NAME"]
     output:
         html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
@@ -200,6 +203,9 @@ rule report:
         set +o pipefail
         Rscript -e 'library(quarto)' -e \"quarto_render(input = '{input.qmd}',\
                                            execute_params=list( \
+                                                       ufboot_reps='{params.ufboot_reps}',\
+                                                       shalrt_reps='{params.shalrt_reps}',\
+                                                       min_ivar_freq='{params.min_ivar_freq}',\
                                                        workflow_version='{params.workflow_version}',\
                                                        div='{input.diversity}',\
                                                        freyja ='{input.freyja}',\

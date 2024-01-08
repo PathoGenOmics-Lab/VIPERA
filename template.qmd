@@ -18,6 +18,9 @@ format:
 css: config/report.styles.css
 editor: visual
 params:
+  ufboot_reps: ""
+  shalrt_reps: ""
+  min_ivar_freq: ""
   workflow_version: ""
   div: ""
   freyja: ""
@@ -130,11 +133,12 @@ Samples in the X-axis are ordered chronologically, from more ancient to newer.](
 A maximum likelihood tree of the target and context samples has been
 built using [IQTREE](http://www.iqtree.org/).
 The target samples `r stats[["monophyly"]]` monophyletic. The clade
-that contains all the target samples is supported by a **UFBoot** score of
-$`r stats[["boot"]]`$% and a **SH-aLRT** score of $`r stats[["alrt"]]`$% (@fig-tree_ml).
+that contains all the target samples is supported by a UFBoot score of
+$`r stats[["boot"]]`$% and a SH-aLRT score of $`r stats[["alrt"]]`$% (@fig-tree_ml).
 
-![Maximum-likelihood phylogeny with 1000 support replicates of
-target datasets and their context samples. The clade that contains the target
+![Maximum-likelihood phylogeny with $`r params$ufboot_reps`$ UFBoot
+and $`r params$shalrt_reps`$ SH-aLRT support replicates of the
+target dataset and its context samples. The clade that contains the target
 samples is squared in red.](`r params$tree_ml`){#fig-tree_ml}
 
 ### Nucleotide diversity comparison
@@ -160,9 +164,9 @@ target samples.](`r params$div`){#fig-div}
 
 ### Number of polymorphic sites
 
-Sites with minor allele frequency > 0.05 are considered polymorphic.
+Sites with minor allele frequency $> `r params$min_ivar_freq`$ are considered polymorphic.
 The linear association between the collection date of the samples and the number of
-polymorphic sites has an $R^2$ of **`r nv.counts[["r2"]]`** and a p-value of
+polymorphic sites has an $R^2$ of $`r nv.counts[["r2"]]`$ and a p-value of
 $`r nv.counts[["value"]]`$ (@fig-fig_cor_snp).
 
 ![Number of polymorphic sites along time. The
@@ -170,7 +174,7 @@ blue line shows the linear model fit.](`r params$fig_cor_snp`){#fig-fig_cor_snp}
 
 ### Description of intra-host nucleotide variants
 
-A total of `r n_SNV` different single nucleotide variants (SNV) and `r n_INDELS`
+A total of $`r n_SNV`$ different single nucleotide variants (SNV) and $`r n_INDELS`$
 insertions and deletions (indels) have been detected along the genome (@fig-SNV).
 
 ::: {.panel-tabset}
@@ -224,8 +228,8 @@ frequency-weighted distances.](`r params$tree`){#fig-tree}
 
 To estimate the substitution rate, root-to-tip distances measured on the previous
 tree (@fig-tree) have been correlated with time, obtaining a $R^2$ of
-**`r correlation`** and a p-value of $`r p_value_lm`$. The estimated substitution
-rate is **`r sub_rate`** substitutions per year (@fig-tempest).
+$`r correlation`$ and a p-value of $`r p_value_lm`$. The estimated substitution
+rate is $`r sub_rate`$ substitutions per year (@fig-tempest).
 
 ![Scatterplot depicting the relationship between root-to-tip
 distances and the number of days passed since the first sample. The red
