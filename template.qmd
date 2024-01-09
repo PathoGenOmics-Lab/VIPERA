@@ -226,10 +226,10 @@ read mappings.
 ![Neighbor-joining tree based on the pairwise allele
 frequency-weighted distances.](`r params$tree`){#fig-tree}
 
-To estimate the substitution rate, root-to-tip distances measured on the previous
+To estimate the evolutionary rate, root-to-tip distances measured on the previous
 tree (@fig-tree) have been correlated with time, obtaining a $R^2$ of
-$`r correlation`$ and a p-value of $`r p_value_lm`$. The estimated substitution
-rate is $`r sub_rate`$ substitutions per year (@fig-tempest).
+$`r correlation`$ and a p-value of $`r p_value_lm`$. The estimated evolutionary
+rate is $`r sub_rate`$ number of changes per year (@fig-tempest).
 
 ![Scatterplot depicting the relationship between root-to-tip
 distances and the number of days passed since the first sample. The red
