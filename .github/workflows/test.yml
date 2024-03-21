@@ -43,7 +43,7 @@ jobs:
           activate-environment: ""
       - name: Install Snakemake 7.32
         run: |
-          pip install snakemake==7.32.4
+          pip install 'snakemake==7.32.4' 'pulp<2.8'
       - name: Run test pipeline
         run: |
           snakemake --snakefile workflow/Snakefile --directory .test --configfile config/config.yaml .test/targets.yaml --use-conda -c1  
