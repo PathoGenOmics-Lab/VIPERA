@@ -34,7 +34,7 @@ jobs:
           activate-environment: ""
       - name: Install Snakemake 7.32
         run: |
-          pip install snakemake==7.32.4
+          pip install 'snakemake==7.32.4' 'pulp<2.8'
       - name: Create environments
         run: |
           snakemake --snakefile workflow/Snakefile --directory .test --configfile config/config.yaml .test/targets.yaml --conda-create-envs-only --use-conda -c1
@@ -55,7 +55,7 @@ jobs:
           activate-environment: ""
       - name: Install Snakemake 7.32
         run: |
-          pip install snakemake==7.32.4
+          pip install 'snakemake==7.32.4' 'pulp<2.8'
       - name: Dry run
         run: |
           snakemake --snakefile workflow/Snakefile --directory .test --configfile config/config.yaml .test/targets.yaml --dry-run
