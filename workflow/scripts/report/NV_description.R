@@ -53,6 +53,18 @@ date_order <- metadata %>%
   pull(ID) %>%
   unique()
 
+empty_vcf <- tibble(
+  REGION      = date_order,
+  variant     = as.character(NA),
+  ALT_FREQ    = as.numeric(NA),
+  GFF_FEATURE = as.character(NA),
+  synonimous  = as.character(NA),
+  POS         = as.numeric(NA),
+  ALT         = as.character(NA),
+  NV_class    = as.character(NA),
+  group       = as.character(NA)
+)
+
 # Create SNP variable and select useful variables
 vcf <- vcf %>%
   dplyr::select(
@@ -63,7 +75,7 @@ vcf <- vcf %>%
     synonimous,
     POS,
     ALT
-      )
+)
 
 # Df with gene length for scheme
 notation_empty <- data.frame(
@@ -141,12 +153,18 @@ npc <- read_csv(snakemake@params[["nsp"]]) %>%
       TRUE ~ POS_f
       )
     ) %>%
-filter(NSP != "nsp1")
+  filter(NSP != "nsp1")
 
 
 # PLOTS
 ## SUMMARY FIGURE FOR WHOLE GENOME
 log_info("Plotting summary figure for whole genome")
+
+if (nrow(vcf) == 0) {
+  log_warn("Whole-genome VCF has no rows")
+  vcf <- empty_vcf
+}
+
 variants <- vcf %>%
   filter(ALT_FREQ > 0) %>%
   ggplot() +
@@ -257,9 +275,16 @@ ggsave(
 
 # Zoom in in spike
 log_info("Plotting summary for variants in the spike")
-spike.pos <- window %>%
+
+spike_pos <- window %>%
   filter(gen == "S") %>%
   pull(position)
+
+vcf_spike <- vcf %>%
+  filter(
+    ALT_FREQ > 0,
+    POS %in% c(min(spike_pos):max(spike_pos))
+  )
 
 window_plot_spike <- window %>%
   filter(gen == "S") %>%
@@ -279,7 +304,7 @@ window_plot_spike <- window %>%
     label = scales::percent,
     limits = c(0, max(window$fractions) + 0.005)
     ) +
-  xlim(c(min(spike.pos), max(spike.pos))) +
+  xlim(c(min(spike_pos), max(spike_pos))) +
   scale_color_manual(
     values = gene_colors,
     guide = "none"
@@ -289,11 +314,12 @@ window_plot_spike <- window %>%
     x = ""
     )
 
-variants_spike <- vcf %>%
-  filter(
-    ALT_FREQ > 0,
-      POS %in% c(min(spike.pos):max(spike.pos))
-      ) %>%
+if (nrow(vcf_spike) == 0) {
+  log_warn("Spike VCF has no rows")
+  vcf_spike <- empty_vcf
+}
+
+variants_spike <- vcf_spike %>%
   ggplot() +
   aes(
     x = POS,
@@ -303,7 +329,7 @@ variants_spike <- vcf %>%
     alpha = ALT_FREQ
     ) +
   geom_point(size = 3) +
-  xlim(c(min(spike.pos), max(spike.pos))) +
+  xlim(c(min(spike_pos), max(spike_pos))) +
   scale_color_manual(
     labels = NV_names,
     values  = NV_colors
@@ -356,6 +382,11 @@ figur_SNP_table <- vcf_snp %>%
     n = n_distinct(POS)
     ) %>%
   ungroup()
+
+if (nrow(figur_SNP_table) == 0) {
+  log_warn("Filtered SNP table has no rows")
+  figur_SNP_table <- empty_vcf
+}
 
 figur_SNP_time <- figur_SNP_table %>%
   ggplot() +
