@@ -16,15 +16,12 @@ theme_set(theme_minimal())
 
 theme_update(text = element_text(size = 16,  family = "Montserrat"),
              axis.title = element_text(size = 16),
-             axis.line = element_line(size = 0.5, colour = "grey40", linetype=1, arrow = arrow(length = unit(3,"mm"))),
-             panel.grid =element_line(size = 0.17, color = "lightgray")
-) 
-
+             axis.line = element_line(linewidth = 0.5, colour = "grey40", linetype=1, arrow = arrow(length = unit(3,"mm"))),
+             panel.grid = element_line(linewidth = 0.17, color = "lightgray")
+)
 
 
 # CONFIG
-
-
 gene_colors = c(M = "#B4D4B4",
                 N = "#B7B7B8",
                 orf1ab = "#9CC4DC",
@@ -56,7 +53,6 @@ node.alpha <- c(
 
 
 # Nucleotide variants classification colors and labels
-
 NV_colors <- c(
     Frameshift = "#568D63",
     "In frame" = "black",
