@@ -22,7 +22,6 @@ __version__ = "1.2.0"
 ## Output
 OUTPUT_NAME = config["OUTPUT_NAME"]
 OUTDIR = Path(config["OUTPUT_DIRECTORY"])
-OUTDIR.mkdir(parents=True, exist_ok=True)
 
 ## Set context to be fetched automatically if CONTEXT_FASTA=null
 if "CONTEXT_FASTA" not in config.keys() or config["CONTEXT_FASTA"] is None:
@@ -45,12 +44,9 @@ else:
 ## Logging
 LOGDIR = OUTDIR / "logs"
 
-## report
+## Report
 REPORT_DIR_PLOTS = Path(OUTDIR/"report/plots")
-REPORT_DIR_PLOTS.mkdir(parents=True, exist_ok=True)
-
 REPORT_DIR_TABLES = Path(OUTDIR/"report/tables")
-REPORT_DIR_TABLES.mkdir(parents=True, exist_ok=True)
 
 
 # Rules
