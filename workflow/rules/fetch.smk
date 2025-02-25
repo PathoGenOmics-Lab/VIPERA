@@ -15,13 +15,15 @@ rule fetch_reference_gb:
     threads: 1
     conda: "../envs/fetch.yaml"
     params:
-        ref = config["ALIGNMENT_REFERENCE"]
+        ref = config["ALIGNMENT_REFERENCE"],
+        database = "nucleotide",
+        format = "gb"
     output:
         fasta = OUTDIR/"reference.gb"
     log:
         LOGDIR / "fetch_reference_gb" / "log.txt"
     shell:
-        "esearch -db nucleotide -query {params.ref} | efetch -format gb > {output.fasta} 2> {log}"
+        "esearch -db {params.database} -query {params.ref} | efetch -format {params.format} > {output.fasta} 2> {log}"
 
 
 
