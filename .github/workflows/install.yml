@@ -28,14 +28,13 @@ jobs:
       - name: Setup mamba
         uses: conda-incubator/setup-miniconda@v3
         with:
-          mamba-version: 1.5.10
           channel-priority: strict
           activate-environment: snakemake
           auto-activate-base: false
           environment-file: .test/environment_7.32.4.yaml
       - name: Create environments
         shell: bash -el {0}
-        run: snakemake --snakefile workflow/Snakefile --directory .test --configfile config/config.yaml .test/targets.yaml --conda-create-envs-only --use-conda -c1
+        run: snakemake --snakefile workflow/Snakefile --directory .test --configfile config/config.yaml .test/targets.yaml --conda-create-envs-only --use-conda -c1 --conda-frontend conda
 
   Dry_run:
     needs: skip_duplicate
@@ -47,7 +46,6 @@ jobs:
       - name: Setup mamba
         uses: conda-incubator/setup-miniconda@v3
         with:
-          mamba-version: 1.5.10
           channel-priority: strict
           activate-environment: snakemake
           auto-activate-base: false
