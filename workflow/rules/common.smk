@@ -44,3 +44,25 @@ def get_repo_version(base_dir: str, default: str, warn=False) -> str:
         if warn:
             print(f"Repository tag not found: '{e}'")
         return f"v{default} (no git)"
+
+
+def select_context_fasta():
+    """Set context to be fetched automatically if CONTEXT_FASTA=null"""
+    if "CONTEXT_FASTA" not in config.keys() or config["CONTEXT_FASTA"] is None:
+        return OUTDIR/"context"/"sequences.fasta"
+        if not Path(config["GISAID"]["CREDENTIALS"]).is_file():
+            raise FileNotFoundError(f"Tried to download a context dataset, but no GISAID credentials were found at '{config['GISAID']['CREDENTIALS']}' (see README.md).")
+    elif Path(config["CONTEXT_FASTA"]).is_file():
+        return config["CONTEXT_FASTA"]
+    else:
+        raise FileNotFoundError(f"No context FASTA file was found at '{config['CONTEXT_FASTA']}' (see README.md).")
+
+
+def select_mapping_references_fasta():
+    """Set mapping references to be fetched automatically if MAPPING_REFERENCES_FASTA=null"""
+    if "MAPPING_REFERENCES_FASTA" not in config.keys() or config["MAPPING_REFERENCES_FASTA"] is None:
+        return OUTDIR/"mapping_references.fasta"
+    elif Path(config["MAPPING_REFERENCES_FASTA"]).is_file():
+        return config["MAPPING_REFERENCES_FASTA"]
+    else:
+        raise FileNotFoundError(f"No mapping references FASTA file was found at '{config['MAPPING_REFERENCES_FASTA']}' (see README.md).")

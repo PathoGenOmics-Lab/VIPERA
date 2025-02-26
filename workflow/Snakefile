@@ -23,24 +23,6 @@ __version__ = "1.2.0"
 OUTPUT_NAME = config["OUTPUT_NAME"]
 OUTDIR = Path(config["OUTPUT_DIRECTORY"])
 
-## Set context to be fetched automatically if CONTEXT_FASTA=null
-if "CONTEXT_FASTA" not in config.keys() or config["CONTEXT_FASTA"] is None:
-    CONTEXT_FASTA = OUTDIR/"context"/"sequences.fasta"
-    if not Path(config["GISAID"]["CREDENTIALS"]).is_file():
-        sys.exit(f"Tried to download a context dataset, but no GISAID credentials were found at '{config['GISAID']['CREDENTIALS']}' (see README.md).")
-elif Path(config["CONTEXT_FASTA"]).is_file():
-    CONTEXT_FASTA = config["CONTEXT_FASTA"]
-else:
-    sys.exit(f"No context FASTA file was found at '{config['CONTEXT_FASTA']}' (see README.md).")
-
-## Set mapping references to be fetched automatically if MAPPING_REFERENCES_FASTA=null
-if "MAPPING_REFERENCES_FASTA" not in config.keys() or config["MAPPING_REFERENCES_FASTA"] is None:
-    MAPPING_REFERENCES_FASTA = OUTDIR/"mapping_references.fasta"
-elif Path(config["MAPPING_REFERENCES_FASTA"]).is_file():
-    MAPPING_REFERENCES_FASTA = config["MAPPING_REFERENCES_FASTA"]
-else:
-    sys.exit(f"No mapping references FASTA file was found at '{config['MAPPING_REFERENCES_FASTA']}' (see README.md).")
-
 ## Logging
 LOGDIR = OUTDIR / "logs"
 

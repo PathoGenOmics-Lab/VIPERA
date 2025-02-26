@@ -40,7 +40,7 @@ rule align_context:
         name = "context_sequences"
     input:
         ref_fasta = OUTDIR/"reference.fasta",
-        fasta = CONTEXT_FASTA
+        fasta = lambda wildcards: select_context_fasta()
     output:
         folder = directory(OUTDIR/"context"/"nextalign"),
         fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.fasta"

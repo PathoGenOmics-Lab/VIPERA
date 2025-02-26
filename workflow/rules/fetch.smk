@@ -33,7 +33,7 @@ rule fetch_mapping_references:
     input:
         OUTDIR / "bam_ids.txt"
     output:
-        fasta = MAPPING_REFERENCES_FASTA
+        fasta = select_mapping_references_fasta()
     log:
         LOGDIR / "fetch_mapping_references" / "log.txt"
     shell:
