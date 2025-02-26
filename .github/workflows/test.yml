@@ -45,10 +45,11 @@ jobs:
         shell: bash -el {0}
         run: snakemake --snakefile workflow/Snakefile --directory .test --configfile config/config.yaml .test/targets.yaml --use-conda -c1 --conda-frontend conda
       - name: Pack logs
-        shell: bash
-        run: |
-          tar czf logs.tar.gz .test/output/logs
+        if: success() || failure()
+        shell: bash -el {0}
+        run: tar czf logs.tar.gz .test/output/logs
       - name: Upload output file
+        if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
           name: output-logs
