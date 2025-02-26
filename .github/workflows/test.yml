@@ -47,7 +47,7 @@ jobs:
       - name: Pack logs
         if: success() || failure()
         shell: bash -el {0}
-        run: tar czf logs.tar.gz .test/output/logs
+        run: tar czf logs.tar.gz .test/output/logs .test/.snakemake/log
       - name: Upload output file
         if: success() || failure()
         uses: actions/upload-artifact@v4
