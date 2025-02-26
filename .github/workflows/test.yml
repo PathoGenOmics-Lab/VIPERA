@@ -34,19 +34,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Setup mamba
+      - name: Setup environment
         uses: conda-incubator/setup-miniconda@v3
         with:
-          mamba-version: "*"
-          channels: conda-forge,bioconda,defaults
-          auto-activate-base: true
-          activate-environment: ""
-      - name: Install Snakemake 7.32
-        run: |
-          pip install 'snakemake==7.32.4' 'pulp<2.8'
+          channel-priority: strict
+          activate-environment: snakemake
+          auto-activate-base: false
+          environment-file: .test/environment_7.32.4.yaml
       - name: Run test pipeline
-        run: |
-          snakemake --snakefile workflow/Snakefile --directory .test --configfile config/config.yaml .test/targets.yaml --use-conda -c1  
+        shell: bash -el {0}
+        run: snakemake --snakefile workflow/Snakefile --directory .test --configfile config/config.yaml .test/targets.yaml --use-conda -c1 --conda-frontend conda
       - name: Pack logs
         shell: bash
         run: |
