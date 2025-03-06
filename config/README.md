@@ -126,7 +126,7 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
 - `DIVERSITY_REPS`: number of random sample subsets of the context dataset for the nucleotide diversity comparison.
 - `LOG_PY_FMT`: logging format string for Python scripts.
 - `PLOTS`: path of the R script that sets the design and style of data visualizations.
-- `NSP`: path of a CSV file containing the SARS-CoV-2 non-structural protein coordinates for data visualization.
+- `PLOT_GENOME_REGIONS`: path of a CSV file containing genome regions, e.g. SARS-CoV-2 non-structural protein (NSP) coordinates, for data visualization.
 - `REPORT_QMD`: path of the report template in Quarto markdown (QMD) format.
 
 ## Workflow graphs

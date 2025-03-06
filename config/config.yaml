@@ -36,7 +36,7 @@ LOG_PY_FMT:
   "%(asctime)s - %(name)s - %(levelname)-8s - %(message)s"
 PLOTS:
   "config/design_plots.R"
-NSP:
+PLOT_GENOME_REGIONS:
   "config/nsp_annotation.csv"
 REPORT_QMD:
   "template.qmd"

@@ -135,7 +135,7 @@ vcf <- vcf %>%
     )
 
 # NSP data
-npc <- read_csv(snakemake@params[["nsp"]]) %>%
+npc <- read_csv(snakemake@params[["regions"]]) %>%
   mutate(
     summary_nsp = case_when(
       NSP %in% paste("nsp", seq(4, 12, 1), sep = "") ~ "nsp4-12",

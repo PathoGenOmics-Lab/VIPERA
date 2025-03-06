@@ -70,7 +70,7 @@ rule general_NV_description:
     params:
         samples = expand("{sample}", sample = iter_samples()),
         design = config["PLOTS"],
-        nsp = config["NSP"],
+        regions = config["PLOT_GENOME_REGIONS"],
         window = config["WINDOW"]["WIDTH"],
         step = config["WINDOW"]["STEP"]
     input:
