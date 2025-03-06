@@ -99,7 +99,7 @@ path of the reference FASTA file.
 All of the following variables are pre-defined in [config.yaml](/config/config.yaml):
 
 - `ALIGNMENT_REFERENCE`: NCBI accession number of the reference record for sequence alignment.
-- `PROBLEMATIC_VCF_URL`: URL of a VCF file containing problematic genome positions for masking.
+- `PROBLEMATIC_VCF`: URL or path of a VCF file containing problematic genome positions for masking.
 - `FEATURES_JSON`: path of a JSON file containing name equivalences of genome features for data visualization.
 - `GENETIC_CODE_JSON`: path of a JSON file containing a genetic code for gene translation.
 - `TREE_MODEL`: substitution model used by IQTREE (see [docs](http://www.iqtree.org/doc/Substitution-Models)).

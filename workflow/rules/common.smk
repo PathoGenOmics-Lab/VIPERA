@@ -66,3 +66,16 @@ def select_mapping_references_fasta():
         return config["MAPPING_REFERENCES_FASTA"]
     else:
         raise FileNotFoundError(f"No mapping references FASTA file was found at '{config['MAPPING_REFERENCES_FASTA']}' (see README.md).")
+
+
+def is_url(string: str) -> bool:
+    return bool(re.match(r"\w+://.+", string))
+
+
+def select_problematic_vcf():
+    if is_url(config["PROBLEMATIC_VCF"]):
+        return OUTDIR/"problematic_sites.vcf"
+    elif Path(config["PROBLEMATIC_VCF"]).is_file():
+        return config["PROBLEMATIC_VCF"]
+    else:
+        raise FileNotFoundError(f"No mapping references FASTA file was found at '{config['MAPPING_REFERENCES_FASTA']}' (see README.md).")

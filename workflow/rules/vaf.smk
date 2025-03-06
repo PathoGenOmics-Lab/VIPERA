@@ -97,7 +97,7 @@ rule mask_tsv:
          mask_class = ["mask"]
     input: 
         tsv = OUTDIR/f"{OUTPUT_NAME}.tsv",
-        vcf = OUTDIR / "problematic_sites.vcf"
+        vcf = lambda wildcards: select_problematic_vcf()
     output:
         masked_tsv = temp(OUTDIR/f"{OUTPUT_NAME}.masked.tsv")
     log:

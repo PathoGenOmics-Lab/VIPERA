@@ -6,7 +6,7 @@ rule weighted_distances:
         mask_class = ["mask"]
     input:
         tsv = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
-        vcf = OUTDIR/"problematic_sites.vcf",
+        vcf = lambda wildcards: select_problematic_vcf(),
         ancestor = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
         reference = OUTDIR/"reference.fasta"
     output:

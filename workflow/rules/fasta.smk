@@ -69,7 +69,7 @@ rule mask_alignment:
     input:
         fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.fasta",
         ref_fasta = OUTDIR/"reference.fasta",
-        vcf = OUTDIR/"problematic_sites.vcf"
+        vcf = lambda wildcards: select_problematic_vcf()
     output:
         fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta"
     log:

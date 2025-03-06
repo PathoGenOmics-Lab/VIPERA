@@ -60,7 +60,7 @@ rule mask_context:
     input:
         fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.fasta",
         ref_fasta = OUTDIR/"reference.fasta",
-        vcf = OUTDIR/"problematic_sites.vcf"
+        vcf = lambda wildcards: select_problematic_vcf()
     output:
         fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     log:
