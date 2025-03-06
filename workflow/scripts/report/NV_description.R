@@ -138,22 +138,22 @@ vcf <- vcf %>%
 npc <- read_csv(snakemake@params[["regions"]]) %>%
   mutate(
     summary_nsp = case_when(
-      NSP %in% paste("nsp", seq(4, 12, 1), sep = "") ~ "nsp4-12",
-      NSP %in% paste("nsp", seq(14, 16, 1), sep = "") ~ "nsp14-16",
-      TRUE ~ NSP
+      region %in% paste("nsp", seq(4, 12, 1), sep = "") ~ "nsp4-12",
+      region %in% paste("nsp", seq(14, 16, 1), sep = "") ~ "nsp14-16",
+      TRUE ~ region
       ),
-    summaary_start = case_when(
-      NSP %in% paste("nsp", seq(4, 12, 1), sep = "") ~ 8555,
-      NSP %in% paste("nsp", seq(14, 16, 1), sep = "") ~ 18040,
-      TRUE ~ POS_i
+    summary_start = case_when(
+      region %in% paste("nsp", seq(4, 12, 1), sep = "") ~ 8555,
+      region %in% paste("nsp", seq(14, 16, 1), sep = "") ~ 18040,
+      TRUE ~ start
       ),
-    summaary_end = case_when(
-      NSP %in% paste("nsp", seq(4, 12, 1), sep = "") ~ 16236,
-      NSP %in% paste("nsp", seq(14, 16, 1), sep = "") ~ 21552,
-      TRUE ~ POS_f
+    summary_end = case_when(
+      region %in% paste("nsp", seq(4, 12, 1), sep = "") ~ 16236,
+      region %in% paste("nsp", seq(14, 16, 1), sep = "") ~ 21552,
+      TRUE ~ end
       )
     ) %>%
-  filter(NSP != "nsp1")
+  filter(region != "nsp1")
 
 
 # PLOTS
@@ -233,18 +233,18 @@ window_plot <- window %>%
 window_plot_nsp <- window_plot +
   geom_vline(
     data = npc,
-    aes(xintercept = summaary_start),
+    aes(xintercept = summary_start),
     color = "red"
     ) +
   geom_vline(
     data = npc,
-    aes(xintercept = summaary_end),
+    aes(xintercept = summary_end),
     color = "red"
     ) +
   geom_text(
     data = npc,
     aes(
-      x = (summaary_start + summaary_end) / 2,
+      x = (summary_start + summary_end) / 2,
       y = max(window$fractions) + 0.002,
       label = summary_nsp
       ),
