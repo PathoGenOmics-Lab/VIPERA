@@ -78,4 +78,4 @@ def select_problematic_vcf():
     elif Path(config["PROBLEMATIC_VCF"]).is_file():
         return config["PROBLEMATIC_VCF"]
     else:
-        raise FileNotFoundError(f"No mapping references FASTA file was found at '{config['MAPPING_REFERENCES_FASTA']}' (see README.md).")
+        raise FileNotFoundError(f"No problematic VCF file was found at '{config['PROBLEMATIC_VCF']}' (see README.md).")
