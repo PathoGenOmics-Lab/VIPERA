@@ -47,8 +47,7 @@ This information may also be provided through the `--config` parameter.
 ## Automated construction of a context dataset
 
 Setting the `CONTEXT_FASTA` parameter to `null` (default) will enable
-the automatic download of sequences from the GISAID SARS-CoV-2 database
-(see [the following section](/config/README.md#context-checkpoints) for further details).
+the automatic download of sequences from the GISAID SARS-CoV-2 database.
 An unset parameter has the same effect.
 To enable this, you must also [sign up to the GISAID platform](https://gisaid.org/register/)
 and provide your credentials by creating and filling an additional configuration
@@ -77,7 +76,7 @@ Then, a series of checkpoint steps are executed for quality assurance:
 
 The workflow will continue its execution until completion if the obtained
 context dataset passes these checkpoints. Otherwise, the execution will be
-terminated and, to continue the analysis. An external context dataset must
+terminated and, to continue the analysis, an external context dataset must
 be provided through the `CONTEXT_FASTA` parameter. This can be done
 by editing [targets.yaml](/config/targets.yaml) or via the command line:
 
