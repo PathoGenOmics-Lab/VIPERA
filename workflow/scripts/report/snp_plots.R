@@ -43,27 +43,10 @@ vcf <- vcf %>%
     REGION,
     ALT_FREQ,
     POS
-    )
+  )
 
-# Get a list with studied samples ID
-IDs <- pull(
-    vcf,
-    REGION
-    ) %>%
-  unique()
-
-vcf <- vcf %>%
-  pivot_wider( # Obtain 0 in positions without freq
-    names_from = REGION,
-    values_from = ALT_FREQ,
-    values_fill = 0
-    ) %>%
-  pivot_longer(
-    IDs,
-    names_to = "REGION",
-    values_to = "ALT_FREQ"
-    ) %>%
-  ungroup()
+# Fill positions without alt frequency with 0
+vcf <- vcf %>% complete(nesting(variant, POS), REGION, fill = list(ALT_FREQ = 0))
 
 # Join variants file and metadata file
 vcf <- left_join(vcf, data, by = c("REGION" = "ID"))
