@@ -5,7 +5,14 @@ To run the pipeline, you will need an environment with `snakemake`
 
 ## Inputs and outputs
 
-The workflow execution parameters are set in two configuration files in YAML format:
+The workflow requires a set of FASTA files (one per target sample), a corresponding set of
+BAM files (also one per target sample), and a metadata table in CSV format with one row per
+sample. The metadata must include the following columns: unique sample identifier (default column `ID`,
+used to match sequencing files with metadata), the date the sample was collected (default `CollectionDate`),
+the location where the sample was collected (default `ResidenceCity`), and GISAID accession (default `GISAIDEPI`).
+The default column names but can be customized if needed via the workflow parameters.
+
+These parameters are set in two configuration files in YAML format:
 [config.yaml](/config/config.yaml) (for general workflow settings) and
 [targets.yaml](/config/targets.yaml) (for specific dataset-related settings).
 The latter must be modified by the user to point the `SAMPLES` and `METADATA`
