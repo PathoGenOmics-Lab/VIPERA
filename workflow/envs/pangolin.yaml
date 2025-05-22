@@ -2,5 +2,4 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - snakemake-minimal==7.24.0
-  - pangolin==4.3
+  - pangolin==4.3.1
