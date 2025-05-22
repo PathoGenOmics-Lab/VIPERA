@@ -43,7 +43,14 @@ mv ${tmpdir}/**/*.fa data/fasta
 mv ${tmpdir}/**/*.csv data
 
 logthis "Running VIPERA"
-snakemake --use-conda -c ${NCPU}
+sm_version=$(snakemake --version | grep -oE "^[0-9]+")
+if [ $sm_version -ge 8 ]; then
+    logthis "Launching with snakemake >= 8"
+    snakemake --software-deployment-method conda -c ${NCPU}
+else
+    logthis "Launching with snakemake < 8"
+    snakemake --use-conda -c ${NCPU}
+fi
 
 logthis "Cleaning up"
 rm -r ${tmpdir}

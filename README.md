@@ -31,17 +31,20 @@ and performs the analysis in a single step:
 ./run_default_VIPERA.sh
 ```
 
-This Snakemake workflow is compatible with both local execution and HPC environments utilizing SLURM. It supports dependency management through either conda or Singularity, as detailed in the [run modes documentation](config/README.md#run-modes).
+The workflow is compatible with both local execution and HPC environments utilizing SLURM.
+The latter requires installing the [Snakemake executor plugin for SLURM](https://snakemake.github.io/snakemake-plugin-catalog/plugins/executor/slurm.html).
+It supports dependency management through either conda or Singularity, as detailed in the
+[run modes documentation](config/README.md#run-modes).
 
-Please refer to the [full workflow documentation](config/README.md) for detailed setup instructions.
+Please refer to the [**full workflow documentation**](config/README.md) for detailed setup instructions.
 
 > The documentation in this repository provides instructions for running VIPERA
-> with Snakemake <8. We recommend using Snakemake 7.32.
-> However, using Snakemake 8 is possible with minimal modifications (see the
+> with Snakemake <8. We used Snakemake 7.32 for the original publication,
+> but using Snakemake 8 or 9 is possible with minimal modifications (see the
 > [migration documentation](https://snakemake.readthedocs.io/en/stable/getting_started/migration.html)).
-> For example, `--use-conda` and `--use-singularity` are deprecated in Snakemake 8,
-> and `--software-deployment-method conda apptainer` is the preferred way to provide the options. Additionally, SLURM support is only available after installing an
-> [executor plugin for slurm](https://snakemake.github.io/snakemake-plugin-catalog/plugins/executor/slurm.html).
+> For example, [profiles](https://snakemake.readthedocs.io/en/stable/getting_started/migration.html#profiles)
+should be backwards compatible, but `--use-conda` is deprecated starting on Snakemake 8 and
+`--software-deployment-method conda` is the preferred way to provide the options.
 
 ## Contributors
 
