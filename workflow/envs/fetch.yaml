@@ -3,4 +3,4 @@ channels:
   - conda-forge
 dependencies:
   - entrez-direct==16.2
-  - curl==8.13.0
+  - curl
