@@ -30,7 +30,7 @@ def read_masked_sites(vcf_path: str, mask_classes: List[str]) -> List[int]:
     """
     vcf = pd.read_csv(
         vcf_path,
-        delim_whitespace=True,
+        sep="\s+",
         comment="#",
         names=("CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO")
     )
