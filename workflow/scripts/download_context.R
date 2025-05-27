@@ -121,7 +121,7 @@ solution <- uniroot(
   lower = r, # determined by sample size (n ≥ r)
   upper = 170 # determined by default number precision
 )
-if (nrow(metadata) < floor(solution$root)) {
+if (nrow(metadata) <= floor(solution$root)) {
   stop(glue(
     "Too few available samples (n={nrow(metadata)}).\n{CHKPT.ERROR.MSG}"
   ))
