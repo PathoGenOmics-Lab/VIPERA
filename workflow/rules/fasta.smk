@@ -75,4 +75,4 @@ rule mask_alignment:
     log:
         LOGDIR / "mask_alignment" / "log.txt"
     script:
-        "../scripts/mask-aln.py"
+        "../scripts/mask_aln.py"

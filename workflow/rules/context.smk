@@ -66,7 +66,7 @@ rule mask_context:
     log:
         LOGDIR / "mask_context" / "log.txt"
     script:
-        "../scripts/mask-aln.py"
+        "../scripts/mask_aln.py"
 
 
 rule ml_context_tree:
