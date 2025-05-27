@@ -374,8 +374,8 @@ ggsave(
 )
 
 
-# Figure for nº of heterozygus sites for each sample
-log_info("Plotting nº of heterozygus sites for each sample")
+# Figure for no of heterozygous sites for each sample
+log_info("Plotting no. of heterozygous sites for each sample")
 figur_SNP_table <- vcf_snp %>%
   filter(ALT_FREQ <= snakemake@params$max_alt_freq) %>%
   left_join(
