@@ -4,7 +4,7 @@ rule heatmap:
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         metadata = config["METADATA"]
     output:
-        table = report((REPORT_DIR_TABLES/"figure_10.csv").resolve())
+        table = report(REPORT_DIR_TABLES/"figure_10.csv")
     log:
         LOGDIR / "heatmap" / "log.txt"
     script:
@@ -19,7 +19,7 @@ rule window:
     input:
         vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         gb = OUTDIR/"reference.gb",
-        features = Path(config["FEATURES_JSON"]).resolve()
+        features = config["FEATURES_JSON"]
     output:
         window_df = temp(OUTDIR/f"{OUTPUT_NAME}.window.csv"),
     log:
@@ -40,9 +40,9 @@ rule diversity:
         study_fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
         context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
     output:
-        fig = report((REPORT_DIR_PLOTS/"figure_3.png").resolve()),
-        json = temp((OUTDIR/"diversity.json").resolve()),
-        table = (REPORT_DIR_TABLES/"figure_3.csv").resolve()
+        fig = report(REPORT_DIR_PLOTS/"figure_3.png"),
+        json = temp(OUTDIR/"diversity.json"),
+        table = REPORT_DIR_TABLES/"figure_3.csv"
     log:
         LOGDIR / "diversity" / "log.txt"
     script:
@@ -57,8 +57,8 @@ rule freyja_plot:
         summary_demixing =  OUTDIR/"summary_freyja_demixing.csv",
         metadata = config["METADATA"]
     output:
-        fig = report((REPORT_DIR_PLOTS/"figure_1.png").resolve()),
-        table = report((REPORT_DIR_TABLES/"figure_1.csv").resolve())
+        fig = report(REPORT_DIR_PLOTS/"figure_1.png"),
+        table = report(REPORT_DIR_TABLES/"figure_1.csv")
     log:
         LOGDIR / "freyja_plot" / "log.txt"
     script:
@@ -79,13 +79,13 @@ rule general_NV_description:
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         metadata = config["METADATA"]
     output:
-        fig = report((REPORT_DIR_PLOTS/"figure_5a.png").resolve()),
-        fig_s = report((REPORT_DIR_PLOTS/"figure_5b.png").resolve()),
-        fig_cor = report((REPORT_DIR_PLOTS/"figure_4.png").resolve()),
-        json = temp((OUTDIR/"summary_nv.json").resolve()),
-        table_1 = report((REPORT_DIR_TABLES/"figure_5a.csv").resolve()),
-        table_2 = report((REPORT_DIR_TABLES/"figure_5b.csv").resolve()),
-        table_3 = report((REPORT_DIR_TABLES/"figure_4.csv").resolve())
+        fig = report(REPORT_DIR_PLOTS/"figure_5a.png"),
+        fig_s = report(REPORT_DIR_PLOTS/"figure_5b.png"),
+        fig_cor = report(REPORT_DIR_PLOTS/"figure_4.png"),
+        json = temp(OUTDIR/"summary_nv.json"),
+        table_1 = report(REPORT_DIR_TABLES/"figure_5a.csv"),
+        table_2 = report(REPORT_DIR_TABLES/"figure_5b.csv"),
+        table_3 = report(REPORT_DIR_TABLES/"figure_4.csv")
     log:
         LOGDIR / "general_NV_description" / "log.txt"
     script:
@@ -108,11 +108,11 @@ rule phylo_plots:
         ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
         metadata = config["METADATA"]
     output:
-        temest = report((REPORT_DIR_PLOTS/"figure_9.png").resolve()),
-        tree = report((REPORT_DIR_PLOTS/"figure_8.png").resolve()),
-        tree_ml = report((REPORT_DIR_PLOTS/"figure_2.png").resolve()),
-        table = report((REPORT_DIR_TABLES/"figure_9.csv").resolve()),
-        json = temp((OUTDIR/"stats.lm.json").resolve())
+        temest = report(REPORT_DIR_PLOTS/"figure_9.png"),
+        tree = report(REPORT_DIR_PLOTS/"figure_8.png"),
+        tree_ml = report(REPORT_DIR_PLOTS/"figure_2.png"),
+        table = report(REPORT_DIR_TABLES/"figure_9.csv"),
+        json = temp(OUTDIR/"stats.lm.json")
     log:
         LOGDIR / "phylo_plots" / "log.txt"
     script:
@@ -128,9 +128,9 @@ rule evo_plots:
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         metadata = config["METADATA"]
     output:
-        plot = report((REPORT_DIR_PLOTS/"figure_11.png").resolve()),
-        plot_omega = report((REPORT_DIR_PLOTS/"figure_12.png").resolve()),
-        table = report((REPORT_DIR_TABLES/"figure_11.csv").resolve())
+        plot = report(REPORT_DIR_PLOTS/"figure_11.png"),
+        plot_omega = report(REPORT_DIR_PLOTS/"figure_12.png"),
+        table = report(REPORT_DIR_TABLES/"figure_11.csv")
     log:
         LOGDIR / "evo_plots" / "log.txt"
     script:
@@ -145,10 +145,10 @@ rule snp_plots:
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         metadata = config["METADATA"]
     output:
-        pseudovolcano = report((REPORT_DIR_PLOTS/"figure_6.png").resolve()),
-        snp_panel = report((REPORT_DIR_PLOTS/"figure_7.png").resolve()),
-        table_1 = report((REPORT_DIR_TABLES/"figure_6.csv").resolve()),
-        table_2 = report((REPORT_DIR_TABLES/"figure_7.csv").resolve())
+        pseudovolcano = report(REPORT_DIR_PLOTS/"figure_6.png"),
+        snp_panel = report(REPORT_DIR_PLOTS/"figure_7.png"),
+        table_1 = report(REPORT_DIR_TABLES/"figure_6.csv"),
+        table_2 = report(REPORT_DIR_TABLES/"figure_7.csv")
     log:
         LOGDIR / "snp_plots" / "log.txt"
     script:
@@ -161,7 +161,7 @@ rule summary_table:
         report = report(OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv"),
         metadata = config["METADATA"]
     output:
-        table = temp((OUTDIR/"summary_table.csv").resolve())
+        table = temp(OUTDIR/"summary_table.csv")
     log:
         LOGDIR / "summary_table" / "log.txt"
     script:
@@ -172,24 +172,24 @@ rule report:
     conda: "../envs/quarto_render.yaml"
     shadow: "shallow"
     input:
-        qmd       = Path(config["REPORT_QMD"]).resolve(),
-        diversity = report(rules.diversity.output.fig),
-        freyja    = report(rules.freyja_plot.output.fig),
-        tree      = report(rules.phylo_plots.output.tree),
-        temest    = report(rules.phylo_plots.output.temest),
-        SNV       = report(rules.general_NV_description.output.fig),
-        SNV_spike = report(rules.general_NV_description.output.fig_s),
-        evo       = report(rules.evo_plots.output.plot),
-        value     = rules.diversity.output.json,
-        panel     = report(rules.snp_plots.output.snp_panel),
-        volcano   = report(rules.snp_plots.output.pseudovolcano),
-        tree_ml   = report(rules.phylo_plots.output.tree_ml),
-        fig_cor   = report(rules.general_NV_description.output.fig_cor),
-        stats_lm  = rules.phylo_plots.output.json,
-        table     = rules.summary_table.output.table,
-        sum_nv    = rules.general_NV_description.output.json,
-        heat_table= rules.heatmap.output.table,
-        omega_plot = report(rules.evo_plots.output.plot_omega)
+        qmd        = Path(config["REPORT_QMD"]).resolve(),
+        freyja     = report(REPORT_DIR_PLOTS/"figure_1.png"),
+        tree_ml    = report(REPORT_DIR_PLOTS/"figure_2.png"),
+        diversity  = report(REPORT_DIR_PLOTS/"figure_3.png"),
+        fig_cor    = report(REPORT_DIR_PLOTS/"figure_4.png"),
+        SNV        = report(REPORT_DIR_PLOTS/"figure_5a.png"),
+        SNV_spike  = report(REPORT_DIR_PLOTS/"figure_5b.png"),
+        volcano    = report(REPORT_DIR_PLOTS/"figure_6.png"),
+        panel      = report(REPORT_DIR_PLOTS/"figure_7.png"),
+        tree       = report(REPORT_DIR_PLOTS/"figure_8.png"),
+        temest     = report(REPORT_DIR_PLOTS/"figure_9.png"),
+        heat_table = report(REPORT_DIR_TABLES/"figure_10.csv"),
+        evo        = report(REPORT_DIR_PLOTS/"figure_11.png"),
+        omega_plot = report(REPORT_DIR_PLOTS/"figure_12.png"),
+        value      = OUTDIR/"diversity.json",
+        stats_lm   = OUTDIR/"stats.lm.json",
+        table      = OUTDIR/"summary_table.csv",
+        sum_nv     = OUTDIR/"summary_nv.json"
     params:
         workflow_version = get_repo_version(BASE_PATH.as_posix(), __version__),
         min_ivar_freq = config["VC"]["IVAR_FREQ"],
