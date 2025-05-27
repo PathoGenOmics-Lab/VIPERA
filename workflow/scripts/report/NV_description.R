@@ -371,7 +371,7 @@ ggsave(
 # Figure for nº of heterozygus sites for each sample
 log_info("Plotting nº of heterozygus sites for each sample")
 figur_SNP_table <- vcf_snp %>%
-  filter(ALT_FREQ <= 0.95) %>%
+  filter(ALT_FREQ <= snakemake@params$max_alt_freq) %>%
   left_join(
     metadata,
     by = c("REGION" = "ID")
@@ -451,9 +451,9 @@ window %>%
   ) %>%
   write.csv(snakemake@output[["table_1"]], row.names = FALSE)
 
-# Heterzygus sites per sample table
+# Heterozygous sites per sample table
 vcf_snp %>%
-  filter(ALT_FREQ <= 0.95) %>%
+  filter(ALT_FREQ <= snakemake@params$max_alt_freq) %>%
   select(!GFF_FEATURE) %>%
   left_join(
     metadata,
@@ -469,8 +469,7 @@ vcf_snp %>%
   unique() %>%
   write.csv(snakemake@output[["table_3"]], row.names = FALSE)
 
-
-# STATS FOR REPORTING
+# Stats for reporting
 n_indels <- vcf %>%
   filter(NV_class == "INDEL") %>%
   pull(variant) %>%

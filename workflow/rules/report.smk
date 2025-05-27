@@ -72,7 +72,8 @@ rule general_NV_description:
         design = config["PLOTS"],
         regions = config["PLOT_GENOME_REGIONS"],
         window = config["WINDOW"]["WIDTH"],
-        step = config["WINDOW"]["STEP"]
+        step = config["WINDOW"]["STEP"],
+        max_alt_freq = 1.0 - config["VC"]["IVAR_FREQ"]
     input:
         window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
