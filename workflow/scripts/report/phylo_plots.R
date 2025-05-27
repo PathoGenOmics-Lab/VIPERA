@@ -1,5 +1,10 @@
 #!/usr/bin/env Rscript
 
+# Write stdout and stderr to log file
+log <- file(snakemake@log[[1]], open = "wt")
+sink(log, type = "message")
+sink(log, type = "output")
+
 library(tidyverse)
 library(stringi)
 library(ape)
@@ -12,7 +17,6 @@ library(logger)
 
 log_threshold(INFO)
 
-
 # Import file with plots style
 source(snakemake@params[["design"]])
 
@@ -24,11 +28,6 @@ legend.names <- c(
   snakemake@params[["alrt_th"]], "%"
   )
 )
-
-# Write stdout and stderr to log file
-log <- file(snakemake@log[[1]], open = "wt")
-sink(log, type = "message")
-sink(log, type = "output")
 
 matrix <- read_csv(snakemake@input[["dist"]])
 metadata <- read_csv(snakemake@input[["metadata"]])

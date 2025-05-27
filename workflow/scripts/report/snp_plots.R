@@ -1,5 +1,10 @@
 #!/usr/bin/env Rscript
 
+# Write stdout and stderr to log file
+log <- file(snakemake@log[[1]], open = "wt")
+sink(log, type = "message")
+sink(log, type = "output")
+
 library(tidyverse)
 library(stringi)
 library(ggrepel)
@@ -11,11 +16,6 @@ color <- grDevices::colors()[grep("gr(a|e)y", grDevices::colors(), invert = TRUE
 color <- color[grep("white", color, invert = TRUE)]
 # Import file with plots style
 source(snakemake@params[["design"]])
-
-# Write stdout and stderr to log file
-log <- file(snakemake@log[[1]], open = "wt")
-sink(log, type = "message")
-sink(log, type = "output")
 
 # DATA PREPROCESSING #####
 metadata <- read_csv(snakemake@input[["metadata"]])

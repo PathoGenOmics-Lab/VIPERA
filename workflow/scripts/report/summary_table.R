@@ -1,19 +1,16 @@
 #!/usr/bin/env Rscript
 
-library(tidyverse)
-library(logger)
-log_threshold(INFO)
-
-
 # Write stdout and stderr to log file
 log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
 
+library(tidyverse)
+library(logger)
+log_threshold(INFO)
 
 metadata <- read.csv(snakemake@input[["metadata"]])
 pango_report <- read.csv(snakemake@input[["report"]])
-
 
 # Obtain sample names ordered by CollectionDate
 date_order <- metadata %>%

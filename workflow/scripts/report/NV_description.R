@@ -1,5 +1,10 @@
 #!/usr/bin/env Rscript
 
+# Write stdout and stderr to log file
+log <- file(snakemake@log[[1]], open = "wt")
+sink(log, type = "message")
+sink(log, type = "output")
+
 library(tidyverse)
 library(stringi)
 library(ggpubr)
@@ -10,11 +15,6 @@ log_threshold(INFO)
 
 # Import file with plots style
 source(snakemake@params[["design"]])
-
-# Write stdout and stderr to log file
-log <- file(snakemake@log[[1]], open = "wt")
-sink(log, type = "message")
-sink(log, type = "output")
 
 # SARS-CoV-2 anotation for genome scheme
 SCov2_annotation <- list(
