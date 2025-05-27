@@ -32,6 +32,7 @@ GISAID:
   ACCESSION_COLUMN: "GISAIDEPI"
 DIVERSITY_REPS:
   1000
+USE_BIONJ: false
 LOG_PY_FMT:
   "%(asctime)s - %(name)s - %(levelname)-8s - %(message)s"
 PLOTS:

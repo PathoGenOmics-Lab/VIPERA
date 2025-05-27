@@ -9,6 +9,7 @@ library(ggpubr)
 library(pegas)
 library(jsonlite)
 library(logger)
+
 log_threshold(INFO)
 
 
@@ -94,18 +95,24 @@ fix_negative_edge_length <- function(nj.tree) {
 }
 
 # Tree construction
-log_info("COnstructing n-j tree")
+if (snakemake@params$use_bionj) {
+  log_info("Constructing BIONJ tree based on distances")
+  tree_method = bionj
+} else {
+  log_info("Constructing NJ tree based on distances")
+  tree_method = nj
+}
 tree <- matrix %>%
   column_to_rownames(var = "...1") %>%
   as.matrix() %>%
   as.dist() %>%
-  nj() %>%
+  tree_method() %>%
   root(snakemake@params[["ref_name"]], resolve.root = TRUE)
 
 tree <- fix_negative_edge_length(tree)
 
-# Get partistic distances to ancestor from n-j tree
-log_info("Getting partistic distances to ancestor from n-j tree")
+# Get patristic distances to ancestor from n-j tree
+log_info("Getting patristic distances to ancestor from n-j tree")
 tempest <- adephylo::distRoot(
     tree,
     "all",
@@ -130,8 +137,8 @@ tempest <- adephylo::distRoot(
 
 
 # PLOTS ####
-# nj tree
-log_info("Plotting n-j tree")
+# (BIO)NJ tree
+log_info("Plotting distance tree")
 tree_plot <- ggtree(tree) %<+% tree_tiplab +
   geom_tiplab(aes(label = tip_label)) +
   geom_treescale() +
@@ -204,7 +211,7 @@ node.color <- case_when(
 # MRCA for target samples
 log_info("Calculating MRCA of target samples")
 study.mrca <- getMRCA(tree_ml, study_names)
-study.mrca.clade <- extract.clade(tree, study.mrca)
+study.mrca.clade <- extract.clade(tree_ml, study.mrca)
 study.mrca.clade.ntips <- Ntip(study.mrca.clade)
 
 log_info("Plotting M-L tree with context samples")
@@ -247,7 +254,7 @@ ggsave(
 )
 
 # PLOT TABLES
-log_info("Saving TempEst table")
+log_info("Saving temporal signal table")
 tempest %>%
   transmute(
     sample = ID,

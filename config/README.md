@@ -130,6 +130,7 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
   - `LOCATION_COLUMN`: name of the column that contains sampling locations (e.g. city names) in the input target metadata.
   - `ACCESSION_COLUMN`: name of the column that contains GISAID EPI identifiers in the input target metadata.
 - `DIVERSITY_REPS`: number of random sample subsets of the context dataset for the nucleotide diversity comparison.
+- `USE_BIONJ`: use the BIONJ algorithm ([Gascuel, 1997](https://doi.org/10.1093/oxfordjournals.molbev.a025808)) instead of NJ (neighbor-joining; [Saitou & Nei, 1987](https://doi.org/10.1093/oxfordjournals.molbev.a040454)) to reconstruct phylogenetic trees from pairwise distances.
 - `LOG_PY_FMT`: logging format string for Python scripts.
 - `PLOTS`: path of the R script that sets the design and style of data visualizations.
 - `PLOT_GENOME_REGIONS`: path of a CSV file containing genome regions, e.g. SARS-CoV-2 non-structural protein (NSP) coordinates, for data visualization.

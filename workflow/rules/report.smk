@@ -100,7 +100,8 @@ rule phylo_plots:
         boot_th = 95,
         alrt_th = 80,
         plot_height_mm = 119.4,
-        plot_width_mm = 159.2
+        plot_width_mm = 159.2,
+        use_bionj = config["USE_BIONJ"]
     input:
         dist = REPORT_DIR_TABLES/f"figure_8.csv",
         study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
