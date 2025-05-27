@@ -148,7 +148,7 @@ ggsave(
 )
 
 # TempEst
-log_info("PLotting TempEst analysis")
+log_info("Plotting temporal signal analysis")
 tempest_fig <- tempest %>%
   ggplot() +
   aes(
@@ -201,8 +201,11 @@ node.color <- case_when(
   aLRT.mask & boot.mask ~ "boot_alrt_pass"
 )
 
-# MRCA for studied samples
+# MRCA for target samples
+log_info("Calculating MRCA of target samples")
 study.mrca <- getMRCA(tree_ml, study_names)
+study.mrca.clade <- extract.clade(tree, study.mrca)
+study.mrca.clade.ntips <- Ntip(study.mrca.clade)
 
 log_info("Plotting M-L tree with context samples")
 p <- ggtree(tree_ml, layout = "circular") +
@@ -270,7 +273,8 @@ list(
   ),
   "boot"     = strsplit(study.node, "/")[[1]][2] %>% as.numeric(),
   "alrt"     = strsplit(study.node, "/")[[1]][1] %>% as.numeric(),
-  "monophyly"= monophyletic
+  "monophyly"= monophyletic,
+  "clade_tips" = study.mrca.clade.ntips
 ) %>%
   toJSON() %>%
   write(snakemake@output[["json"]])
