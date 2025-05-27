@@ -14,36 +14,36 @@ pango_report <- read.csv(snakemake@input[["report"]])
 
 # Obtain sample names ordered by CollectionDate
 date_order <- metadata %>%
-    arrange(CollectionDate) %>%
-    filter(
-        ID %in% pango_report$taxon
-    ) %>%
-pull(ID) %>%
-unique()
+  arrange(CollectionDate) %>%
+  filter(
+    ID %in% pango_report$taxon
+  ) %>%
+  pull(ID) %>%
+  unique()
 
 # Create a temporal index for samples
-index  <- data.frame(
-    Sample = date_order,
-    Index = seq(1, length(date_order), 1)
-    )
+index <- data.frame(
+  Sample = date_order,
+  Index = seq(1, length(date_order), 1)
+)
 
 metadata <- select(
-        metadata,
-        ID,
-        CollectionDate
-    ) %>%
-    filter(
-        ID %in% pango_report$taxon
-    ) %>%
-    left_join(
-        select(pango_report, taxon, lineage),
-        by = c("ID" = "taxon")
-    ) %>%
-    rename(
-        Sample = ID,
-        Collection_Date = CollectionDate,
-        Lineage = lineage
-    )
+  metadata,
+  ID,
+  CollectionDate
+) %>%
+  filter(
+    ID %in% pango_report$taxon
+  ) %>%
+  left_join(
+    select(pango_report, taxon, lineage),
+    by = c("ID" = "taxon")
+  ) %>%
+  rename(
+    Sample = ID,
+    Collection_Date = CollectionDate,
+    Lineage = lineage
+  )
 
 log_info("Creating summary table")
 table <- left_join(index, metadata)

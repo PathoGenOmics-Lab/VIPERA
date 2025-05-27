@@ -23,9 +23,12 @@ source(snakemake@params[["design"]])
 # legend thresholds for ml tree
 legend.names <- c(
   tip_label = "Studied samples",
-  boot_alrt_pass = sprintf("UFBoot ≥ %s%s & SH-aLRT ≥ %s%s ",
-  snakemake@params[["boot_th"]], "%",
-  snakemake@params[["alrt_th"]], "%"
+  boot_alrt_pass = sprintf(
+    "UFBoot ≥ %s%s & SH-aLRT ≥ %s%s ",
+    snakemake@params[["boot_th"]],
+    "%",
+    snakemake@params[["alrt_th"]],
+    "%"
   )
 )
 
@@ -35,15 +38,17 @@ tree_ml <- read.tree(snakemake@input[["ml"]]) %>%
   root(
     snakemake@params[["ref_name"]],
     resolve.root = TRUE
-    )
+  )
 
 study_names <- read.dna(
   snakemake@input[["study_fasta"]],
   format = "fasta",
   as.matrix = FALSE,
-  )
+)
 
-study_names <- study_names[!startsWith(names(study_names), snakemake@config[["ALIGNMENT_REFERENCE"]])]
+study_names <- study_names[
+  !startsWith(names(study_names), snakemake@config[["ALIGNMENT_REFERENCE"]])
+]
 study_names <- names(study_names)
 
 # Obtain sample names ordered by CollectionDate
@@ -54,9 +59,9 @@ date_order <- metadata %>%
   unique()
 
 tree_tiplab <- data.frame(
-    ID = date_order,
-    order = seq(1, length(date_order), 1)
-  ) %>%
+  ID = date_order,
+  order = seq(1, length(date_order), 1)
+) %>%
   rowwise() %>%
   mutate(
     tip_label = sprintf(
@@ -78,7 +83,8 @@ tree_tiplab <- data.frame(
 fix_negative_edge_length <- function(nj.tree) {
   edge_infos <- cbind(
     nj.tree$edge,
-    nj.tree$edge.length) %>%
+    nj.tree$edge.length
+  ) %>%
     as.data.table
   colnames(edge_infos) <- c("from", "to", "length")
 
@@ -113,10 +119,10 @@ tree <- fix_negative_edge_length(tree)
 # Get patristic distances to ancestor from n-j tree
 log_info("Getting patristic distances to ancestor from n-j tree")
 tempest <- adephylo::distRoot(
-    tree,
-    "all",
-    method = "patristic"
-  ) %>%
+  tree,
+  "all",
+  method = "patristic"
+) %>%
   as.data.frame() %>%
   rownames_to_column(var = "ID") %>%
   filter(ID != snakemake@params[["ref_name"]]) %>%
@@ -138,7 +144,8 @@ tempest <- adephylo::distRoot(
 # PLOTS ####
 # (BIO)NJ tree
 log_info("Plotting distance tree")
-tree_plot <- ggtree(tree) %<+% tree_tiplab +
+tree_plot <- ggtree(tree) %<+%
+  tree_tiplab +
   geom_tiplab(aes(label = tip_label)) +
   geom_treescale() +
   geom_rootedge(0.5) +
@@ -160,19 +167,21 @@ tempest_fig <- tempest %>%
   aes(
     x = date_interval,
     y = distance
-    ) +
+  ) +
   geom_smooth(
     method = "lm",
     fill = "gray95",
     alpha = 0.6,
     color = "red"
-    ) +
+  ) +
   geom_point() +
   labs(
     y = "Root-to-tip distance",
-    x = "Days since the initial sampling")
+    x = "Days since the initial sampling"
+  )
 
-ggsave(filename = snakemake@output[["temest"]],
+ggsave(
+  filename = snakemake@output[["temest"]],
   plot = tempest_fig,
   width = snakemake@params[["plot_width_mm"]],
   height = snakemake@params[["plot_height_mm"]],
@@ -216,32 +225,35 @@ study.mrca.clade.ntips <- Ntip(study.mrca.clade)
 log_info("Plotting M-L tree with context samples")
 p <- ggtree(tree_ml, layout = "circular") +
   geom_highlight(node = study.mrca, colour = "red", fill = "red", alpha = 0) +
-    geom_point(
-      aes(
-        color = c(tip.color, node.color), # First node points in the tree are tip points, then internal nodes
-        size = c(rep("tip_label", length(tree_ml$tip.label)), rep("boot_alrt_pass", length(tree_ml$node.label))),
-        alpha = c(rep("tip_label", length(tree_ml$tip.label)), rep("boot_alrt_pass", length(tree_ml$node.label)))
-        ),
-        show.legend = TRUE
-        ) +
-    geom_treescale(x = 0.0008) +
-    geom_rootedge(0.0005) +
-    xlim(-0.0008, NA) +
-    scale_size_manual(
-      name = "Class",
-      values = node.size,
-      labels = legend.names
-      ) +
-    scale_alpha_manual(
-      name = "Class",
-      values = node.alpha,
-      labels = legend.names
-      ) +
-    labs(color = "Class") +
-    scale_color_manual(values = tree_colors,
-                      na.value = NA,
-                      labels = legend.names
-    )
+  geom_point(
+    aes(
+      color = c(tip.color, node.color), # First node points in the tree are tip points, then internal nodes
+      size = c(
+        rep("tip_label", length(tree_ml$tip.label)),
+        rep("boot_alrt_pass", length(tree_ml$node.label))
+      ),
+      alpha = c(
+        rep("tip_label", length(tree_ml$tip.label)),
+        rep("boot_alrt_pass", length(tree_ml$node.label))
+      )
+    ),
+    show.legend = TRUE
+  ) +
+  geom_treescale(x = 0.0008) +
+  geom_rootedge(0.0005) +
+  xlim(-0.0008, NA) +
+  scale_size_manual(
+    name = "Class",
+    values = node.size,
+    labels = legend.names
+  ) +
+  scale_alpha_manual(
+    name = "Class",
+    values = node.alpha,
+    labels = legend.names
+  ) +
+  labs(color = "Class") +
+  scale_color_manual(values = tree_colors, na.value = NA, labels = legend.names)
 
 ggsave(
   filename = snakemake@output[["tree_ml"]],
@@ -272,14 +284,15 @@ monophyletic <- ifelse(is.monophyletic(tree_ml, study_names), "are", "are not")
 
 list(
   "sub_rate" = model$coefficients[[2]] * 365,
-  "r2"       = summary(model)$r.squared[[1]],
-  "pvalue"   = ifelse(cor.test(tempest$distance, tempest$date_interval)$p.value < 0.001,
-  "< 0.001",
-  cor.test(tempest$distance, tempest$date_interval)$p.value
+  "r2" = summary(model)$r.squared[[1]],
+  "pvalue" = ifelse(
+    cor.test(tempest$distance, tempest$date_interval)$p.value < 0.001,
+    "< 0.001",
+    cor.test(tempest$distance, tempest$date_interval)$p.value
   ),
-  "boot"     = strsplit(study.node, "/")[[1]][2] %>% as.numeric(),
-  "alrt"     = strsplit(study.node, "/")[[1]][1] %>% as.numeric(),
-  "monophyly"= monophyletic,
+  "boot" = strsplit(study.node, "/")[[1]][2] %>% as.numeric(),
+  "alrt" = strsplit(study.node, "/")[[1]][1] %>% as.numeric(),
+  "monophyly" = monophyletic,
   "clade_tips" = study.mrca.clade.ntips
 ) %>%
   toJSON() %>%

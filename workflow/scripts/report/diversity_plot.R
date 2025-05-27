@@ -15,7 +15,6 @@ log_threshold(INFO)
 
 # Pi calculation
 nucleotide.diversity <- function(dna_object, record.names, sample.size) {
-
   sample <- sample(record.names, sample.size, replace = FALSE)
   dna_subset <- dna_object[record.names %in% sample]
   nuc.div(dna_subset)
@@ -23,7 +22,6 @@ nucleotide.diversity <- function(dna_object, record.names, sample.size) {
 
 # Parallel bootstrapping
 boot.nd.parallel <- function(aln, sample.size = 12, reps = 100) {
-
   record.names <- names(aln)
   future_sapply(
     1:reps,
@@ -43,7 +41,9 @@ gene_ex <- read.dna(
   format = "fasta",
   as.matrix = FALSE
 )
-gene_ex <- gene_ex[!startsWith(names(gene_ex), snakemake@config[["ALIGNMENT_REFERENCE"]])]
+gene_ex <- gene_ex[
+  !startsWith(names(gene_ex), snakemake@config[["ALIGNMENT_REFERENCE"]])
+]
 
 # Study alignment
 study_aln <- read.dna(
@@ -51,7 +51,9 @@ study_aln <- read.dna(
   format = "fasta",
   as.matrix = FALSE
 )
-study_aln <- study_aln[!startsWith(names(study_aln), snakemake@config[["ALIGNMENT_REFERENCE"]])]
+study_aln <- study_aln[
+  !startsWith(names(study_aln), snakemake@config[["ALIGNMENT_REFERENCE"]])
+]
 
 # Diversity value for our samples
 log_info("Calculating diversity value for studied samples")
@@ -61,7 +63,11 @@ diversity <- nuc.div(study_aln)
 # Perform bootstrap
 log_info("Performing calculation for nucleotide diversity in context samples")
 plan(multisession, workers = snakemake@threads)
-divs <- boot.nd.parallel(gene_ex, length(study_aln), snakemake@params[["bootstrap_reps"]])
+divs <- boot.nd.parallel(
+  gene_ex,
+  length(study_aln),
+  snakemake@params[["bootstrap_reps"]]
+)
 plan(sequential)
 
 # Test normality
@@ -103,10 +109,12 @@ p <- data.frame(pi = divs) %>%
   stat_function(
     fun = dnorm,
     args = list(mean = mean(divs), sd = sd(divs)),
-    color = "#f77f00") +
+    color = "#f77f00"
+  ) +
   labs(
     x = "π",
-    y = "Density")
+    y = "Density"
+  )
 
 ggsave(
   filename = snakemake@output[["fig"]],
@@ -118,7 +126,7 @@ ggsave(
 )
 
 # DATA JSON #####
-p.value <- ifelse(st$p.value >= 0.05, pvalue.norm,pvalue.emp)
+p.value <- ifelse(st$p.value >= 0.05, pvalue.norm, pvalue.emp)
 
 list.div <- list(
   "diversity" = format(diversity, scientific = TRUE),
@@ -137,5 +145,5 @@ write(json, snakemake@output[["json"]])
 data.frame(
   pi = divs,
   prop.value = diversity
-  ) %>%
+) %>%
   write.csv(snakemake@output[["table"]], row.names = FALSE)

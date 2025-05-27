@@ -12,7 +12,11 @@ library(logger)
 log_threshold(INFO)
 
 # Get colors
-color <- grDevices::colors()[grep("gr(a|e)y", grDevices::colors(), invert = TRUE)]
+color <- grDevices::colors()[grep(
+  "gr(a|e)y",
+  grDevices::colors(),
+  invert = TRUE
+)]
 color <- color[grep("white", color, invert = TRUE)]
 # Import file with plots style
 source(snakemake@params[["design"]])
@@ -46,16 +50,17 @@ vcf <- vcf %>%
   )
 
 # Fill positions without alt frequency with 0
-vcf <- vcf %>% complete(nesting(variant, POS), REGION, fill = list(ALT_FREQ = 0))
+vcf <- vcf %>%
+  complete(nesting(variant, POS), REGION, fill = list(ALT_FREQ = 0))
 
 # Join variants file and metadata file
 vcf <- left_join(vcf, data, by = c("REGION" = "ID"))
 
 # Calculate days since first sample
 vcf <- arrange(
-    vcf,
-    CollectionDate
-    ) %>%
+  vcf,
+  CollectionDate
+) %>%
   mutate(
     interval = as.numeric(CollectionDate - min(CollectionDate))
   )
@@ -65,45 +70,45 @@ vcf <- arrange(
 
 # Get list with all different polymorphisms
 SNPs <- pull(
-    vcf,
-    variant
-    ) %>%
+  vcf,
+  variant
+) %>%
   unique()
 
 # Create an empty dataframe to be filled
 cor.df <- data.frame(
-    snp = "",
-    cor = 0,
-    p.value = 0
-    ) %>%
+  snp = "",
+  cor = 0,
+  p.value = 0
+) %>%
   filter(p.value != 0)
 
 cor.df.fill <- lapply(
-    SNPs,
-    function(snp) {
-      df <- filter(
-        vcf,
-        variant == snp
-      )
+  SNPs,
+  function(snp) {
+    df <- filter(
+      vcf,
+      variant == snp
+    )
 
-      test <- cor.test(
-        df$ALT_FREQ,
-        df$interval
-      )
+    test <- cor.test(
+      df$ALT_FREQ,
+      df$interval
+    )
 
-      pvalue <- p.adjust(
-        test$p.value,
-        method = "BH",
-        n = length(SNPs)
-      )
-      add_row(
-        cor.df,
-        snp = snp,
-        cor = test$estimate,
-        p.value = pvalue
-      )
-    }
-  ) %>%
+    pvalue <- p.adjust(
+      test$p.value,
+      method = "BH",
+      n = length(SNPs)
+    )
+    add_row(
+      cor.df,
+      snp = snp,
+      cor = test$estimate,
+      p.value = pvalue
+    )
+  }
+) %>%
   bind_rows()
 
 # Plot a pseudo volcano plot with coorrelation index and p-value
@@ -144,9 +149,9 @@ ggsave(
 ## SNP PANEL ####
 # SNPs significantly correlated with time
 sign <- filter(
-            cor.df.fill,
-            p.value < 0.05
-            ) %>%
+  cor.df.fill,
+  p.value < 0.05
+) %>%
   pull(snp) %>%
   unique()
 
@@ -188,7 +193,8 @@ panel <- vcf %>%
   labs(
     x = "Days since first sample",
     y = "Frequency",
-    color = "NV") +
+    color = "NV"
+  ) +
   guides(color = guide_legend(ncol = 3))
 
 if (length(subset) > 1) {
@@ -202,7 +208,8 @@ if (length(subset) > 1) {
 
 ggsave(
   filename = snakemake@output[["snp_panel"]],
-  plot = panel, width = 159.2,
+  plot = panel,
+  width = 159.2,
   height = max(100, plot.height),
   units = "mm",
   dpi = 250
@@ -220,7 +227,7 @@ cor.df.fill %>%
   write.csv(
     snakemake@output[["table_1"]],
     row.names = FALSE
-    )
+  )
 
 log_info("Saving SNPs trends table")
 vcf %>%
@@ -231,5 +238,5 @@ vcf %>%
     NV = variant,
     ALT_FREQ = ALT_FREQ,
     DaysSinceFirst = interval
-    ) %>%
-    write.csv(snakemake@output[["table_2"]], row.names = FALSE)
+  ) %>%
+  write.csv(snakemake@output[["table_2"]], row.names = FALSE)

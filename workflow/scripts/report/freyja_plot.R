@@ -55,7 +55,7 @@ demix_plot <- demix %>%
     na.value = "gray50",
     labels = function(x) {
       ifelse(is.na(x), "Other", x)
-        }
+    }
   ) +
   geom_col() +
   theme(
@@ -83,8 +83,8 @@ log_info("Saving plot table")
 demix %>%
   mutate(
     lineages = case_when(
-    lineages %in% main_lineages ~ lineages,
-    TRUE ~ "Other"
+      lineages %in% main_lineages ~ lineages,
+      TRUE ~ "Other"
     )
   ) %>%
   group_by(sample, lineages) %>%

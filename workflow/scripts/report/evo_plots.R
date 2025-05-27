@@ -52,7 +52,7 @@ plot_df <- vcf %>%
     names_from = synonimous,
     values_from = Freq,
     values_fill = 0
-  )  %>%
+  ) %>%
   transmute(
     dn = No / sum(N_S_position$N),
     ds = Yes / sum(N_S_position$S)
@@ -60,7 +60,7 @@ plot_df <- vcf %>%
   ungroup() %>%
   mutate(
     w = dn / ds,
-    ) %>%
+  ) %>%
   filter(w != Inf) %>%
   pivot_longer(
     c("dn", "ds", "w"),
@@ -69,7 +69,7 @@ plot_df <- vcf %>%
   ) %>%
   left_join(unique(select(vcf, REGION, interval)))
 
-  plot <- plot_df %>%
+plot <- plot_df %>%
   filter(d != "w") %>%
   ggplot() +
   aes(
@@ -84,12 +84,12 @@ plot_df <- vcf %>%
     name = "Parameter",
     labels = dnds.labels,
     values = dnds.colors
-    ) +
-    scale_shape_manual(
-      name = "Parameter",
-      values = dnds.shapes,
-      labels = dnds.labels
-    )  +
+  ) +
+  scale_shape_manual(
+    name = "Parameter",
+    values = dnds.shapes,
+    labels = dnds.labels
+  ) +
   labs(
     y = "Substitution rate",
     x = "Days since the initial sampling",
