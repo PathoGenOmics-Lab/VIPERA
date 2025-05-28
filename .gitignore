@@ -1,5 +1,5 @@
 # Snakemake
-/.snakemake/
+.snakemake/
 
 # Analysis files
 /data/
