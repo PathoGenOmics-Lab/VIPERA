@@ -22,6 +22,7 @@ params:
   shalrt_reps: ""
   min_ivar_freq: ""
   workflow_version: ""
+  use_bionj: ""
   div: ""
   freyja: ""
   tree: ""
@@ -82,6 +83,13 @@ row.names(vcf) <- vcf$`...1`
 vcf <- vcf[-1]
 cor.mat <- cor(vcf)
 cor.mat[is.na(cor.mat)] <- 0
+
+# Distance tree
+if (params$use_bionj) {
+  dist.tree.algo <- "BIONJ (modified neighbor-joining)"
+} else {
+  dist.tree.algo <- "neighbor-joining (NJ)"
+}
 ```
 
 ## Summary of the target samples dataset
@@ -221,11 +229,11 @@ nucleotide variants with a significant correlation with time and sites with more
 than two possible states. Each subplot depicts the progression of the allele
 frequencies in time for a given genome position.](`r params$panel`){#fig-panel}
 
-A neighbor-joining tree has been constructed using pairwise distances
+A `r dist.tree.algo` tree has been constructed using pairwise distances
 between target samples (@fig-tree), based on the allele frequencies measured from
 read mappings.
 
-![Neighbor-joining tree based on the pairwise allele
+![Distance tree built with the `r dist.tree.algo` method based on the pairwise allele
 frequency-weighted distances.](`r params$tree`){#fig-tree}
 
 To estimate the evolutionary rate, root-to-tip distances measured on the previous
