@@ -6,10 +6,13 @@
 
 [![PGO badge](https://img.shields.io/badge/PathoGenOmics-Lab-yellow.svg)](https://pathogenomics.github.io/)
 [![DOI](https://img.shields.io/badge/Virus_Evolution-10.1093/ve/veae018-387088.svg)](https://doi.org/10.1093/ve/veae018)
+
 [![Release](https://img.shields.io/github/v/release/PathoGenOmics-Lab/VIPERA)](https://github.com/PathoGenOmics-Lab/VIPERA/releases)
 [![Snakemake](https://img.shields.io/badge/Snakemake-≥7.19-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
 ![Install workflow](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/install.yml/badge.svg)
-![Test workflow](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/test.yml/badge.svg)
+![Test workflow with Snakemake v7](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/test_v7.yml/badge.svg)
+![Test workflow with Snakemake v8](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/test_v8.yml/badge.svg)
+![Test workflow with Snakemake v9](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/test_v9.yml/badge.svg)
 
 A pipeline for SARS-CoV-2 Viral Intra-Patient Evolution Reporting and Analysis.
 
@@ -21,7 +24,7 @@ configuring [the inputs and outputs](config/README.md#inputs-and-outputs) and
 [the context dataset](config/README.md#automated-construction-of-a-context-dataset):
 
 ```shell
-snakemake --use-conda -c4  # runs VIPERA on 4 cores
+snakemake --use-conda --cores 4  # command for Snakemake v7.32
 ```
 
 We provide a simple script that downloads the [data](https://doi.org/10.20350/digitalCSIC/15648) from [our study](https://doi.org/10.1093/ve/veae018)

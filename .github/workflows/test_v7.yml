@@ -1,0 +1,39 @@
+name: Test Sm v7
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  run_test_pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup environment
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          channel-priority: strict
+          activate-environment: snakemake
+          auto-activate-base: false
+          miniforge-version: latest
+          environment-file: .test/environment_v7.yaml
+      - name: Run test pipeline
+        shell: bash -el {0}
+        run: snakemake --snakefile .test/Snakefile --configfile config/config.yaml .test/targets.yaml --use-conda -c1 --conda-frontend conda
+      - name: Pack logs
+        if: success() || failure()
+        shell: bash -el {0}
+        run: tar czf logs.tar.gz .test/output .snakemake/log
+      - name: Upload output file
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: output-logs
+          path: logs.tar.gz

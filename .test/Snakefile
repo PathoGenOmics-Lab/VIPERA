@@ -1,0 +1,20 @@
+import sys
+import re
+from pathlib import Path
+from snakemake.utils import min_version
+import subprocess
+
+
+min_version("7.19")
+
+# Workflow version
+__version__ = "1.2.1"
+
+# Rules
+include: "../workflow/core.smk"
+include: "../workflow/rules/context.smk"
+include: "../workflow/rules/report.smk"
+
+rule all:
+    input:
+        OUTDIR/f"{OUTPUT_NAME}.report.html"

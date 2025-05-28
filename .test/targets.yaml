@@ -1,25 +1,25 @@
 SAMPLES:
   sample1:
-    bam: "data/bam/sample1.bam"
-    fasta: "data/fasta/sample1.fasta"
+    bam: ".test/data/bam/sample1.bam"
+    fasta: ".test/data/fasta/sample1.fasta"
   sample2:
-    bam: "data/bam/sample2.bam"
-    fasta: "data/fasta/sample2.fasta"
+    bam: ".test/data/bam/sample2.bam"
+    fasta: ".test/data/fasta/sample2.fasta"
   sample3:
-    bam: "data/bam/sample3.bam"
-    fasta: "data/fasta/sample3.fasta"
+    bam: ".test/data/bam/sample3.bam"
+    fasta: ".test/data/fasta/sample3.fasta"
 METADATA:
-  "data/metadata.csv"
+  ".test/data/metadata.csv"
 OUTPUT_DIRECTORY:
-  "output"
+  ".test/output"
 CONTEXT_FASTA:
-  "data/context.fasta"
+  ".test/data/context.fasta"
 OUTPUT_NAME:
   "test"
 DIVERSITY_REPS:
   10
 PLOTS:
-  "../config/design_plots.R"
+  "config/design_plots.R"
 PROBLEMATIC_VCF:
   "https://raw.githubusercontent.com/W-L/ProblematicSites_SARS-CoV2/da322c32004f7b16bdaa6a8ee7fd24d56e79d9dc/problematic_sites_sarsCov2.vcf"
 VC:
@@ -34,10 +34,10 @@ DEMIX:
   MIN_ABUNDANCE: 0.0001
 USE_BIONJ: false
 PLOT_GENOME_REGIONS:
-  "../config/nsp_annotation.csv"
+  "config/nsp_annotation.csv"
 REPORT_QMD:
-  "../template.qmd"
+  "template.qmd"
 FEATURES_JSON:
-  "../config/sarscov2_features.json"
+  "config/sarscov2_features.json"
 GENETIC_CODE_JSON:
-  "../config/standard_genetic_code.json"
+  "config/standard_genetic_code.json"
