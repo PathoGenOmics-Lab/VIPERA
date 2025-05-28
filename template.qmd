@@ -135,7 +135,7 @@ A maximum likelihood tree of the target and context samples has been
 built using [IQTREE](http://www.iqtree.org/).
 The target samples `r stats[["monophyly"]]` monophyletic. The clade
 that contains all $`r n.samples`$ target samples has $`r stats[["clade_tips"]]`$
-tips ($`r round(n.samples / stats[["clade_tips"]], 1)`$% targets) and is supported by a UFBoot score of
+tips ($`r round(100 * n.samples / stats[["clade_tips"]], 1)`$% targets) and is supported by a UFBoot score of
 $`r stats[["boot"]]`$% and a SH-aLRT score of $`r stats[["alrt"]]`$% (@fig-tree_ml).
 
 ![Maximum-likelihood phylogeny with $`r params$ufboot_reps`$ UFBoot
