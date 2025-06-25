@@ -1,7 +1,16 @@
 # Instructions
 
-To run the pipeline, you will need an environment with `snakemake`
-(check [the Snakemake docs](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)).
+To run VIPERA, an environment with Snakemake version 7.19 or later is needed
+(see [the Snakemake docs](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
+for setup instructions).
+
+> This guide provides command-line instructions for running VIPERA with Snakemake versions prior to 8.
+All configuration parameters are fully cross-compatible. The original publication used Snakemake 7.32,
+but newer versions can also be used with only minor changes. For details, see the Snakemake
+[migration guide](https://snakemake.readthedocs.io/en/stable/getting_started/migration.html).
+For example, existing [profiles](https://snakemake.readthedocs.io/en/stable/getting_started/migration.html#profiles)
+are cross-compatible as well, but note that the `--use-conda` flag is deprecated starting with Snakemake 8.
+Instead, use `--software-deployment-method conda`.
 
 ## Inputs and outputs
 

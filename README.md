@@ -24,7 +24,7 @@ configuring [the inputs and outputs](config/README.md#inputs-and-outputs) and
 [the context dataset](config/README.md#automated-construction-of-a-context-dataset):
 
 ```shell
-snakemake --use-conda --cores 4  # command for Snakemake v7.32
+snakemake --use-conda --cores 4  # command for Snakemake v7
 ```
 
 We provide a simple script that downloads the [data](https://doi.org/10.20350/digitalCSIC/15648) from [our study](https://doi.org/10.1093/ve/veae018)
@@ -39,15 +39,12 @@ The latter requires installing the [Snakemake executor plugin for SLURM](https:/
 It supports dependency management through either conda or Singularity, as detailed in the
 [run modes documentation](config/README.md#run-modes).
 
-Please refer to the [**full workflow documentation**](config/README.md) for detailed setup instructions.
+We use continuous integration (CI) to verify that all dependencies install correctly
+with Snakemake v7.32.4 (see GitHub Action `Install`), and to test that VIPERA runs
+successfully with Snakemake v7.32.4, v8.30.0, and v9.1.6 (see GitHub Actions
+`Test Sm v[7-9]`).
 
-> The documentation in this repository provides instructions for running VIPERA
-> with Snakemake <8. We used Snakemake 7.32 for the original publication,
-> but using Snakemake 8 or 9 is possible with minimal modifications (see the
-> [migration documentation](https://snakemake.readthedocs.io/en/stable/getting_started/migration.html)).
-> For example, [profiles](https://snakemake.readthedocs.io/en/stable/getting_started/migration.html#profiles)
-should be backwards compatible, but `--use-conda` is deprecated starting on Snakemake 8 and
-`--software-deployment-method conda` is the preferred way to provide the options.
+Please refer to the [**full workflow documentation**](config/README.md) for detailed instructions.
 
 ## Contributors
 
