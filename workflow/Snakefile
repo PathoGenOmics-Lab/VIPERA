@@ -13,7 +13,7 @@ configfile: "config/config.yaml"
 configfile: "config/targets.yaml"
 
 # Workflow version
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 # Rules
 include: "core.smk"
