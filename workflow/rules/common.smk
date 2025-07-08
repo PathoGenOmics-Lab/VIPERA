@@ -9,11 +9,11 @@ def iter_samples():
 
 
 def get_input_bam(wildcards):
-    return config.get("SAMPLES", {})[wildcards.sample]["bam"]
+    return config.get("SAMPLES", {}).get(wildcards.sample, {}).get("bam", "")
 
 
 def get_input_fasta(wildcards):
-    return config.get("SAMPLES", {})[wildcards.sample]["fasta"]
+    return config.get("SAMPLES", {}).get(wildcards.sample, {}).get("fasta", "")
 
 
 def get_repo_version(base_dir: str, default: str, warn=False) -> str:
