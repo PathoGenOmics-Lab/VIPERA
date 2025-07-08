@@ -183,12 +183,12 @@ snakemake --use-conda --slurm --profile profile/default
 
 Additionally, we offer the option of running the workflow within a containerized
 environment using a [pre-built Docker image](https://hub.docker.com/r/ahmig/vipera),
-provided that [Singularity](https://en.wikipedia.org/wiki/Singularity_(software))
+provided that [Apptainer/Singularity](https://en.wikipedia.org/wiki/Singularity_(software))
 is available on the system. This eliminates the need for further conda package
 downloads and environment configuration.
-To do that, simply add the option `--use-singularity` to any of the previous commands.
+To do that, simply add the option `--use-apptainer` to any of the previous commands.
 
-Using Singularity for running VIPERA in the Windows Subsystem for Linux (WSL)
+Using Apptainer for running VIPERA in the Windows Subsystem for Linux (WSL)
 may encounter errors due to the default file permissions configuration, which
 conflicts with Snakemake's containerized conda environment activation mechanism.
 Thus, running the containerized VIPERA workflow on the WSL is not advised.

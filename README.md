@@ -36,13 +36,15 @@ and performs the analysis in a single step:
 
 The workflow is compatible with both local execution and HPC environments utilizing SLURM.
 The latter requires installing the [Snakemake executor plugin for SLURM](https://snakemake.github.io/snakemake-plugin-catalog/plugins/executor/slurm.html).
-It supports dependency management through either conda or Singularity, as detailed in the
+It supports dependency management through either conda or Apptainer/Singularity, as detailed in the
 [run modes documentation](config/README.md#run-modes).
 
-We use continuous integration (CI) to verify that all dependencies install correctly
+We use continuous integration (CI) to automatically verify that all dependencies install correctly
 with Snakemake v7.32.4 (see GitHub Action `Install`), and to test that VIPERA runs
-successfully with Snakemake v7.32.4, v8.30.0, and v9.1.6 (see GitHub Actions
-`Test Sm v[7-9]`).
+successfully with Snakemake v7.32.4, v8.30.0, and v9.1.6 using conda (Actions `Test Sm v[7-9]`).
+We also test a containerized workflow with Snakemake v9.1.6 and Apptainer using a
+[remote image](https://hub.docker.com/r/ahmig/vipera) (Action `Test Sm v9 Apptainer`).
+This image is automatically updated in every version (Action `Deploy`).
 
 Please refer to the [**full workflow documentation**](config/README.md) for detailed instructions.
 
