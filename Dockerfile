@@ -1,14 +1,12 @@
-FROM condaforge/mambaforge:latest
+FROM condaforge/miniforge3:latest
 LABEL io.github.snakemake.containerized="true"
-LABEL io.github.snakemake.conda_env_hash="e5f6ff0e9e827d0d6bf8717bb46f3394c2356786ca7cde04716f3dd7488a0a45"
+LABEL io.github.snakemake.conda_env_hash="537ab21812cff05914015e48d38a0368b2bc608f2ac2152eaa5fe53f4cffd98b"
 
-RUN apt-get update && apt-get install -y curl
-
-# Step 1: Retrieve conda environments
+# Step 2: Retrieve conda environments
 
 # Conda environment:
 #   source: workflow/envs/biopython.yaml
-#   prefix: /conda-envs/80434b30d852d88ac0d9f0dc4712fcc8
+#   prefix: /conda-envs/a87373c85b4b4d0bc0742b01f5ffadf8
 #   channels:
 #     - conda-forge
 #     - bioconda
@@ -17,22 +15,22 @@ RUN apt-get update && apt-get install -y curl
 #     - biopython==1.81
 #     - pandas==2.0.3
 #     - pip==23.2.1
-#     - mafft==7.520
-#     - gb2seq==0.2.20 (pip)
-RUN mkdir -p /conda-envs/80434b30d852d88ac0d9f0dc4712fcc8
-COPY workflow/envs/biopython.yaml /conda-envs/80434b30d852d88ac0d9f0dc4712fcc8/environment.yaml
-COPY workflow/envs/biopython.post-deploy.sh /conda-envs/80434b30d852d88ac0d9f0dc4712fcc8/post-deploy.sh
+#     - pip:
+#       - gb2seq==0.2.20
+RUN mkdir -p /conda-envs/a87373c85b4b4d0bc0742b01f5ffadf8
+COPY workflow/envs/biopython.yaml /conda-envs/a87373c85b4b4d0bc0742b01f5ffadf8/environment.yaml
 
 # Conda environment:
 #   source: workflow/envs/fetch.yaml
-#   prefix: /conda-envs/446520408112f3597796f452c95a7517
+#   prefix: /conda-envs/9439457f932a4fbca3665c9ea1ac2f0a
 #   channels:
 #     - bioconda
 #     - conda-forge
 #   dependencies:
 #     - entrez-direct==16.2
-RUN mkdir -p /conda-envs/446520408112f3597796f452c95a7517
-COPY workflow/envs/fetch.yaml /conda-envs/446520408112f3597796f452c95a7517/environment.yaml
+#     - curl
+RUN mkdir -p /conda-envs/9439457f932a4fbca3665c9ea1ac2f0a
+COPY workflow/envs/fetch.yaml /conda-envs/9439457f932a4fbca3665c9ea1ac2f0a/environment.yaml
 
 # Conda environment:
 #   source: workflow/envs/freyja.yaml
@@ -47,7 +45,7 @@ COPY workflow/envs/freyja.yaml /conda-envs/ee7a2e1b4ec9a7a9999f34dddaea0605/envi
 
 # Conda environment:
 #   source: workflow/envs/gisaidr.yaml
-#   prefix: /conda-envs/da7a255722228900ab1eeedd1878e1c7
+#   prefix: /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f
 #   channels:
 #     - conda-forge
 #   dependencies:
@@ -55,11 +53,9 @@ COPY workflow/envs/freyja.yaml /conda-envs/ee7a2e1b4ec9a7a9999f34dddaea0605/envi
 #     - r-tidyverse==2.0.0
 #     - r-devtools==2.4.5
 #     - r-logger==0.2.2
-#     - Wytamma/GISAIDR (R)
-#     - curl (R)
-RUN mkdir -p /conda-envs/da7a255722228900ab1eeedd1878e1c7
-COPY workflow/envs/gisaidr.yaml /conda-envs/da7a255722228900ab1eeedd1878e1c7/environment.yaml
-COPY workflow/envs/gisaidr.post-deploy.sh /conda-envs/da7a255722228900ab1eeedd1878e1c7/post-deploy.sh
+RUN mkdir -p /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f
+COPY workflow/envs/gisaidr.yaml /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f/environment.yaml
+COPY workflow/envs/gisaidr.post-deploy.sh /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f/post-deploy.sh
 
 # Conda environment:
 #   source: workflow/envs/iqtree.yaml
@@ -85,14 +81,14 @@ COPY workflow/envs/nextalign.yaml /conda-envs/04a3347f94ddf7e21c34bc49e5246076/e
 
 # Conda environment:
 #   source: workflow/envs/pangolin.yaml
-#   prefix: /conda-envs/efc6ee175cf0def0e180f8f2f7dd529d
+#   prefix: /conda-envs/fd645c541ee7a3d43fb9167441b77888
 #   channels:
 #     - conda-forge
 #     - bioconda
 #   dependencies:
-#     - pangolin==4.3
-RUN mkdir -p /conda-envs/efc6ee175cf0def0e180f8f2f7dd529d
-COPY workflow/envs/pangolin.yaml /conda-envs/efc6ee175cf0def0e180f8f2f7dd529d/environment.yaml
+#     - pangolin==4.3.1
+RUN mkdir -p /conda-envs/fd645c541ee7a3d43fb9167441b77888
+COPY workflow/envs/pangolin.yaml /conda-envs/fd645c541ee7a3d43fb9167441b77888/environment.yaml
 
 # Conda environment:
 #   source: workflow/envs/quarto_render.yaml
@@ -159,27 +155,25 @@ COPY workflow/envs/snpeff.yaml /conda-envs/1934df0e4df02a7ee33c52f53f9e3c30/envi
 RUN mkdir -p /conda-envs/5150d0f0a91d7f7a789a06f453d63479
 COPY workflow/envs/var_calling.yaml /conda-envs/5150d0f0a91d7f7a789a06f453d63479/environment.yaml
 
-# Step 2: Generate conda environments
+# Step 3: Generate conda environments
 
-RUN mamba env create --prefix /conda-envs/80434b30d852d88ac0d9f0dc4712fcc8 --file /conda-envs/80434b30d852d88ac0d9f0dc4712fcc8/environment.yaml && \
-    mamba env create --prefix /conda-envs/446520408112f3597796f452c95a7517 --file /conda-envs/446520408112f3597796f452c95a7517/environment.yaml && \
-    mamba env create --prefix /conda-envs/ee7a2e1b4ec9a7a9999f34dddaea0605 --file /conda-envs/ee7a2e1b4ec9a7a9999f34dddaea0605/environment.yaml && \
-    mamba env create --prefix /conda-envs/da7a255722228900ab1eeedd1878e1c7 --file /conda-envs/da7a255722228900ab1eeedd1878e1c7/environment.yaml && \
-    mamba env create --prefix /conda-envs/0a608afb24723cb6fa8aef748f5efbc8 --file /conda-envs/0a608afb24723cb6fa8aef748f5efbc8/environment.yaml && \
-    mamba env create --prefix /conda-envs/04a3347f94ddf7e21c34bc49e5246076 --file /conda-envs/04a3347f94ddf7e21c34bc49e5246076/environment.yaml && \
-    mamba env create --prefix /conda-envs/efc6ee175cf0def0e180f8f2f7dd529d --file /conda-envs/efc6ee175cf0def0e180f8f2f7dd529d/environment.yaml && \
-    mamba env create --prefix /conda-envs/f2a098519cf1f8c4cecb3c13f8c92883 --file /conda-envs/f2a098519cf1f8c4cecb3c13f8c92883/environment.yaml && \
-    mamba env create --prefix /conda-envs/4b57bfc237ddc217c1f0b04d34dc06ef --file /conda-envs/4b57bfc237ddc217c1f0b04d34dc06ef/environment.yaml && \
-    mamba env create --prefix /conda-envs/1934df0e4df02a7ee33c52f53f9e3c30 --file /conda-envs/1934df0e4df02a7ee33c52f53f9e3c30/environment.yaml && \
-    mamba env create --prefix /conda-envs/5150d0f0a91d7f7a789a06f453d63479 --file /conda-envs/5150d0f0a91d7f7a789a06f453d63479/environment.yaml && \
-    mamba clean --all -y
+RUN conda env create --prefix /conda-envs/a87373c85b4b4d0bc0742b01f5ffadf8 --file /conda-envs/a87373c85b4b4d0bc0742b01f5ffadf8/environment.yaml && \
+    conda env create --prefix /conda-envs/9439457f932a4fbca3665c9ea1ac2f0a --file /conda-envs/9439457f932a4fbca3665c9ea1ac2f0a/environment.yaml && \
+    conda env create --prefix /conda-envs/ee7a2e1b4ec9a7a9999f34dddaea0605 --file /conda-envs/ee7a2e1b4ec9a7a9999f34dddaea0605/environment.yaml && \
+    conda env create --prefix /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f --file /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f/environment.yaml && \
+    conda env create --prefix /conda-envs/0a608afb24723cb6fa8aef748f5efbc8 --file /conda-envs/0a608afb24723cb6fa8aef748f5efbc8/environment.yaml && \
+    conda env create --prefix /conda-envs/04a3347f94ddf7e21c34bc49e5246076 --file /conda-envs/04a3347f94ddf7e21c34bc49e5246076/environment.yaml && \
+    conda env create --prefix /conda-envs/fd645c541ee7a3d43fb9167441b77888 --file /conda-envs/fd645c541ee7a3d43fb9167441b77888/environment.yaml && \
+    conda env create --prefix /conda-envs/f2a098519cf1f8c4cecb3c13f8c92883 --file /conda-envs/f2a098519cf1f8c4cecb3c13f8c92883/environment.yaml && \
+    conda env create --prefix /conda-envs/4b57bfc237ddc217c1f0b04d34dc06ef --file /conda-envs/4b57bfc237ddc217c1f0b04d34dc06ef/environment.yaml && \
+    conda env create --prefix /conda-envs/1934df0e4df02a7ee33c52f53f9e3c30 --file /conda-envs/1934df0e4df02a7ee33c52f53f9e3c30/environment.yaml && \
+    conda env create --prefix /conda-envs/5150d0f0a91d7f7a789a06f453d63479 --file /conda-envs/5150d0f0a91d7f7a789a06f453d63479/environment.yaml && \
+    conda clean --all -y
 
-# Step 3: Run post-deploy scripts
+# Step 4: Run post-deploy scripts
 
 RUN conda init && . /root/.bashrc && \
-    conda activate /conda-envs/80434b30d852d88ac0d9f0dc4712fcc8 && \
-    bash /conda-envs/80434b30d852d88ac0d9f0dc4712fcc8/post-deploy.sh && \
-    conda activate /conda-envs/da7a255722228900ab1eeedd1878e1c7 && \
-    bash /conda-envs/da7a255722228900ab1eeedd1878e1c7/post-deploy.sh && \
+    conda activate /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f && \
+    bash /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f/post-deploy.sh && \
     conda deactivate && \
-    mamba clean --all -y
+    conda clean --all -y
