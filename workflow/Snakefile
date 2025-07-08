@@ -4,18 +4,15 @@ from pathlib import Path
 from snakemake.utils import min_version
 import subprocess
 
-
 min_version("7.19")
 
-containerized: "docker://ahmig/vipera:latest"
+__version__ = "1.2.1"
+
+containerized: "docker://ahmig/vipera:v" + __version__
 
 configfile: "config/config.yaml"
 configfile: "config/targets.yaml"
 
-# Workflow version
-__version__ = "1.2.1"
-
-# Rules
 include: "core.smk"
 include: "rules/context.smk"
 include: "rules/report.smk"
