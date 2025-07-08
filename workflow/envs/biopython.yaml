@@ -6,5 +6,6 @@ dependencies:
   - biopython==1.81
   - pandas==2.0.3
   - pip==23.2.1
+  - mafft==7.525
   - pip:
     - gb2seq==0.2.20
