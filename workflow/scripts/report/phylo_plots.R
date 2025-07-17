@@ -277,6 +277,7 @@ tempest %>%
 
 # TEMPEST STATS
 model <- lm(distance ~ date_interval, data = tempest)
+p.value <- summary(model)$coefficients[2,4]
 
 # TREE STATS
 study.node <- tree_ml$node.label[study.mrca - length(tip.color)]
@@ -285,11 +286,7 @@ monophyletic <- ifelse(is.monophyletic(tree_ml, study_names), "are", "are not")
 list(
   "sub_rate" = model$coefficients[[2]] * 365,
   "r2" = summary(model)$r.squared[[1]],
-  "pvalue" = ifelse(
-    cor.test(tempest$distance, tempest$date_interval)$p.value < 0.001,
-    "< 0.001",
-    cor.test(tempest$distance, tempest$date_interval)$p.value
-  ),
+  "pvalue" = ifelse(p.value < 0.001, "< 0.001", p.value),
   "boot" = strsplit(study.node, "/")[[1]][2] %>% as.numeric(),
   "alrt" = strsplit(study.node, "/")[[1]][1] %>% as.numeric(),
   "monophyly" = monophyletic,

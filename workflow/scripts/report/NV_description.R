@@ -488,12 +488,9 @@ model <- lm(n ~ CollectionDate, data = figur_SNP_table)
 
 # Calculate correlation, if possible
 if (nrow(figur_SNP_table) > 2) {
-  p.cor <- cor.test(
-    figur_SNP_table$n,
-    as.numeric(figur_SNP_table$CollectionDate)
-  )$p.value
+  p.value <- summary(model)$coefficients[2,4]
 } else {
-  p.cor <- NA
+  p.value <- NA
 }
 
 list(
@@ -502,7 +499,7 @@ list(
   "window" = snakemake@params[["window"]],
   "step" = snakemake@params[["step"]],
   "r2" = summary(model)$r.squared[[1]],
-  "value" = ifelse(p.cor < 0.001, "< 0.001", p.cor)
+  "value" = ifelse(p.value < 0.001, "< 0.001", p.value)
 ) %>%
   toJSON() %>%
   write(snakemake@output[["json"]])
