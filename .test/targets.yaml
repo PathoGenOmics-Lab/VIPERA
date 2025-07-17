@@ -33,6 +33,9 @@ DEMIX:
   COV_CUTOFF: 0
   MIN_ABUNDANCE: 0.0001
 USE_BIONJ: false
+COR:
+  METHOD: "pearson"
+  EXACT: null
 PLOT_GENOME_REGIONS:
   "config/nsp_annotation.csv"
 REPORT_QMD:

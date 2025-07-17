@@ -93,7 +93,9 @@ cor.df.fill <- lapply(
 
     test <- cor.test(
       df$ALT_FREQ,
-      df$interval
+      df$interval,
+      method = snakemake@params$cor_method,
+      exact = snakemake@params$cor_exact
     )
 
     pvalue <- p.adjust(
@@ -174,7 +176,7 @@ subset <- c(sign, dup) %>%
 # Plot height depending on the number of SNPs assuming 4 columns in the plot
 plot.height <- ceiling(length(subset) / 4) * 42
 
-log_info("PLotting SNPs trends in time")
+log_info("Plotting SNPs trends in time")
 panel <- vcf %>%
   filter(variant %in% subset) %>%
   ggplot() +
@@ -221,7 +223,7 @@ log_info("Saving coorelation table")
 cor.df.fill %>%
   transmute(
     NV = snp,
-    PearsonCor = cor,
+    correlation_coef = cor,
     adj_pvalue = p.value
   ) %>%
   write.csv(

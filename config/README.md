@@ -140,6 +140,9 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
   - `ACCESSION_COLUMN`: name of the column that contains GISAID EPI identifiers in the input target metadata.
 - `DIVERSITY_REPS`: number of random sample subsets of the context dataset for the nucleotide diversity comparison.
 - `USE_BIONJ`: use the BIONJ algorithm ([Gascuel, 1997](https://doi.org/10.1093/oxfordjournals.molbev.a025808)) instead of NJ (neighbor-joining; [Saitou & Nei, 1987](https://doi.org/10.1093/oxfordjournals.molbev.a040454)) to reconstruct phylogenetic trees from pairwise distances.
+- `COR`: configuration for correlation analyses of allele frequency data over time and between variants. This parameter controls how correlation tests are performed using R's `cor.test` and `cor` functions (see [R documentation](https://search.r-project.org/CRAN/refmans/correlation/html/cor_test.html)).
+  - `METHOD`: correlation method to use. Valid options are "pearson" (default), "kendall", or "spearman".
+  - `EXACT`: boolean flag indicating whether to compute an exact p-value when possible. This option applies only to certain methods and may be set to `null` (default) to let R decide automatically.
 - `LOG_PY_FMT`: logging format string for Python scripts.
 - `PLOTS`: path of the R script that sets the design and style of data visualizations.
 - `PLOT_GENOME_REGIONS`: path of a CSV file containing genome regions, e.g. SARS-CoV-2 non-structural protein (NSP) coordinates, for data visualization.

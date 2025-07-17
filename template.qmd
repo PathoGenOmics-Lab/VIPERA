@@ -23,6 +23,7 @@ params:
   min_ivar_freq: ""
   workflow_version: ""
   use_bionj: ""
+  cor_method: ""
   div: ""
   freyja: ""
   tree: ""
@@ -81,8 +82,17 @@ n.samples <- table %>% pull(Sample) %>% unique() %>% length()
 vcf <- read_csv(params$heat_tab) 
 row.names(vcf) <- vcf$`...1`
 vcf <- vcf[-1]
-cor.mat <- cor(vcf)
+cor.mat <- cor(vcf, method = params$cor_method)
 cor.mat[is.na(cor.mat)] <- 0
+if (params$cor_method == "pearson") {
+  cor.method.name <- "Pearson's"
+} else if (params$cor_method == "spearman") {
+  cor.method.name <- "Spearman's"
+} else if (params$cor_method == "kendall") {
+  cor.method.name <- "Kendall's"
+} else {
+  cor.method.name <- "Undetermined"
+}
 
 # Distance tree
 if (params$use_bionj) {
@@ -217,7 +227,7 @@ at the bottom, and the latest, at the top.](`r params$SNV_s`){#fig-SNV_s}
 The correlation of the allele frequency of each NV with the time since the
 initial sampling has been calculated (@fig-volcano).
 
-![Pearson’s correlation coefficients and adjusted p-values of
+![`r cor.method.name` correlation coefficients and adjusted p-values of
 allele frequencies with time. Red dashed line indicates adjusted $p = 0.05$.
 Labeled dots represent nucleotide variants correlated with time
 (adjusted $p < 0.05$).](`r params$volcano`){#fig-volcano}
@@ -253,7 +263,7 @@ zooming in on specific regions.
 
 ```{r heatmap, echo = F, message = F, fig.align = 'center'}
 #| label: fig-heatmap
-#| fig-cap: "Interactive hierarchically clustered heatmap of the pairwise Pearson’s correlation coefficients between the time series of allele frequencies in the case study."
+#| fig-cap: "Interactive hierarchically clustered heatmap of the pairwise correlation coefficients between the time series of allele frequencies in the case study."
 
 heatmaply_cor(
   cor.mat,

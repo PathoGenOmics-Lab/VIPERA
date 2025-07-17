@@ -140,7 +140,9 @@ rule evo_plots:
 rule snp_plots:
     conda: "../envs/renv.yaml"
     params:
-        design = config["PLOTS"]
+        design = config["PLOTS"],
+        cor_method = config["COR"]["METHOD"],
+        cor_exact = config["COR"]["EXACT"]
     input:
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         metadata = config["METADATA"]
@@ -196,7 +198,8 @@ rule report:
         ufboot_reps = config["UFBOOT_REPS"],
         shalrt_reps = config["SHALRT_REPS"],
         name = config["OUTPUT_NAME"],
-        use_bionj = config["USE_BIONJ"]
+        use_bionj = config["USE_BIONJ"],
+        cor_method = config["COR"]["METHOD"]
     output:
         html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
     log:
@@ -211,6 +214,7 @@ rule report:
                                                        min_ivar_freq='{params.min_ivar_freq}',\
                                                        workflow_version='{params.workflow_version}',\
                                                        use_bionj='{params.use_bionj}',\
+                                                       cor_method='{params.cor_method}',\
                                                        div='{input.diversity}',\
                                                        freyja ='{input.freyja}',\
                                                        tree = '{input.tree}',\
