@@ -22,7 +22,7 @@ source(snakemake@params[["design"]])
 
 # legend thresholds for ml tree
 legend.names <- c(
-  tip_label = "Studied samples",
+  tip_label = "Target samples",
   boot_alrt_pass = sprintf(
     "UFBoot ≥ %s%s & SH-aLRT ≥ %s%s ",
     snakemake@params[["boot_th"]],
@@ -242,18 +242,31 @@ p <- ggtree(tree_ml, layout = "circular") +
   geom_treescale(x = 0.0008) +
   geom_rootedge(0.0005) +
   xlim(-0.0008, NA) +
+  scale_color_manual(
+    name   = "Class",
+    values = tree_colors,
+    labels = legend.names,
+    na.value = NA,
+    guide  = guide_legend(
+      override.aes = list(
+        size  = node.size,
+        alpha = node.alpha,
+        shape = 19
+      )
+    )
+  ) +
   scale_size_manual(
     name = "Class",
     values = node.size,
-    labels = legend.names
+    labels = legend.names,
+    guide  = FALSE
   ) +
   scale_alpha_manual(
     name = "Class",
     values = node.alpha,
-    labels = legend.names
-  ) +
-  labs(color = "Class") +
-  scale_color_manual(values = tree_colors, na.value = NA, labels = legend.names)
+    labels = legend.names,
+    guide  = FALSE
+  )
 
 ggsave(
   filename = snakemake@output[["tree_ml"]],
