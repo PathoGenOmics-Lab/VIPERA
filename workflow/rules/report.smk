@@ -205,33 +205,34 @@ rule report:
     log:
         LOGDIR / "report" / "log.txt"
     shell:
-        """
-        set +o pipefail
-        Rscript -e 'library(quarto)' -e \"quarto_render(input = '{input.qmd}',\
-                                           execute_params=list( \
-                                                       ufboot_reps='{params.ufboot_reps}',\
-                                                       shalrt_reps='{params.shalrt_reps}',\
-                                                       min_ivar_freq='{params.min_ivar_freq}',\
-                                                       workflow_version='{params.workflow_version}',\
-                                                       use_bionj='{params.use_bionj}',\
-                                                       cor_method='{params.cor_method}',\
-                                                       div='{input.diversity}',\
-                                                       freyja ='{input.freyja}',\
-                                                       tree = '{input.tree}',\
-                                                       tempest = '{input.temest}',\
-                                                       SNV = '{input.SNV}',\
-                                                       SNV_s = '{input.SNV_spike}',
-                                                       evo = '{input.evo}',
-                                                       div_value = '{input.value}',
-                                                       panel = '{input.panel}',
-                                                       volcano = '{input.volcano}',
-                                                       tree_ml = '{input.tree_ml}',
-                                                       fig_cor_snp = '{input.fig_cor}',
-                                                       stats_lm = '{input.stats_lm}',
-                                                       table = '{input.table}',
-                                                       sum_nv = '{input.sum_nv}',
-                                                       heat_tab = '{input.heat_table}',
-                                                       omega_plot = '{input.omega_plot}',
-                                                       name = '{params.name}'))\" >{log} 2>&1
-        mv "$(dirname {input.qmd:q})/report.html" {output.html}
-        """
+        "set +o pipefail; "
+        "Rscript -e 'library(quarto)' "
+        "-e \"quarto_render("
+            "input = '{input.qmd}', "
+            "execute_params=list("
+                "ufboot_reps='{params.ufboot_reps}', "
+                "shalrt_reps='{params.shalrt_reps}', "
+                "min_ivar_freq='{params.min_ivar_freq}', "
+                "workflow_version='{params.workflow_version}', "
+                "use_bionj='{params.use_bionj}', "
+                "cor_method='{params.cor_method}', "
+                "div='{input.diversity}', "
+                "freyja ='{input.freyja}', "
+                "tree = '{input.tree}', "
+                "tempest = '{input.temest}', "
+                "SNV = '{input.SNV}', "
+                "SNV_s = '{input.SNV_spike}', "
+                "evo = '{input.evo}', "
+                "div_value = '{input.value}', "
+                "panel = '{input.panel}', "
+                "volcano = '{input.volcano}', "
+                "tree_ml = '{input.tree_ml}', "
+                "fig_cor_snp = '{input.fig_cor}', "
+                "stats_lm = '{input.stats_lm}', "
+                "table = '{input.table}', "
+                "sum_nv = '{input.sum_nv}', "
+                "heat_tab = '{input.heat_table}', "
+                "omega_plot = '{input.omega_plot}', "
+                "name = '{params.name}'))\" "
+        ">{log} 2>&1 && "
+        'mv "$(dirname {input.qmd:q})/report.html" {output.html:q}'
