@@ -100,6 +100,21 @@ by editing [targets.yaml](/config/targets.yaml) or via the command line:
 snakemake --config CONTEXT_FASTA="path/to/fasta"
 ```
 
+> [!IMPORTANT]
+> The GISAID EpiCoV database is proprietary and not openly accessible. For details, refer
+> to the [GISAID Terms of Use](https://gisaid.org/terms-of-use/).
+> VIPERA uses [GISAIDR](https://github.com/Wytamma/GISAIDR) to automate access to GISAID data.
+> However, this access can be unstable or occasionally fail due to changes in the platform.
+> Possible workarounds are documented in the GISAIDR repository (e.g. issues
+> [#55](https://github.com/Wytamma/GISAIDR/issues/55) and [#58](https://github.com/Wytamma/GISAIDR/issues/58)).
+> If programmatic access fails, a suitable context dataset must be manually provided by setting the
+> `CONTEXT_FASTA` parameter to the path of a FASTA file.
+> As a last resort, some of the analyses can be allowed to run even if context-dependent rules
+> fail by passing the `--keep-going` flag to Snakemake.
+> To replicate [our work](https://doi.org/10.1093/ve/veae018), the automatic context dataset is available via
+> DOI: [10.55876/gis8.250718er](https://doi.org/10.55876/gis8.250718er) (EPI_SET_250718er).
+> Read more about EPI_SETs [here](https://gisaid.org/episet/).
+
 ## Mapping reference sequence
 
 Setting `MAPPING_REFERENCES_FASTA` to `null` (default) will enable the automatic download of the
