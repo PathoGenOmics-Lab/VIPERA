@@ -63,7 +63,7 @@ This information may also be provided through the `--config` parameter.
 ## Automated construction of a context dataset
 
 Setting the `CONTEXT_FASTA` parameter to `null` (default) will enable
-the automatic download of sequences from the GISAID SARS-CoV-2 database.
+the automatic download of sequences from the GISAID EpiCoV SARS-CoV-2 database.
 An unset parameter has the same effect.
 To enable this, you must also [sign up to the GISAID platform](https://gisaid.org/register/)
 and provide your credentials by creating and filling an additional configuration
@@ -177,11 +177,16 @@ snakemake --use-conda -c4
 ```
 
 To run the analysis in an HPC environment using SLURM, we provide a
-[default profile configuration](/profile/default) as an example that
-should be modified to fit your needs. To use it, run the following command:
+default [SLURM profile configuration](/profile/slurm) as an example that
+should be modified to fit your needs. Read more about Snakemake profiles
+[here](https://snakemake.readthedocs.io/en/stable/executing/cli.html#executing-profiles).
+To use the profile, install the
+[Snakemake executor plugin for SLURM](https://snakemake.github.io/snakemake-plugin-catalog/plugins/executor/slurm.html)
+and run one of the following commands:
 
 ```shell
-snakemake --use-conda --slurm --profile profile/default
+snakemake --slurm --profile profile/slurm  # Snakemake v7
+snakemake --profile profile/slurm          # Snakemake v8+
 ```
 
 Additionally, we offer the option of running the workflow within a containerized

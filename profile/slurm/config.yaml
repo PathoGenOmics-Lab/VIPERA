@@ -1,3 +1,4 @@
+use-conda: true
 default-resources:
   - slurm_account="pgo"
   - slurm_partition="global"

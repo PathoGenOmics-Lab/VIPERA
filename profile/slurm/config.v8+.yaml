@@ -1,0 +1,12 @@
+executor: slurm
+use-conda: true
+default-resources:
+  - slurm_account="pgo"
+  - slurm_partition="global"
+  - mem="4000MB"
+  - runtime="30m"
+  - slurm_extra="--qos=short"
+jobs: 25
+shadow-prefix: "/scr/aherrera/"
+rerun-incomplete: True
+restart-times: 5
