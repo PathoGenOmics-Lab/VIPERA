@@ -190,8 +190,6 @@ ggsave(
 )
 
 # ML tree with context data
-# Tip node color
-tip.color <- ifelse(tree_ml$tip.label %in% study_names, "tip_label", NA)
 
 # Internal nodes color
 # Node labels contain SH-aLRT/UFboot values
@@ -212,61 +210,42 @@ bootstrap.values <- sapply(
 aLRT.mask <- aLRT.values >= snakemake@params[["alrt_th"]]
 boot.mask <- bootstrap.values >= snakemake@params[["boot_th"]]
 
-node.color <- case_when(
-  aLRT.mask & boot.mask ~ "boot_alrt_pass"
-)
-
 # MRCA for target samples
 log_info("Calculating MRCA of target samples")
 study.mrca <- getMRCA(tree_ml, study_names)
 study.mrca.clade <- extract.clade(tree_ml, study.mrca)
 study.mrca.clade.ntips <- Ntip(study.mrca.clade)
 
-log_info("Plotting M-L tree with context samples")
-p <- ggtree(tree_ml, layout = "circular") +
-  geom_highlight(node = study.mrca, colour = "red", fill = "red", alpha = 0) +
-  geom_point(
-    aes(
-      color = c(tip.color, node.color), # First node points in the tree are tip points, then internal nodes
-      size = c(
-        rep("tip_label", length(tree_ml$tip.label)),
-        rep("boot_alrt_pass", length(tree_ml$node.label))
-      ),
-      alpha = c(
-        rep("tip_label", length(tree_ml$tip.label)),
-        rep("boot_alrt_pass", length(tree_ml$node.label))
-      )
-    ),
-    show.legend = TRUE
-  ) +
-  geom_treescale(x = 0.0008) +
-  geom_rootedge(0.0005) +
-  xlim(-0.0008, NA) +
-  scale_color_manual(
-    name   = "Class",
-    values = tree_colors,
-    labels = legend.names,
-    na.value = NA,
-    guide  = guide_legend(
-      override.aes = list(
-        size  = node.size,
-        alpha = node.alpha,
-        shape = 19
-      )
+log_info("Building M-L tree annotation")
+tree_ml.max.tip.length <- max(node.depth.edgelength(tree_ml)[1:length(tree$tip.label)])
+tree_ml.ntips <- length(tree_ml$tip.label)
+tree_ml.nodes <- tree_ml$Nnode + tree_ml.ntips
+tree_ml.labels <- tree_ml$tip.label[1:tree_ml.nodes]
+tree_ml.node.pass <- c(rep(FALSE, tree_ml.ntips), aLRT.mask & boot.mask)
+
+ml.tree.annot <- tibble(
+    node = 1:tree_ml.nodes,
+  ) %>%
+  mutate(
+    Class = case_when(
+      tree_ml.labels %in% study_names ~ legend.names["tip_label"],
+      tree_ml.node.pass ~ legend.names["boot_alrt_pass"],
+      TRUE ~ NA
     )
-  ) +
-  scale_size_manual(
-    name = "Class",
-    values = node.size,
-    labels = legend.names,
-    guide  = FALSE
-  ) +
-  scale_alpha_manual(
-    name = "Class",
-    values = node.alpha,
-    labels = legend.names,
-    guide  = FALSE
   )
+
+log_info("Plotting M-L tree with context samples")
+p <- ggtree(tree_ml, layout = "circular") %<+% ml.tree.annot +
+  geom_highlight(node = study.mrca, colour = "red", alpha = 0) +
+  geom_point(aes(color = Class, size = Class)) +
+  geom_treescale(1.05 * tree_ml.max.tip.length) +
+  geom_rootedge(0.05 * tree_ml.max.tip.length) +
+  xlim(-tree_ml.max.tip.length / 3, NA) +
+  scale_color_manual(
+    values = setNames(tree_colors[names(legend.names)], legend.names),
+    na.translate = FALSE
+  ) +
+  scale_size_discrete(range = c(2, 1), na.translate = FALSE)
 
 ggsave(
   filename = snakemake@output[["tree_ml"]],
@@ -293,7 +272,7 @@ model <- lm(distance ~ date_interval, data = tempest)
 p.value <- summary(model)$coefficients[2,4]
 
 # TREE STATS
-study.node <- tree_ml$node.label[study.mrca - length(tip.color)]
+study.node <- tree_ml$node.label[study.mrca - length(tree_ml$tip.label)]
 monophyletic <- ifelse(is.monophyletic(tree_ml, study_names), "are", "are not")
 
 list(
