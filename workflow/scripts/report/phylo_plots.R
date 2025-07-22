@@ -245,7 +245,10 @@ p <- ggtree(tree_ml, layout = "circular") %<+% ml.tree.annot +
     values = setNames(tree_colors[names(legend.names)], legend.names),
     na.translate = FALSE
   ) +
-  scale_size_discrete(range = c(2, 1), na.translate = FALSE)
+  scale_size_manual(
+    values = setNames(node.size[names(legend.names)], legend.names),
+    na.translate = FALSE
+  )
 
 ggsave(
   filename = snakemake@output[["tree_ml"]],

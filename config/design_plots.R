@@ -43,21 +43,14 @@ gene_colors = c(
 
 # M-L tree colors and labels
 tree_colors = c(
-  tip_label = "#D944AA",
-  boot_alrt_pass = "#64acee"
+  tip_label = "#D944AA99",
+  boot_alrt_pass = "#64ACEEB2"
 )
-
 
 node.size <- c(
   tip_label = 2,
   boot_alrt_pass = 0.8
 )
-
-node.alpha <- c(
-  tip_label = 0.6,
-  boot_alrt_pass = 0.7
-)
-
 
 # Nucleotide variants classification colors and labels
 NV_colors <- c(
