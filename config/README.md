@@ -141,10 +141,16 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
   - `IVAR_QUALITY`: minimum base quality for `ivar variants` (option `-q`).
   - `IVAR_FREQ`: minimum frequency threshold for `ivar variants` (option `-t`).
   - `IVAR_DEPTH`: minimum read depth for `ivar variants` (option `-m`).
-- `DEMIX`: demixing configuration:
+- `DEMIX`: demixing configuration (uses [Freyja](https://github.com/andersen-lab/Freyja), see also [its docs](https://andersen-lab.github.io/Freyja/index.html)):
+  - `PATHOGEN`: pathogen of interest for `freyja demix` (option `--pathogen`).
   - `MIN_QUALITY`: minimum quality for `freyja variants` (option `--minq`).
-  - `COV_CUTOFF`: minimum depth for `freyja demix` (option `--covcut`).
+  - `COV_CUTOFF`: minimum depth to calculate coverage for `freyja demix` (option `--covcut`).
   - `MIN_ABUNDANCE`: minimum lineage estimated abundance for `freyja demix` (option `--eps`).
+  - `CONFIRMED_ONLY`: exclude unconfirmed lineages in `freyja demix` (option `--confirmedonly`).
+  - `DEPTH_CUTOFF`: minimum depth on each site for `freyja demix` (option `--depthcutoff`).
+  - `RELAXED_MRCA`: assign clusters using relaxed (as opposed to strict) MRCA, used with `DEPTH_CUTOFF`, for `freyja demix` (option `--relaxedmrca`).
+  - `RELAXED_MRCA_THRESH`: `RELAXED_MRCA` threshold for `freyja demix` (option `--relaxedthresh`).
+  - `AUTO_ADAPT`: use error profile to set adaptive lasso penalty parameter for `freyja demix` (option `--autoadapt`).
 - `WINDOW`: sliding window of nucleotide variants per site configuration:
   - `WIDTH`: number of sites within windows.
   - `STEP`: number of sites between windows.

@@ -32,20 +32,30 @@ rule demix:
         variants_file = OUTDIR/"demixing"/"{sample}/{sample}_variants.tsv"
     params:
         coverage_cutoff = config["DEMIX"]["COV_CUTOFF"],
-        minimum_abundance = config["DEMIX"]["MIN_ABUNDANCE"]
+        minimum_abundance = config["DEMIX"]["MIN_ABUNDANCE"],
+        confirmed_only = "--confirmedonly " if config["DEMIX"]["CONFIRMED_ONLY"] else "",
+        depth_cutoff = config["DEMIX"]["DEPTH_CUTOFF"],
+        auto_adapt = "--autoadapt " if config["DEMIX"]["AUTO_ADAPT"] else "",
+        relaxed_mrca = "--relaxedmrca " if config["DEMIX"]["RELAXED_MRCA"] else "",
+        relaxed_mrca_thresh = config["DEMIX"]["RELAXED_MRCA_THRESH"],
+        pathogen = config["DEMIX"]["PATHOGEN"]
     output:
         demix_file = OUTDIR/"demixing"/"{sample}/{sample}_demixed.tsv"
     log:
         LOGDIR / "demix" / "{sample}.log.txt"
     shell:
-        """
-        freyja demix \
-            "{input.variants_file}" \
-            "{input.depth_file}" \
-            --eps {params.minimum_abundance} \
-            --covcut {params.coverage_cutoff} \
-            --output {output.demix_file} >{log} 2>&1
-        """
+        "freyja demix "
+        "{input.variants_file:q} "
+        "{input.depth_file:q} "
+        "--eps {params.minimum_abundance} "
+        "--covcut {params.coverage_cutoff} "
+        "--depthcutoff {params.depth_cutoff} "
+        "{params.confirmed_only}"
+        "{params.auto_adapt}"
+        "{params.relaxed_mrca}"
+        "--relaxedthresh {params.relaxed_mrca_thresh} "
+        "--output {output.demix_file} "
+        ">{log} 2>&1"
 
 
 rule summarise_demixing:
