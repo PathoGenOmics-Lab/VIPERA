@@ -142,7 +142,7 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
   - `IVAR_FREQ`: minimum frequency threshold for `ivar variants` (option `-t`).
   - `IVAR_DEPTH`: minimum read depth for `ivar variants` (option `-m`).
 - `DEMIX`: demixing configuration (uses [Freyja](https://github.com/andersen-lab/Freyja), see also [its docs](https://andersen-lab.github.io/Freyja/index.html)):
-  - `PATHOGEN`: pathogen of interest for `freyja demix` (option `--pathogen`).
+  - `PATHOGEN`: pathogen of interest for `freyja update` (option `--pathogen`); must be 'SARS-CoV-2'.
   - `MIN_QUALITY`: minimum quality for `freyja variants` (option `--minq`).
   - `COV_CUTOFF`: minimum depth to calculate coverage for `freyja demix` (option `--covcut`).
   - `MIN_ABUNDANCE`: minimum lineage estimated abundance for `freyja demix` (option `--eps`).

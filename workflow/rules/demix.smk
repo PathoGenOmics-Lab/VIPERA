@@ -1,3 +1,25 @@
+rule demix_update:
+    threads: 1
+    shadow: "shallow"
+    conda:
+        "../envs/freyja.yaml"
+    params:
+        pathogen = config["DEMIX"]["PATHOGEN"]
+    output:
+        folder = directory(OUTDIR/"demixing"/"freyja_data"),
+        curated_lineages = OUTDIR/"demixing"/"freyja_data"/"curated_lineages.json",
+        last_barcode_update = OUTDIR/"demixing"/"freyja_data"/"last_barcode_update.txt",
+        lineage_mutations = OUTDIR/"demixing"/"freyja_data"/"lineage_mutations.json",
+        lineage_yml = OUTDIR/"demixing"/"freyja_data"/"lineages.yml",
+        pathogens = OUTDIR/"demixing"/"freyja_data"/"pathogen_config.yml",
+        usher_barcodes = OUTDIR/"demixing"/"freyja_data"/"usher_barcodes.feather"
+    log:
+        LOGDIR / "demix_update" / "log.txt"
+    shell:
+        "mkdir -p {output.folder:q} && "
+        "freyja update --outdir {output.folder:q} --pathogen {params.pathogen:q} >{log} 2>&1"
+
+
 rule demix_preprocessing:
     threads: 1
     conda: "../envs/freyja.yaml"
@@ -29,7 +51,10 @@ rule demix:
     shadow: "minimal"
     input:
         depth_file = OUTDIR/"demixing"/"{sample}/{sample}_depth.txt",
-        variants_file = OUTDIR/"demixing"/"{sample}/{sample}_variants.tsv"
+        variants_file = OUTDIR/"demixing"/"{sample}/{sample}_variants.tsv",
+        barcodes = OUTDIR/"demixing"/"freyja_data"/"usher_barcodes.feather",
+        curated_lineages = OUTDIR/"demixing"/"freyja_data"/"curated_lineages.json",
+        lineage_yml = OUTDIR/"demixing"/"freyja_data"/"lineages.yml"
     params:
         coverage_cutoff = config["DEMIX"]["COV_CUTOFF"],
         minimum_abundance = config["DEMIX"]["MIN_ABUNDANCE"],
@@ -37,8 +62,7 @@ rule demix:
         depth_cutoff = config["DEMIX"]["DEPTH_CUTOFF"],
         auto_adapt = "--autoadapt " if config["DEMIX"]["AUTO_ADAPT"] else "",
         relaxed_mrca = "--relaxedmrca " if config["DEMIX"]["RELAXED_MRCA"] else "",
-        relaxed_mrca_thresh = config["DEMIX"]["RELAXED_MRCA_THRESH"],
-        pathogen = config["DEMIX"]["PATHOGEN"]
+        relaxed_mrca_thresh = config["DEMIX"]["RELAXED_MRCA_THRESH"]
     output:
         demix_file = OUTDIR/"demixing"/"{sample}/{sample}_demixed.tsv"
     log:
@@ -47,6 +71,9 @@ rule demix:
         "freyja demix "
         "{input.variants_file:q} "
         "{input.depth_file:q} "
+        "--barcodes {input.barcodes:q} "
+        "--meta {input.curated_lineages:q} "
+        "--lineageyml {input.lineage_yml:q} "
         "--eps {params.minimum_abundance} "
         "--covcut {params.coverage_cutoff} "
         "--depthcutoff {params.depth_cutoff} "
