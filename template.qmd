@@ -42,6 +42,7 @@ params:
   heat_tab: ""
   omega_plot: ""
   name: ""
+  freyja_ts: ""
 output-file: report.html
 ---
 <head>
@@ -100,6 +101,11 @@ if (params$use_bionj) {
 } else {
   dist.tree.algo <- "neighbor-joining (NJ)"
 }
+
+# Freyja timestamp
+freyja.timestamp <- read_file(params$freyja_ts) %>%
+  as.POSIXct(., format = "%m_%d_%Y-%H-%M") %>%
+  strftime(., format = "%d %B %Y at %H:%M")
 ```
 
 ## Summary of the target samples dataset
@@ -141,10 +147,10 @@ table %>%
 
 ### Lineage admixture
 
-The estimated lineage admixture for each sample has been calculated
+The lineage admixture for each sample has been estimated
 using [Freyja](https://github.com/andersen-lab/Freyja).
 
-![Estimated lineage admixture of each sample.
+![Estimated lineage admixture of each sample (Freyja barcode timestamp: `r freyja.timestamp`).
 Samples in the X-axis are ordered chronologically, from more ancient to newer.](`r params$freyja`){#fig-freyja}
 
 ### Phylogenetic reconstruction

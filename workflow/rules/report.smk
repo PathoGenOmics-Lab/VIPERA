@@ -188,10 +188,11 @@ rule report:
         heat_table = report(REPORT_DIR_TABLES/"figure_10.csv"),
         evo        = report(REPORT_DIR_PLOTS/"figure_11.png"),
         omega_plot = report(REPORT_DIR_PLOTS/"figure_12.png"),
+        freyja_ts  = OUTDIR/"demixing"/"freyja_data"/"last_barcode_update.txt",
         value      = OUTDIR/"diversity.json",
         stats_lm   = OUTDIR/"stats.lm.json",
         table      = OUTDIR/"summary_table.csv",
-        sum_nv     = OUTDIR/"summary_nv.json"
+        sum_nv     = OUTDIR/"summary_nv.json",
     params:
         workflow_version = get_repo_version(BASE_PATH.as_posix(), __version__),
         min_ivar_freq = config["VC"]["IVAR_FREQ"],
@@ -199,7 +200,7 @@ rule report:
         shalrt_reps = config["SHALRT_REPS"],
         name = config["OUTPUT_NAME"],
         use_bionj = config["USE_BIONJ"],
-        cor_method = config["COR"]["METHOD"]
+        cor_method = config["COR"]["METHOD"],
     output:
         html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
     log:
@@ -233,6 +234,7 @@ rule report:
                 "sum_nv = '{input.sum_nv}', "
                 "heat_tab = '{input.heat_table}', "
                 "omega_plot = '{input.omega_plot}', "
+                "freyja_ts = '{input.freyja_ts}', "
                 "name = '{params.name}'))\" "
-        ">{log} 2>&1 && "
+        ">{log:q} 2>&1 && "
         'mv "$(dirname {input.qmd:q})/report.html" {output.html:q}'
