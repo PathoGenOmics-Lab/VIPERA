@@ -144,7 +144,7 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
 - `DEMIX`: demixing configuration (uses [Freyja](https://github.com/andersen-lab/Freyja), see also [its docs](https://andersen-lab.github.io/Freyja/index.html)):
   - `PATHOGEN`: pathogen of interest for `freyja update` (option `--pathogen`); must be 'SARS-CoV-2'.
   - `MIN_QUALITY`: minimum quality for `freyja variants` (option `--minq`).
-  - `COV_CUTOFF`: minimum depth to calculate coverage for `freyja demix` (option `--covcut`).
+  - `COV_CUTOFF`: minimum depth to calculate the reported "coverage" (percent of sites with that depth) for `freyja demix` (option `--covcut`).
   - `MIN_ABUNDANCE`: minimum lineage estimated abundance for `freyja demix` (option `--eps`).
   - `CONFIRMED_ONLY`: exclude unconfirmed lineages in `freyja demix` (option `--confirmedonly`).
   - `DEPTH_CUTOFF`: minimum depth on each site for `freyja demix` (option `--depthcutoff`).
