@@ -1,4 +1,4 @@
-rule demix_update:
+rule demix_barcode_update:
     threads: 1
     shadow: "shallow"
     conda:
@@ -14,7 +14,7 @@ rule demix_update:
         pathogens = OUTDIR/"demixing"/"freyja_data"/"pathogen_config.yml",
         usher_barcodes = OUTDIR/"demixing"/"freyja_data"/"usher_barcodes.feather"
     log:
-        LOGDIR / "demix_update" / "log.txt"
+        LOGDIR / "demix_barcode_update" / "log.txt"
     shell:
         "mkdir -p {output.folder:q} && "
         "freyja update --outdir {output.folder:q} --pathogen {params.pathogen:q} >{log} 2>&1"
@@ -63,7 +63,7 @@ rule demix:
         relaxed_mrca_thresh = config["DEMIX"]["RELAXED_MRCA_THRESH"],
         solver = config["DEMIX"]["SOLVER"],
     output:
-        demix_file = OUTDIR/"demixing"/"{sample}/{sample}_demixed.tsv"
+        demix_file = OUTDIR/"demixing"/"samples"/"{sample}/{sample}_demixed.tsv"
     log:
         LOGDIR / "demix" / "{sample}.log.txt"
     shell:
@@ -91,15 +91,15 @@ rule demix:
         ">{log} 2>&1"
 
 
-rule summarise_demixing:
+rule summarise_demix:
     threads: 1
     conda: "../envs/renv.yaml"
     shadow: "shallow"
     input:
-        tables = expand(OUTDIR/"demixing"/"{sample}/{sample}_demixed.tsv", sample=iter_samples())
+        tables = expand(OUTDIR/"demixing"/"samples"/"{sample}/{sample}_demixed.tsv", sample=iter_samples())
     output:
-        summary_df = report(OUTDIR/"summary_freyja_demixing.csv")
+        summary_df = report(OUTDIR/"demixing"/"summary.csv")
     log:
-        LOGDIR / "summarise_demixing" / "log.txt"
+        LOGDIR / "summarise_demix" / "log.txt"
     script: 
-        "../scripts/summary_demixing.R"
+        "../scripts/summarise_demix.R"

@@ -11,8 +11,8 @@ log_threshold(INFO)
 
 # Empty dataframe to be filled with data
 demix <- data.frame(
-  "lineages" = NA,
-  "abundances" = NA,
+  "lineage" = NA,
+  "abundance" = NA,
   "sample" = NA
 ) %>%
   filter(!is.na(sample))
@@ -23,20 +23,24 @@ lapply(
   function(tsv_file) {
     read_tsv(
       tsv_file,
-      col_names = c("variable", "valor"),
+      col_names = c("variable", "value"),
       show_col_types = FALSE
     ) %>%
       filter(
-        row_number() %in% c(3, 4)
+        variable %in% c("lineages", "abundances")
       ) %>%
       pivot_wider(
         names_from = variable,
-        values_from = valor
+        values_from = value
       ) %>%
       separate_rows(
         lineages,
         abundances,
         sep = " "
+      ) %>%
+      rename(
+        lineage = lineages,
+        abundance = abundances
       ) %>%
       mutate(
         sample = str_extract(

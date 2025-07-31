@@ -49,16 +49,27 @@ rule diversity:
         "../scripts/report/diversity_plot.R"
 
 
+rule freyja_plot_data:
+    conda: "../envs/renv.yaml"
+    input:
+        summary_demixing = OUTDIR/"demixing"/"summary.csv",
+        metadata = config["METADATA"]
+    output:
+        data = report(REPORT_DIR_TABLES/"freyja.csv")
+    log:
+        LOGDIR / "freyja_plot_data" / "log.txt"
+    script:
+        "../scripts/report/freyja_plot_data.R"
+
+
 rule freyja_plot:
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"]
     input:
-        summary_demixing =  OUTDIR/"summary_freyja_demixing.csv",
-        metadata = config["METADATA"]
+        data = REPORT_DIR_TABLES/"freyja.csv"
     output:
-        fig = report(REPORT_DIR_PLOTS/"figure_1.png"),
-        table = report(REPORT_DIR_TABLES/"figure_1.csv")
+        plot = report(REPORT_DIR_PLOTS/"freyja.png")
     log:
         LOGDIR / "freyja_plot" / "log.txt"
     script:
@@ -175,7 +186,7 @@ rule report:
     shadow: "shallow"
     input:
         qmd        = Path(config["REPORT_QMD"]).resolve(),
-        freyja     = report(REPORT_DIR_PLOTS/"figure_1.png"),
+        freyja     = report(REPORT_DIR_PLOTS/"freyja.png"),
         tree_ml    = report(REPORT_DIR_PLOTS/"figure_2.png"),
         diversity  = report(REPORT_DIR_PLOTS/"figure_3.png"),
         fig_cor    = report(REPORT_DIR_PLOTS/"figure_4.png"),
