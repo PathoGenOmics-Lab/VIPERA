@@ -54,7 +54,7 @@ rule demix:
         variants_file = OUTDIR/"demixing"/"{sample}/{sample}_variants.tsv",
         barcodes = OUTDIR/"demixing"/"freyja_data"/"usher_barcodes.feather",
         curated_lineages = OUTDIR/"demixing"/"freyja_data"/"curated_lineages.json",
-        lineage_yml = OUTDIR/"demixing"/"freyja_data"/"lineages.yml"
+        lineage_yml = OUTDIR/"demixing"/"freyja_data"/"lineages.yml",
     params:
         coverage_cutoff = config["DEMIX"]["COV_CUTOFF"],
         minimum_abundance = config["DEMIX"]["MIN_ABUNDANCE"],
@@ -62,12 +62,19 @@ rule demix:
         depth_cutoff = config["DEMIX"]["DEPTH_CUTOFF"],
         auto_adapt = "--autoadapt " if config["DEMIX"]["AUTO_ADAPT"] else "",
         relaxed_mrca = "--relaxedmrca " if config["DEMIX"]["RELAXED_MRCA"] else "",
-        relaxed_mrca_thresh = config["DEMIX"]["RELAXED_MRCA_THRESH"]
+        relaxed_mrca_thresh = config["DEMIX"]["RELAXED_MRCA_THRESH"],
+        solver = config["DEMIX"]["SOLVER"],
     output:
         demix_file = OUTDIR/"demixing"/"{sample}/{sample}_demixed.tsv"
     log:
         LOGDIR / "demix" / "{sample}.log.txt"
     shell:
+        "RAYON_NUM_THREADS={threads} "
+        "JULIA_NUM_THREADS={threads} "
+        "BLAS_NUM_THREADS={threads} "
+        "OPENBLAS_NUM_THREADS={threads}"
+        "MKL_NUM_THREADS={threads} "
+        "OMP_NUM_THREADS={threads} "
         "freyja demix "
         "{input.variants_file:q} "
         "{input.depth_file:q} "
@@ -81,6 +88,7 @@ rule demix:
         "{params.auto_adapt}"
         "{params.relaxed_mrca}"
         "--relaxedthresh {params.relaxed_mrca_thresh} "
+        "--solver {params.solver} "
         "--output {output.demix_file} "
         ">{log} 2>&1"
 
