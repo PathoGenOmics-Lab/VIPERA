@@ -22,27 +22,25 @@ rule demix_update:
 
 rule demix_preprocessing:
     threads: 1
-    conda: "../envs/freyja.yaml"
+    conda: "../envs/var_calling.yaml"
     shadow: "minimal"
     input:
         bam = get_input_bam,
         ref_fasta = lambda wildcards: select_mapping_references_fasta()
     params:
-        minq = config["DEMIX"]["MIN_QUALITY"]
+        minq = config["DEMIX"]["MIN_QUALITY"],
     output:
         depth_file = OUTDIR/"demixing"/"{sample}/{sample}_depth.txt",
-        variants_file = OUTDIR/"demixing"/"{sample}/{sample}_variants.tsv"
+        variants_file = OUTDIR/"demixing"/"{sample}/{sample}_variants.tsv",
     log:
-        LOGDIR / "demix_preprocessing" / "{sample}.log.txt"
+        pileup = LOGDIR / "demix_preprocessing" / "{sample}_pileup.log.txt",
+        ivar = LOGDIR / "demix_preprocessing" / "{sample}_ivar.log.txt",
     shell:
-        """
-        freyja variants \
-            "{input.bam}" \
-            --variants {output.variants_file} \
-            --depths {output.depth_file} \
-            --minq {params.minq} \
-            --ref {input.ref_fasta} >{log} 2>&1
-        """
+        "set -euo pipefail && "
+        "samtools mpileup -aa -A -d 600000 -Q {params.minq} -q 0 -B -f {input.ref_fasta:q} {input.bam:q} >sample.pileup 2>{log.pileup:q} && "
+        "ivar variants -p variants -q {params.minq} -r {input.ref_fasta:q} >{log.ivar:q} 2>&1 <sample.pileup && "
+        "cut -f1-4 sample.pileup >{output.depth_file:q} && "
+        "mv variants.tsv {output.variants_file:q}"
 
 
 rule demix:
