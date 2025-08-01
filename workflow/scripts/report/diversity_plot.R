@@ -25,19 +25,19 @@ p <- data.frame(pi = divs) %>%
   ggplot() +
   geom_density(
     aes(x = pi),
-    fill = "#fcbf49",
+    fill = DIVERSITY_PALETTE["density_fill"],
     alpha = 0.7,
     bw = 0.000001,
-    color = "#eae2b7"
+    color = DIVERSITY_PALETTE["density_color"]
   ) +
   geom_vline(
     xintercept = json$diversity,
-    color = "#d62828"
+    color = DIVERSITY_PALETTE["value_color"]
   ) +
   stat_function(
     fun = dnorm,
     args = list(mean = mean(divs), sd = sd(divs)),
-    color = "#f77f00"
+    color = DIVERSITY_PALETTE["dnorm_color"]
   ) +
   labs(
     x = "π",

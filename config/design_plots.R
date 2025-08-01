@@ -25,9 +25,8 @@ theme_update(
   panel.grid = element_line(linewidth = 0.17, color = "lightgray")
 )
 
-
-# CONFIG
-gene_colors = c(
+# Gene palette
+gene_colors <- c(
   M = "#B4D4B4",
   N = "#B7B7B8",
   orf1ab = "#9CC4DC",
@@ -40,9 +39,16 @@ gene_colors = c(
   ORF10 = "#CACB5D"
 )
 
+# Nucleotide diversity
+DIVERSITY_PALETTE <- c(
+  density_fill = "#fcbf49",
+  density_color = "#eae2b7",
+  value_color = "#d62828",
+  dnorm_color = "#f77f00"
+)
 
 # M-L tree colors and labels
-tree_colors = c(
+tree_colors <- c(
   tip_label = "#D944AA99",
   boot_alrt_pass = "#64ACEEB2"
 )
