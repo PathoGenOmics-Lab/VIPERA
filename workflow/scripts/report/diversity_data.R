@@ -107,5 +107,6 @@ log_info("Writing results JSON")
 write_json(
   list.div,
   snakemake@output[["json"]],
-  auto_unbox = TRUE
+  auto_unbox = TRUE,
+  digits = NA  # maximum precision
 )
