@@ -14,12 +14,11 @@ rule demix_plot_data:
 rule demix_plot:
     conda: "../envs/renv.yaml"
     params:
-        design = config["PLOTS"]
-    input:
-        data = REPORT_DIR_TABLES/"demix.csv"
-    params:
+        design = config["PLOTS"],
         plot_width_mm = 159.2,
         plot_height_mm = 119.4,
+    input:
+        data = REPORT_DIR_TABLES/"demix.csv"
     output:
         plot = report(REPORT_DIR_PLOTS/"demix.png")
     log:
@@ -58,23 +57,38 @@ rule window:
         "../scripts/window.py"
 
 
-rule diversity:
+rule diversity_data:
     threads: 4
     conda: "../envs/renv.yaml"
     params:
-        design = config["PLOTS"],
         bootstrap_reps = config["DIVERSITY_REPS"],
-        plot_width = 159.2,
-        plot_height = 119.4
+        aln_reference = config["ALIGNMENT_REFERENCE"],
     input:
         study_fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
-        context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
+        context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta",
     output:
-        fig = report(REPORT_DIR_PLOTS/"figure_3.png"),
-        json = temp(OUTDIR/"diversity.json"),
-        table = REPORT_DIR_TABLES/"figure_3.csv"
+        divs = report(REPORT_DIR_TABLES/"diversity.txt"),
+        json = temp(REPORT_DIR_TABLES/"diversity.json"),
     log:
-        LOGDIR / "diversity" / "log.txt"
+        LOGDIR / "diversity_data" / "log.txt"
+    script:
+        "../scripts/report/diversity_data.R"
+
+
+rule diversity_plot:
+    threads: 1
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+        plot_width_mm = 159.2,
+        plot_height_mm = 119.4,
+    input:
+        divs = report(REPORT_DIR_TABLES/"diversity.txt"),
+        json = REPORT_DIR_TABLES/"diversity.json",
+    output:
+        plot = report(REPORT_DIR_PLOTS/"diversity.png"),
+    log:
+        LOGDIR / "diversity_plot" / "log.txt"
     script:
         "../scripts/report/diversity_plot.R"
 
@@ -191,7 +205,7 @@ rule report:
         qmd        = Path(config["REPORT_QMD"]).resolve(),
         demix     = report(REPORT_DIR_PLOTS/"demix.png"),
         tree_ml    = report(REPORT_DIR_PLOTS/"figure_2.png"),
-        diversity  = report(REPORT_DIR_PLOTS/"figure_3.png"),
+        diversity  = report(REPORT_DIR_PLOTS/"diversity.png"),
         fig_cor    = report(REPORT_DIR_PLOTS/"figure_4.png"),
         SNV        = report(REPORT_DIR_PLOTS/"figure_5a.png"),
         SNV_spike  = report(REPORT_DIR_PLOTS/"figure_5b.png"),
@@ -203,7 +217,7 @@ rule report:
         evo        = report(REPORT_DIR_PLOTS/"figure_11.png"),
         omega_plot = report(REPORT_DIR_PLOTS/"figure_12.png"),
         freyja_ts  = OUTDIR/"demixing"/"freyja_data"/"last_barcode_update.txt",
-        value      = OUTDIR/"diversity.json",
+        value      = REPORT_DIR_TABLES/"diversity.json",
         stats_lm   = OUTDIR/"stats.lm.json",
         table      = OUTDIR/"summary_table.csv",
         sum_nv     = OUTDIR/"summary_nv.json",
