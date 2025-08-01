@@ -67,8 +67,8 @@ rule diversity_data:
         study_fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
         context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta",
     output:
-        divs = report(REPORT_DIR_TABLES/"diversity.txt"),
-        json = temp(REPORT_DIR_TABLES/"diversity.json"),
+        divs = REPORT_DIR_TABLES/"diversity.txt",
+        json = REPORT_DIR_TABLES/"diversity.json",
     log:
         LOGDIR / "diversity_data" / "log.txt"
     script:
@@ -83,7 +83,7 @@ rule diversity_plot:
         plot_width_mm = 159.2,
         plot_height_mm = 119.4,
     input:
-        divs = report(REPORT_DIR_TABLES/"diversity.txt"),
+        divs = REPORT_DIR_TABLES/"diversity.txt",
         json = REPORT_DIR_TABLES/"diversity.json",
     output:
         plot = report(REPORT_DIR_PLOTS/"diversity.png"),
