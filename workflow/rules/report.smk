@@ -49,31 +49,31 @@ rule diversity:
         "../scripts/report/diversity_plot.R"
 
 
-rule freyja_plot_data:
+rule demix_plot_data:
     conda: "../envs/renv.yaml"
     input:
         summary_demixing = OUTDIR/"demixing"/"summary.csv",
         metadata = config["METADATA"]
     output:
-        data = report(REPORT_DIR_TABLES/"freyja.csv")
+        data = report(REPORT_DIR_TABLES/"demix.csv")
     log:
-        LOGDIR / "freyja_plot_data" / "log.txt"
+        LOGDIR / "demix_plot_data" / "log.txt"
     script:
-        "../scripts/report/freyja_plot_data.R"
+        "../scripts/report/demix_plot_data.R"
 
 
-rule freyja_plot:
+rule demix_plot:
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"]
     input:
-        data = REPORT_DIR_TABLES/"freyja.csv"
+        data = REPORT_DIR_TABLES/"demix.csv"
     output:
-        plot = report(REPORT_DIR_PLOTS/"freyja.png")
+        plot = report(REPORT_DIR_PLOTS/"demix.png")
     log:
-        LOGDIR / "freyja_plot" / "log.txt"
+        LOGDIR / "demix_plot" / "log.txt"
     script:
-        "../scripts/report/freyja_plot.R"
+        "../scripts/report/demix_plot.R"
 
 
 rule general_NV_description:
@@ -186,7 +186,7 @@ rule report:
     shadow: "shallow"
     input:
         qmd        = Path(config["REPORT_QMD"]).resolve(),
-        freyja     = report(REPORT_DIR_PLOTS/"freyja.png"),
+        demix     = report(REPORT_DIR_PLOTS/"demix.png"),
         tree_ml    = report(REPORT_DIR_PLOTS/"figure_2.png"),
         diversity  = report(REPORT_DIR_PLOTS/"figure_3.png"),
         fig_cor    = report(REPORT_DIR_PLOTS/"figure_4.png"),
@@ -229,7 +229,7 @@ rule report:
                 "use_bionj='{params.use_bionj}', "
                 "cor_method='{params.cor_method}', "
                 "div='{input.diversity}', "
-                "freyja ='{input.freyja}', "
+                "demix ='{input.demix}', "
                 "tree = '{input.tree}', "
                 "tempest = '{input.temest}', "
                 "SNV = '{input.SNV}', "

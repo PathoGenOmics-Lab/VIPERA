@@ -25,7 +25,7 @@ params:
   use_bionj: ""
   cor_method: ""
   div: ""
-  freyja: ""
+  demix: ""
   tree: ""
   tempest: ""
   SNV: ""
@@ -148,10 +148,10 @@ table %>%
 ### Lineage admixture
 
 The lineage admixture for each sample has been estimated
-using [Freyja](https://github.com/andersen-lab/Freyja).
+using [Freyja](https://github.com/andersen-lab/Freyja) (@fig-demix).
 
 ![Estimated lineage admixture of each sample (Freyja barcode timestamp: `r freyja.timestamp`).
-Samples in the X-axis are ordered chronologically, from more ancient to newer.](`r params$freyja`){#fig-freyja}
+Samples in the X-axis are ordered chronologically, from more ancient to newer.](`r params$demix`){#fig-demix}
 
 ### Phylogenetic reconstruction
 
