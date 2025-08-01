@@ -175,7 +175,7 @@ from the context dataset. The distribution of the nuclotide diversity is assumed
 `r div_values[["norm.text"]]` be normal after performing a Shapiro-Wilk test
 (p-value of $`r div_values[["normal.pvalue"]]`$).
 
-The nucleotide diversity of the target samples is $`r div_values[["diversity"]] `$ (red line in @fig-div).
+The nucleotide diversity of the target samples is $`r format(div_values[["diversity"]], scientific = TRUE) `$ (red line in @fig-div).
 Assuming the independence of the context samples, the `r div_values[["type.test"]]`
 p-value of the context samples having a nucleotide diversity (in orange in @fig-div)
 as low as that of the target dataset is $`r div_values[["p.value"]]`$.
