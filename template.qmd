@@ -175,15 +175,15 @@ from the context dataset. The distribution of the nuclotide diversity is assumed
 `r div_values[["norm.text"]]` be normal after performing a Shapiro-Wilk test
 (p-value of $`r div_values[["normal.pvalue"]]`$).
 
-The nucleotide diversity of the target samples is $`r format(div_values[["diversity"]], scientific = TRUE) `$ (red line in @fig-div).
+The nucleotide diversity of the target samples is $`r format(div_values[["diversity"]], scientific = TRUE) `$ (vertical line in @fig-div).
 Assuming the independence of the context samples, the `r div_values[["type.test"]]`
-p-value of the context samples having a nucleotide diversity (in orange in @fig-div)
+p-value of the context samples having a nucleotide diversity (smooth curve in @fig-div)
 as low as that of the target dataset is $`r div_values[["p.value"]]`$.
 
-![Analysis of the nucleotide diversity (π). The orange line describes
+![Analysis of the nucleotide diversity (π). The smooth curve describes
 a normal distribution with the same mean and standard deviation as the distribution
 of π from $`r div_values[["boot.reps"]]`$ subsets of $`r div_values[["sample.size"]]`$
-sequences from the context. The red vertical line indicates the π value of the
+sequences from the context. The vertical line indicates the π value of the
 target samples.](`r params$div`){#fig-div}
 
 ## Evolutionary trajectory of the serially-sampled SARS-CoV-2 infection
