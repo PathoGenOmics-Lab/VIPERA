@@ -17,6 +17,9 @@ rule demix_plot:
         design = config["PLOTS"]
     input:
         data = REPORT_DIR_TABLES/"demix.csv"
+    params:
+        plot_width_mm = 159.2,
+        plot_height_mm = 119.4,
     output:
         plot = report(REPORT_DIR_PLOTS/"demix.png")
     log:
