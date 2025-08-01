@@ -189,11 +189,11 @@ variants <- vcf %>%
     inherit.aes = FALSE,
     width = 0.3
   ) +
-  scale_fill_manual(values = gene_colors) +
+  scale_fill_manual(values = GENE_PALETTE) +
   xlim(c(0, 29903)) +
   scale_color_manual(
-    labels = NV_names,
-    values = NV_colors
+    labels = NV_TYPE_NAMES,
+    values = NV_TYPE_PALETTE
   ) +
   scale_y_discrete(drop = FALSE) +
   labs(
@@ -227,7 +227,7 @@ window_plot <- window %>%
     limits = c(0, max(window$fractions) + 0.005)
   ) +
   xlim(c(0, 29903)) +
-  scale_color_manual(values = gene_colors) +
+  scale_color_manual(values = GENE_PALETTE) +
   labs(
     y = "Proportion of \n sites with NV",
     x = "",
@@ -312,7 +312,7 @@ window_plot_spike <- window %>%
   ) +
   xlim(c(min(spike_pos), max(spike_pos))) +
   scale_color_manual(
-    values = gene_colors,
+    values = GENE_PALETTE,
     guide = "none"
   ) +
   labs(
@@ -337,8 +337,8 @@ variants_spike <- vcf_spike %>%
   geom_point(size = 3) +
   xlim(c(min(spike_pos), max(spike_pos))) +
   scale_color_manual(
-    labels = NV_names,
-    values = NV_colors
+    labels = NV_TYPE_NAMES,
+    values = NV_TYPE_PALETTE
   ) +
   scale_y_discrete(drop = FALSE) +
   labs(

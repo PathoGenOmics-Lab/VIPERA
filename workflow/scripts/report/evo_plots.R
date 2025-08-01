@@ -82,13 +82,13 @@ plot <- plot_df %>%
   geom_line() +
   scale_color_manual(
     name = "Parameter",
-    labels = dnds.labels,
-    values = dnds.colors
+    labels = DNDS_LABELS,
+    values = DNDS_COLORS
   ) +
   scale_shape_manual(
     name = "Parameter",
-    values = dnds.shapes,
-    labels = dnds.labels
+    values = DNDS_SHAPES,
+    labels = DNDS_LABELS
   ) +
   labs(
     y = "Substitution rate",

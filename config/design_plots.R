@@ -26,7 +26,7 @@ theme_update(
 )
 
 # Gene palette
-gene_colors <- c(
+GENE_PALETTE <- c(
   M = "#B4D4B4",
   N = "#B7B7B8",
   orf1ab = "#9CC4DC",
@@ -48,18 +48,18 @@ DIVERSITY_PALETTE <- c(
 )
 
 # M-L tree colors and labels
-tree_colors <- c(
+TREE_PALETTE <- c(
   tip_label = "#D944AA99",
   boot_alrt_pass = "#64ACEEB2"
 )
 
-node.size <- c(
+TREE_NODE_SIZE <- c(
   tip_label = 2,
   boot_alrt_pass = 0.8
 )
 
 # Nucleotide variants classification colors and labels
-NV_colors <- c(
+NV_TYPE_PALETTE <- c(
   Frameshift = "#568D63",
   "In frame" = "black",
   Intergenic = "#B27CF9",
@@ -67,7 +67,7 @@ NV_colors <- c(
   Yes = "#0248FD"
 )
 
-NV_names <- c(
+NV_TYPE_NAMES <- c(
   Frameshift = "Frameshift",
   "In frame" = "Inframe",
   Intergenic = "Intergenic",
@@ -76,17 +76,17 @@ NV_names <- c(
 )
 
 # dn ds colors and labels
-dnds.labels <- c(
+DNDS_LABELS <- c(
   dn = "dN",
   ds = "dS"
 )
 
-dnds.colors <- c(
+DNDS_COLORS <- c(
   dn = "#E53E47",
   ds = "#2C47F5"
 )
 
-dnds.shapes <- c(
+DNDS_SHAPES <- c(
   dn = 2,
   ds = 4
 )

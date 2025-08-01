@@ -242,11 +242,11 @@ p <- ggtree(tree_ml, layout = "circular") %<+% ml.tree.annot +
   geom_rootedge(0.05 * tree_ml.max.tip.length) +
   xlim(-tree_ml.max.tip.length / 3, NA) +
   scale_color_manual(
-    values = setNames(tree_colors[names(legend.names)], legend.names),
+    values = setNames(TREE_PALETTE[names(legend.names)], legend.names),
     na.translate = FALSE
   ) +
   scale_size_manual(
-    values = setNames(node.size[names(legend.names)], legend.names),
+    values = setNames(TREE_NODE_SIZE[names(legend.names)], legend.names),
     na.translate = FALSE
   )
 
