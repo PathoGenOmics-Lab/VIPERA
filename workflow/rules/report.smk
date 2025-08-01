@@ -1,10 +1,37 @@
-rule heatmap:
+rule demix_plot_data:
+    conda: "../envs/renv.yaml"
+    input:
+        summary_demixing = OUTDIR/"demixing"/"summary.csv",
+        metadata = config["METADATA"]
+    output:
+        data = report(REPORT_DIR_TABLES/"demix.csv")
+    log:
+        LOGDIR / "demix_plot_data" / "log.txt"
+    script:
+        "../scripts/report/demix_plot_data.R"
+
+
+rule demix_plot:
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"]
+    input:
+        data = REPORT_DIR_TABLES/"demix.csv"
+    output:
+        plot = report(REPORT_DIR_PLOTS/"demix.png")
+    log:
+        LOGDIR / "demix_plot" / "log.txt"
+    script:
+        "../scripts/report/demix_plot.R"
+
+
+rule heatmap_plot_data:
     conda: "../envs/renv.yaml"
     input:
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         metadata = config["METADATA"]
     output:
-        table = report(REPORT_DIR_TABLES/"figure_10.csv")
+        table = report(REPORT_DIR_TABLES/"heatmap.csv")
     log:
         LOGDIR / "heatmap" / "log.txt"
     script:
@@ -47,33 +74,6 @@ rule diversity:
         LOGDIR / "diversity" / "log.txt"
     script:
         "../scripts/report/diversity_plot.R"
-
-
-rule demix_plot_data:
-    conda: "../envs/renv.yaml"
-    input:
-        summary_demixing = OUTDIR/"demixing"/"summary.csv",
-        metadata = config["METADATA"]
-    output:
-        data = report(REPORT_DIR_TABLES/"demix.csv")
-    log:
-        LOGDIR / "demix_plot_data" / "log.txt"
-    script:
-        "../scripts/report/demix_plot_data.R"
-
-
-rule demix_plot:
-    conda: "../envs/renv.yaml"
-    params:
-        design = config["PLOTS"]
-    input:
-        data = REPORT_DIR_TABLES/"demix.csv"
-    output:
-        plot = report(REPORT_DIR_PLOTS/"demix.png")
-    log:
-        LOGDIR / "demix_plot" / "log.txt"
-    script:
-        "../scripts/report/demix_plot.R"
 
 
 rule general_NV_description:
@@ -196,7 +196,7 @@ rule report:
         panel      = report(REPORT_DIR_PLOTS/"figure_7.png"),
         tree       = report(REPORT_DIR_PLOTS/"figure_8.png"),
         temest     = report(REPORT_DIR_PLOTS/"figure_9.png"),
-        heat_table = report(REPORT_DIR_TABLES/"figure_10.csv"),
+        heat_table = report(REPORT_DIR_TABLES/"heatmap.csv"),
         evo        = report(REPORT_DIR_PLOTS/"figure_11.png"),
         omega_plot = report(REPORT_DIR_PLOTS/"figure_12.png"),
         freyja_ts  = OUTDIR/"demixing"/"freyja_data"/"last_barcode_update.txt",
