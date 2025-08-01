@@ -104,4 +104,8 @@ log_info("Writing diversity distribution")
 write_lines(divs, snakemake@output[["divs"]])
 
 log_info("Writing results JSON")
-write_json(list.div, snakemake@output[["json"]])
+write_json(
+  list.div,
+  snakemake@output[["json"]],
+  auto_unbox = TRUE
+)
