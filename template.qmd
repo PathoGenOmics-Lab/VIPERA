@@ -37,6 +37,7 @@ params:
   tree_ml: ""
   fig_cor_snp: ""
   stats_lm: ""
+  stats_ml: ""
   table: ""
   sum_nv: ""
   heat_tab: ""
@@ -63,8 +64,11 @@ library(readr)
 # Diversity
 div_values <- fromJSON(params$div_value)
 
-# Temporal signal
-stats <- fromJSON(params$stats_lm)
+# Temporal signal and context tree
+stats <- append(
+  fromJSON(params$stats_lm),
+  fromJSON(params$stats_ml)
+)
 correlation <- stats[["r2"]]
 sub_rate <- stats[["sub_rate"]]
 sub_rate <- round(sub_rate, digits = 2)

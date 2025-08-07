@@ -120,6 +120,59 @@ rule general_NV_description:
         "../scripts/report/NV_description.R"
 
 
+rule context_phylogeny_data:
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+        ref_name = config["ALIGNMENT_REFERENCE"],
+        boot_th = 95.0,
+        alrt_th = 80.0,
+    input:
+        target_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
+        tree = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
+    output:
+        json = REPORT_DIR_TABLES/"context_phylogeny.json",
+        annotation = REPORT_DIR_TABLES/"context_phylogeny.csv",
+    log:
+        LOGDIR / "context_phylogeny_data" / "log.txt"
+    script:
+        "../scripts/report/context_phylogeny_data.R"
+
+
+rule context_phylogeny_plot:
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+        plot_height_mm = 119.4,
+        plot_width_mm = 159.2,
+    input:
+        tree = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
+        json = REPORT_DIR_TABLES/"context_phylogeny.json",
+        annotation = REPORT_DIR_TABLES/"context_phylogeny.csv"
+    output:
+        plot = report(REPORT_DIR_PLOTS/"context_phylogeny.png"),
+    log:
+        LOGDIR / "context_phylogeny_plot" / "log.txt"
+    script:
+        "../scripts/report/context_phylogeny_plot.R"
+
+
+# rule allele_freq_phylogeny_data:  # nj
+#     ...
+
+
+# rule allele_freq_phylogeny_plot:
+#     ...
+
+
+# rule time_signal_data:  # tempest
+#     ...
+
+
+# rule time_signal_plot:  # tempest
+#     ...
+
+
 rule phylo_plots:
     conda: "../envs/renv.yaml"
     params:
@@ -131,14 +184,13 @@ rule phylo_plots:
         plot_width_mm = 159.2,
         use_bionj = config["USE_BIONJ"]
     input:
-        dist = REPORT_DIR_TABLES/f"figure_8.csv",
+        dist = REPORT_DIR_TABLES/f"distances.csv",
         study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
         ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
         metadata = config["METADATA"]
     output:
         temest = report(REPORT_DIR_PLOTS/"figure_9.png"),
         tree = report(REPORT_DIR_PLOTS/"figure_8.png"),
-        tree_ml = report(REPORT_DIR_PLOTS/"figure_2.png"),
         table = report(REPORT_DIR_TABLES/"figure_9.csv"),
         json = temp(OUTDIR/"stats.lm.json")
     log:
@@ -204,7 +256,7 @@ rule report:
     input:
         qmd        = Path(config["REPORT_QMD"]).resolve(),
         demix     = report(REPORT_DIR_PLOTS/"demix.png"),
-        tree_ml    = report(REPORT_DIR_PLOTS/"figure_2.png"),
+        tree_ml    = report(REPORT_DIR_PLOTS/"context_phylogeny.png"),
         diversity  = report(REPORT_DIR_PLOTS/"diversity.png"),
         fig_cor    = report(REPORT_DIR_PLOTS/"figure_4.png"),
         SNV        = report(REPORT_DIR_PLOTS/"figure_5a.png"),
@@ -219,6 +271,7 @@ rule report:
         freyja_ts  = OUTDIR/"demixing"/"freyja_data"/"last_barcode_update.txt",
         value      = REPORT_DIR_TABLES/"diversity.json",
         stats_lm   = OUTDIR/"stats.lm.json",
+        stats_ml   = REPORT_DIR_TABLES/"context_phylogeny.json",
         table      = OUTDIR/"summary_table.csv",
         sum_nv     = OUTDIR/"summary_nv.json",
     params:
@@ -258,6 +311,7 @@ rule report:
                 "tree_ml = '{input.tree_ml}', "
                 "fig_cor_snp = '{input.fig_cor}', "
                 "stats_lm = '{input.stats_lm}', "
+                "stats_ml = '{input.stats_ml}', "
                 "table = '{input.table}', "
                 "sum_nv = '{input.sum_nv}', "
                 "heat_tab = '{input.heat_table}', "

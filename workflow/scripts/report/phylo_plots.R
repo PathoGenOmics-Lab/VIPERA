@@ -20,25 +20,8 @@ log_threshold(INFO)
 # Import file with plots style
 source(snakemake@params[["design"]])
 
-# legend thresholds for ml tree
-legend.names <- c(
-  tip_label = "Target samples",
-  boot_alrt_pass = sprintf(
-    "UFBoot ≥ %s%s & SH-aLRT ≥ %s%s ",
-    snakemake@params[["boot_th"]],
-    "%",
-    snakemake@params[["alrt_th"]],
-    "%"
-  )
-)
-
 matrix <- read_csv(snakemake@input[["dist"]])
 metadata <- read_csv(snakemake@input[["metadata"]])
-tree_ml <- read.tree(snakemake@input[["ml"]]) %>%
-  root(
-    snakemake@params[["ref_name"]],
-    resolve.root = TRUE
-  )
 
 study_names <- read.dna(
   snakemake@input[["study_fasta"]],
@@ -189,76 +172,6 @@ ggsave(
   dpi = 250
 )
 
-# ML tree with context data
-
-# Internal nodes color
-# Node labels contain SH-aLRT/UFboot values
-aLRT.values <- sapply(
-  strsplit(tree_ml$node.label, "/"),
-  function(x) {
-    as.numeric(x[1])
-  }
-)
-
-bootstrap.values <- sapply(
-  strsplit(tree_ml$node.label, "/"),
-  function(x) {
-    as.numeric(x[2])
-  }
-)
-
-aLRT.mask <- aLRT.values >= snakemake@params[["alrt_th"]]
-boot.mask <- bootstrap.values >= snakemake@params[["boot_th"]]
-
-# MRCA for target samples
-log_info("Calculating MRCA of target samples")
-study.mrca <- getMRCA(tree_ml, study_names)
-study.mrca.clade <- extract.clade(tree_ml, study.mrca)
-study.mrca.clade.ntips <- Ntip(study.mrca.clade)
-
-log_info("Building M-L tree annotation")
-tree_ml.max.tip.length <- max(node.depth.edgelength(tree_ml)[1:length(tree$tip.label)])
-tree_ml.ntips <- length(tree_ml$tip.label)
-tree_ml.nodes <- tree_ml$Nnode + tree_ml.ntips
-tree_ml.labels <- tree_ml$tip.label[1:tree_ml.nodes]
-tree_ml.node.pass <- c(rep(FALSE, tree_ml.ntips), aLRT.mask & boot.mask)
-
-ml.tree.annot <- tibble(
-    node = 1:tree_ml.nodes,
-  ) %>%
-  mutate(
-    Class = case_when(
-      tree_ml.labels %in% study_names ~ legend.names["tip_label"],
-      tree_ml.node.pass ~ legend.names["boot_alrt_pass"],
-      TRUE ~ NA
-    )
-  )
-
-log_info("Plotting M-L tree with context samples")
-p <- ggtree(tree_ml, layout = "circular") %<+% ml.tree.annot +
-  geom_highlight(node = study.mrca, colour = "red", alpha = 0) +
-  geom_point(aes(color = Class, size = Class)) +
-  geom_treescale(1.05 * tree_ml.max.tip.length) +
-  geom_rootedge(0.05 * tree_ml.max.tip.length) +
-  xlim(-tree_ml.max.tip.length / 3, NA) +
-  scale_color_manual(
-    values = setNames(TREE_PALETTE[names(legend.names)], legend.names),
-    na.translate = FALSE
-  ) +
-  scale_size_manual(
-    values = setNames(TREE_NODE_SIZE[names(legend.names)], legend.names),
-    na.translate = FALSE
-  )
-
-ggsave(
-  filename = snakemake@output[["tree_ml"]],
-  plot = p,
-  width = snakemake@params[["plot_width_mm"]],
-  height = snakemake@params[["plot_height_mm"]],
-  units = "mm",
-  dpi = 250
-)
-
 # PLOT TABLES
 log_info("Saving temporal signal table")
 tempest %>%
@@ -272,20 +185,13 @@ tempest %>%
 
 # TEMPEST STATS
 model <- lm(distance ~ date_interval, data = tempest)
-p.value <- summary(model)$coefficients[2,4]
+p.value <- summary(model)$coefficients[2, 4]
 
 # TREE STATS
-study.node <- tree_ml$node.label[study.mrca - length(tree_ml$tip.label)]
-monophyletic <- ifelse(is.monophyletic(tree_ml, study_names), "are", "are not")
-
 list(
   "sub_rate" = model$coefficients[[2]] * 365,
   "r2" = summary(model)$r.squared[[1]],
-  "pvalue" = ifelse(p.value < 0.001, "< 0.001", p.value),
-  "boot" = strsplit(study.node, "/")[[1]][2] %>% as.numeric(),
-  "alrt" = strsplit(study.node, "/")[[1]][1] %>% as.numeric(),
-  "monophyly" = monophyletic,
-  "clade_tips" = study.mrca.clade.ntips
+  "pvalue" = ifelse(p.value < 0.001, "< 0.001", p.value)
 ) %>%
   toJSON() %>%
   write(snakemake@output[["json"]])

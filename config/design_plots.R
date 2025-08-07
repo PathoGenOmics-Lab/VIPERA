@@ -58,6 +58,17 @@ TREE_NODE_SIZE <- c(
   boot_alrt_pass = 0.8
 )
 
+TREE_LEGEND_NAMES <- c(
+  tip_label = "Target samples",
+  boot_alrt_pass = sprintf(
+    "UFBoot ≥ %s%s & SH-aLRT ≥ %s%s ",
+    snakemake@params[["boot_th"]],
+    "%",
+    snakemake@params[["alrt_th"]],
+    "%"
+  )
+)
+
 # Nucleotide variants classification colors and labels
 NV_TYPE_PALETTE <- c(
   Frameshift = "#568D63",
