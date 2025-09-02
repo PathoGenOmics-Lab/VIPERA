@@ -157,46 +157,70 @@ rule context_phylogeny_plot:
         "../scripts/report/context_phylogeny_plot.R"
 
 
-# rule allele_freq_phylogeny_data:  # nj
-#     ...
+rule allele_freq_tree_data:
+    conda: "../envs/renv.yaml"
+    params:
+        use_bionj = config["USE_BIONJ"],
+        ref_name = config["ALIGNMENT_REFERENCE"],
+    input:
+        dist = REPORT_DIR_TABLES/"distances.csv",
+    output:
+        tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
+    log:
+        LOGDIR / "allele_freq_tree_data" / "log.txt"
+    script:
+        "../scripts/report/allele_freq_tree_data.R"
 
 
-# rule allele_freq_phylogeny_plot:
-#     ...
-
-
-# rule time_signal_data:  # tempest
-#     ...
-
-
-# rule time_signal_plot:  # tempest
-#     ...
-
-
-rule phylo_plots:
+rule allele_freq_tree_plot:
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"],
         ref_name = config["ALIGNMENT_REFERENCE"],
-        boot_th = 95,
-        alrt_th = 80,
         plot_height_mm = 119.4,
         plot_width_mm = 159.2,
-        use_bionj = config["USE_BIONJ"]
     input:
-        dist = REPORT_DIR_TABLES/f"distances.csv",
+        tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
         study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
-        ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
-        metadata = config["METADATA"]
+        metadata = config["METADATA"],
     output:
-        temest = report(REPORT_DIR_PLOTS/"figure_9.png"),
-        tree = report(REPORT_DIR_PLOTS/"figure_8.png"),
-        table = report(REPORT_DIR_TABLES/"figure_9.csv"),
-        json = temp(OUTDIR/"stats.lm.json")
+        plot = report(REPORT_DIR_PLOTS/"allele_freq_tree.png"),
     log:
-        LOGDIR / "phylo_plots" / "log.txt"
+        LOGDIR / "allele_freq_tree_plot" / "log.txt"
     script:
-        "../scripts/report/phylo_plots.R"
+        "../scripts/report/allele_freq_tree_plot.R"
+
+
+rule time_signal_data:
+    conda: "../envs/renv.yaml"
+    params:
+        ref_name = config["ALIGNMENT_REFERENCE"],
+    input:
+        tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
+        metadata = config["METADATA"],
+    output:
+        table = report(REPORT_DIR_TABLES/"time_signal.csv"),
+        json = REPORT_DIR_TABLES/"time_signal.json"
+    log:
+        LOGDIR / "time_signal_data" / "log.txt"
+    script:
+        "../scripts/report/time_signal_data.R"
+
+
+rule time_signal_plot:
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+        plot_height_mm = 119.4,
+        plot_width_mm = 159.2,
+    input:
+        table = report(REPORT_DIR_TABLES/"time_signal.csv"),
+    output:
+        plot = report(REPORT_DIR_PLOTS/"time_signal.png"),
+    log:
+        LOGDIR / "time_signal_plot" / "log.txt"
+    script:
+        "../scripts/report/time_signal_plot.R"
 
 
 rule evo_plots:
@@ -263,14 +287,14 @@ rule report:
         SNV_spike  = report(REPORT_DIR_PLOTS/"figure_5b.png"),
         volcano    = report(REPORT_DIR_PLOTS/"figure_6.png"),
         panel      = report(REPORT_DIR_PLOTS/"figure_7.png"),
-        tree       = report(REPORT_DIR_PLOTS/"figure_8.png"),
-        temest     = report(REPORT_DIR_PLOTS/"figure_9.png"),
+        tree       = report(REPORT_DIR_PLOTS/"allele_freq_tree.png"),
+        temest     = report(REPORT_DIR_PLOTS/"time_signal.png"),
         heat_table = report(REPORT_DIR_TABLES/"heatmap.csv"),
         evo        = report(REPORT_DIR_PLOTS/"figure_11.png"),
         omega_plot = report(REPORT_DIR_PLOTS/"figure_12.png"),
         freyja_ts  = OUTDIR/"demixing"/"freyja_data"/"last_barcode_update.txt",
         value      = REPORT_DIR_TABLES/"diversity.json",
-        stats_lm   = OUTDIR/"stats.lm.json",
+        stats_lm   = REPORT_DIR_TABLES/"time_signal.json",
         stats_ml   = REPORT_DIR_TABLES/"context_phylogeny.json",
         table      = OUTDIR/"summary_table.csv",
         sum_nv     = OUTDIR/"summary_nv.json",
