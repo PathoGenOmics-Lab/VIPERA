@@ -16,30 +16,10 @@ log_threshold(INFO)
 # Import file with plots style
 source(snakemake@params[["design"]])
 
-# SARS-CoV-2 anotation for genome scheme
-SCov2_annotation <- list(
-  "five_prime_UTR" = c(1:265),
-  "orf1ab" = c(266:21555),
-  "Intergenic_1" = c(21556:21562),
-  "S" = c(21563:25384),
-  "Intergenic_2" = c(25385:25392),
-  "ORF3a" = c(25393:26220),
-  "Intergenic_3" = c(26221:26244),
-  "E" = c(26245:26472),
-  "Intergenic_4" = c(26473:26522),
-  "M" = c(26523:27191),
-  "Intergenic_5" = c(27192:27201),
-  "ORF6" = c(27202:27387),
-  "Intergenic_6" = c(27388:27393),
-  "ORF7" = c(27394:27759),
-  "Intergenic_7" = c(27760:27893),
-  "ORF8" = c(27894:28259),
-  "Intergenic_8" = c(28260:28273),
-  "N" = c(28274:29533),
-  "Intergenic_9" = c(29534:29557),
-  "ORF10" = c(29558:29674),
-  "three_prime_UTR" = c(29675:29903)
-)
+log_info("Reading inputs")
+
+# Anotation for genome scheme
+coordinates <- read_json(snakemake@input$coordinates)
 
 vcf <- read_delim(snakemake@input[["vcf"]])
 vcf_snp <- vcf
@@ -78,7 +58,7 @@ vcf <- vcf %>%
     ALT
   )
 
-# Df with gene length for scheme
+# Create dataframe with gene length for scheme
 notation_empty <- data.frame(
   gene = "",
   len = 0
@@ -86,12 +66,12 @@ notation_empty <- data.frame(
   filter(len != 0)
 
 notation <- lapply(
-  names(SCov2_annotation),
+  names(coordinates),
   function(x) {
     add_row(
       notation_empty,
       gene = x,
-      len = length(SCov2_annotation[[x]])
+      len = length(coordinates[[x]])
     )
   }
 ) %>%
@@ -184,7 +164,7 @@ variants <- vcf %>%
     aes(
       x = len,
       y = 0.3,
-      fill = factor(gene, rev(names(SCov2_annotation)))
+      fill = factor(gene, rev(names(coordinates)))
     ),
     inherit.aes = FALSE,
     width = 0.3

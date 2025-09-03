@@ -99,6 +99,7 @@ rule general_NV_description:
         samples = expand("{sample}", sample = iter_samples()),
         design = config["PLOTS"],
         regions = config["PLOT_GENOME_REGIONS"],
+        coordinates = config["COORDINATES_JSON"],
         window = config["WINDOW"]["WIDTH"],
         step = config["WINDOW"]["STEP"],
         max_alt_freq = 1.0 - config["VC"]["IVAR_FREQ"]
