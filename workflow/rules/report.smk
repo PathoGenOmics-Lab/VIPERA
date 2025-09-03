@@ -98,12 +98,12 @@ rule general_NV_description:
     params:
         samples = expand("{sample}", sample = iter_samples()),
         design = config["PLOTS"],
-        regions = config["PLOT_GENOME_REGIONS"],
-        coordinates = config["COORDINATES_JSON"],
         window = config["WINDOW"]["WIDTH"],
         step = config["WINDOW"]["STEP"],
         max_alt_freq = 1.0 - config["VC"]["IVAR_FREQ"]
     input:
+        coordinates = config["COORDINATES_JSON"],
+        regions = config["PLOT_GENOME_REGIONS"],
         window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
         vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
         metadata = config["METADATA"]
