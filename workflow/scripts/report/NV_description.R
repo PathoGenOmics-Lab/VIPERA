@@ -19,7 +19,10 @@ source(snakemake@params[["design"]])
 log_info("Reading inputs")
 
 # Anotation for genome scheme
-coordinates <- read_json(snakemake@input$coordinates)
+coordinates <- lapply(
+  read_json(snakemake@input$coordinates, simplifyVector = TRUE),
+  function(x) x[1]:x[2]
+)
 
 vcf <- read_delim(snakemake@input[["vcf"]])
 vcf_snp <- vcf
@@ -468,7 +471,7 @@ model <- lm(n ~ CollectionDate, data = figur_SNP_table)
 
 # Calculate correlation, if possible
 if (nrow(figur_SNP_table) > 2) {
-  p.value <- summary(model)$coefficients[2,4]
+  p.value <- summary(model)$coefficients[2, 4]
 } else {
   p.value <- NA
 }
