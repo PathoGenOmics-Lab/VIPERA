@@ -187,6 +187,18 @@ rule extract_vcf_fields:
         'SnpSift extractFields -s {params.sep:q} {input.vcf:q} {params.extract_columns} >{output.tsv:q} 2>{log:q}'
 
 
+rule format_vcf_fields_longer:
+    conda: "../envs/renv.yaml"
+    params:
+        sep = ","
+    input:
+        tsv = OUTDIR/f"{OUTPUT_NAME}.vcf_fields.tsv"
+    output:
+        tsv = OUTDIR/f"{OUTPUT_NAME}.vcf_fields.longer.tsv"
+    script:
+        "../scripts/format_vcf_fields_longer.R"
+
+
 rule vcf_to_tsv:
     threads: 1
     conda: "../envs/renv.yaml"
