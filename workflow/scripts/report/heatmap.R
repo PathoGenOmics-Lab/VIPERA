@@ -19,7 +19,7 @@ date_order <- read_csv(snakemake@input[["metadata"]]) %>%
 
 # Create SNP variable and select useful variables from vcf
 vcf <- vcf %>%
-  dplyr::select(variant, REGION, ALT_FREQ)
+  dplyr::select(variant, SAMPLE, ALT_FREQ)
 
 vcf <- vcf %>%
   pivot_wider(
@@ -28,8 +28,8 @@ vcf <- vcf %>%
     values_fill = 0,
     values_fn = sum
   ) %>%
-  arrange(factor(REGION, levels = date_order)) %>%
-  column_to_rownames(var = "REGION")
+  arrange(factor(SAMPLE, levels = date_order)) %>%
+  column_to_rownames(var = "SAMPLE")
 
 log_info("Saving table to create heatmap")
 write.csv(vcf, snakemake@output[["table"]])

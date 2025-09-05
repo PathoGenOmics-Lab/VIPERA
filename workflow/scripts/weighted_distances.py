@@ -46,14 +46,14 @@ def build_ancestor_variant_table(ancestor: Seq, reference: Seq, reference_name: 
             alt.append(reference[i-1])
     df = pd.DataFrame({"POS": pos, "ALT": alt})
     df["ALT_FREQ"] = 1  # As a reference genome, we assume all positions are monomorphic
-    df["REGION"] = reference_name
+    df["SAMPLE"] = reference_name
     return df
 
 
 def get_frequencies_in_position(variant_table: pd.DataFrame, sample_name: str, position: int, reference: Seq) -> Tuple[float]:
     frequencies = {alt: 0. for alt in variant_table["ALT"].unique()}
     alt_keys = sorted(frequencies.keys())
-    sample_variant_table = variant_table[variant_table["REGION"] == sample_name]
+    sample_variant_table = variant_table[variant_table["SAMPLE"] == sample_name]
     # If the position has polimorphisims, allele frequencies are captured
     if position in sample_variant_table["POS"].values:
         alleles = sample_variant_table[sample_variant_table["POS"] == position]

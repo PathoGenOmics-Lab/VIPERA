@@ -48,8 +48,6 @@ rule snps_to_ancestor:
                 -m {params.ivar_depth} \
                 -g {input.gff} \
                 -r renamed_reference.fasta
-
-        sed 's/'$ref'/'{wildcards.sample}'/g' {wildcards.sample}.tsv | cat > {output.tsv}
         """
 
 
@@ -69,39 +67,18 @@ rule annotation:
         "../scripts/report/get_annotation.py"
 
 
-rule format_tsv:
-    threads:1
-    shadow: "shallow"
-    input:
-        expand(OUTDIR/"{sample}.tsv", sample = iter_samples())
-    output:
-        tsv = OUTDIR/f"{OUTPUT_NAME}.tsv"
-    log:
-        LOGDIR / "format_tsv" / "log.txt"
-    shell:
-        """
-        path=`echo {input} | awk '{{print $1}}'`
-        grep "^REGION" "$path" > header
-        for tsv in {input}; do
-            tail -n +2 "$tsv"  >> body
-        done
-        cat header body > "{output.tsv}"
-        rm header
-        """
-
-
 rule mask_tsv:
     threads: 1
     conda: "../envs/biopython.yaml"
     params:
          mask_class = ["mask"]
     input: 
-        tsv = OUTDIR/f"{OUTPUT_NAME}.tsv",
+        tsv = OUTDIR/"{sample}.tsv",
         vcf = lambda wildcards: select_problematic_vcf()
     output:
-        masked_tsv = temp(OUTDIR/f"{OUTPUT_NAME}.masked.tsv")
+        masked_tsv = temp(OUTDIR/"{sample}.masked.tsv")
     log:
-        LOGDIR / "mask_tsv" / "log.txt"
+        LOGDIR / "mask_tsv" / "{sample}.log.txt"
     script:
         "../scripts/mask_tsv.py"
 
@@ -114,12 +91,12 @@ rule filter_tsv:
         min_alt_rv = 2,
         min_alt_dp = 2,
     input: 
-        tsv = OUTDIR/f"{OUTPUT_NAME}.masked.tsv",
+        tsv = OUTDIR/"{sample}.masked.tsv",
         annotation = OUTDIR/"annotation.csv"
     output:
-        filtered_tsv = temp(OUTDIR/f"{OUTPUT_NAME}.masked.prefiltered.tsv")
+        filtered_tsv = temp(OUTDIR/"{sample}.masked.prefiltered.tsv")
     log:
-        LOGDIR / "filter_tsv" / "log.txt"
+        LOGDIR / "filter_tsv" / "{sample}.log.txt"
     script:
         "../scripts/filter_tsv.R"
 
@@ -130,11 +107,11 @@ rule tsv_to_vcf:
     params:
         ref_name = config["ALIGNMENT_REFERENCE"],
     input: 
-        tsv = OUTDIR/f"{OUTPUT_NAME}.masked.prefiltered.tsv",
+        tsv = OUTDIR/"{sample}.masked.prefiltered.tsv",
     output:
-        vcf = temp(OUTDIR/f"{OUTPUT_NAME}.vcf")
+        vcf = temp(OUTDIR/"{sample}.vcf")
     log:
-        LOGDIR / "tsv_to_vcf" / "log.txt"
+        LOGDIR / "tsv_to_vcf" / "{sample}.log.txt"
     script:
         "../scripts/tsv_to_vcf.py"
 
@@ -147,11 +124,11 @@ rule variants_effect:
         ref_name = config["ALIGNMENT_REFERENCE"],
         snpeff_data_dir = (BASE_PATH / "config" / "snpeff").resolve()
     input:
-        vcf = OUTDIR/f"{OUTPUT_NAME}.vcf"
+        vcf = OUTDIR/"{sample}.vcf"
     output:
-        ann_vcf = temp(OUTDIR/f"{OUTPUT_NAME}.annotated.vcf")
+        ann_vcf = OUTDIR/"{sample}.annotated.vcf"
     log:
-        LOGDIR / "variants_effect" / "log.txt"
+        LOGDIR / "variants_effect" / "{sample}.log.txt"
     retries: 2
     shell:
         """
@@ -165,7 +142,7 @@ rule variants_effect:
             echo "Local database not found at '{params.snpeff_data_dir}', downloading from repository"
         fi
 
-        snpEff eff -dataDir {params.snpeff_data_dir} -noStats {params.ref_name} {input.vcf} > {output.ann_vcf}
+        snpEff eff -dataDir {params.snpeff_data_dir} -noStats {params.ref_name} {input.vcf} >{output.ann_vcf}
         """
 
 
@@ -180,11 +157,11 @@ rule extract_vcf_fields:
         ],
         sep = ","
     input:
-        vcf = OUTDIR/f"{OUTPUT_NAME}.annotated.vcf"
+        vcf = OUTDIR/"{sample}.annotated.vcf"
     output:
-        tsv = OUTDIR/f"{OUTPUT_NAME}.vcf_fields.tsv"
+        tsv = OUTDIR/"{sample}.vcf_fields.tsv"
     log:
-        LOGDIR / "tsv_to_vcf" / "log.txt"
+        LOGDIR / "tsv_to_vcf" / "{sample}.log.txt"
     shell:
         'SnpSift extractFields -s {params.sep:q} {input.vcf:q} {params.extract_columns} >{output.tsv:q} 2>{log:q}'
 
@@ -194,11 +171,11 @@ rule format_vcf_fields_longer:
     params:
         sep = ","
     input:
-        tsv = OUTDIR/f"{OUTPUT_NAME}.vcf_fields.tsv"
+        tsv = OUTDIR/"{sample}.vcf_fields.tsv"
     output:
-        tsv = OUTDIR/f"{OUTPUT_NAME}.vcf_fields.longer.tsv"
+        tsv = OUTDIR/"{sample}.vcf_fields.longer.tsv"
     log:
-        LOGDIR / "format_vcf_fields_longer" / "log.txt"
+        LOGDIR / "format_vcf_fields_longer" / "{sample}.log.txt"
     script:
         "../scripts/format_vcf_fields_longer.R"
 
@@ -207,11 +184,22 @@ rule vcf_to_tsv:
     threads: 1
     conda: "../envs/renv.yaml"
     input:
-        ann_vcf = OUTDIR/f"{OUTPUT_NAME}.annotated.vcf",
-        pre_tsv = OUTDIR/f"{OUTPUT_NAME}.masked.prefiltered.tsv"
+        ann_vcf = OUTDIR/"{sample}.annotated.vcf",
+        pre_tsv = OUTDIR/"{sample}.masked.prefiltered.tsv"
+    output:
+        tsv = OUTDIR/"{sample}.masked.filtered.tsv"
+    log:
+        LOGDIR / "vcf_to_tsv" / "{sample}.log.txt"
+    script:
+        "../scripts/vcf_to_tsv.R"
+
+
+rule compile_variants:
+    threads: 1
+    input: expand(OUTDIR/"{sample}.masked.filtered.tsv", sample=iter_samples())
     output:
         tsv = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
     log:
-        LOGDIR / "vcf_to_tsv" / "log.txt"
+        LOGDIR / "compile_variants" / "log.txt"
     script:
-        "../scripts/vcf_to_tsv.R"
+        "../scripts/compile_variants.R"

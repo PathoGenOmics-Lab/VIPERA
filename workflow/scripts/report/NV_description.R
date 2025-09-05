@@ -38,10 +38,11 @@ date_order <- metadata %>%
   unique()
 
 empty_vcf <- tibble(
-  REGION = date_order,
+  SAMPLE = date_order,
+  REGION = as.character(NA),
   variant = as.character(NA),
   ALT_FREQ = as.numeric(NA),
-  GFF_FEATURE = as.character(NA),
+  GB_FEATURE = as.character(NA),
   synonimous = as.character(NA),
   POS = as.numeric(NA),
   ALT = as.character(NA),
@@ -52,10 +53,11 @@ empty_vcf <- tibble(
 # Create SNP variable and select useful variables
 vcf <- vcf %>%
   dplyr::select(
-    variant,
+    SAMPLE,
     REGION,
+    variant,
     ALT_FREQ,
-    GFF_FEATURE,
+    GB_FEATURE,
     synonimous,
     POS,
     ALT
@@ -91,7 +93,7 @@ vcf <- vcf %>%
       TRUE ~ "SNP"
     ),
     Class = case_when(
-      GFF_FEATURE == "Intergenic" ~ "Intergenic",
+      GB_FEATURE == "Intergenic" ~ "Intergenic",
       TRUE ~ synonimous
     ),
     POS = as.numeric(POS)
@@ -102,7 +104,7 @@ vcf <- vcf %>%
       NV_class == "INDEL" ~ str_length(ALT) - 1
     ),
     indel_class = case_when(
-      GFF_FEATURE == "Intergenic" ~ "Intergenic",
+      GB_FEATURE == "Intergenic" ~ "Intergenic",
       NV_class == "INDEL" &
         indel_len %% 3 == 0 ~
         "In frame",
@@ -114,7 +116,7 @@ vcf <- vcf %>%
   ungroup() %>%
   mutate(
     group = case_when(
-      GFF_FEATURE == "Intergenic" ~ "Intergenic",
+      GB_FEATURE == "Intergenic" ~ "Intergenic",
       NV_class == "SNP" ~ Class,
       NV_class == "INDEL" ~ indel_class
     )
@@ -156,7 +158,7 @@ variants <- vcf %>%
   ggplot() +
   aes(
     x = POS,
-    y = factor(REGION, date_order),
+    y = factor(SAMPLE, date_order),
     shape = factor(NV_class, c("SNP", "INDEL")),
     color = group,
     alpha = ALT_FREQ
@@ -312,7 +314,7 @@ variants_spike <- vcf_spike %>%
   ggplot() +
   aes(
     x = POS,
-    y = factor(REGION, date_order),
+    y = factor(SAMPLE, date_order),
     shape = factor(NV_class, c("SNP", "INDEL")),
     color = group,
     alpha = ALT_FREQ
@@ -363,9 +365,9 @@ figur_SNP_table <- vcf_snp %>%
   filter(ALT_FREQ <= snakemake@params$max_alt_freq) %>%
   left_join(
     metadata,
-    by = c("REGION" = "ID")
+    by = c("SAMPLE" = "ID")
   ) %>%
-  group_by(REGION) %>%
+  group_by(SAMPLE) %>%
   summarise(
     CollectionDate = min(as.Date(CollectionDate)),
     n = n_distinct(POS)
@@ -410,7 +412,7 @@ log_info("Saving plot tables")
 # Variants summary table
 vcf %>%
   select(
-    REGION,
+    SAMPLE,
     POS,
     variant,
     ALT_FREQ,
@@ -418,7 +420,7 @@ vcf %>%
     group
   ) %>%
   rename(
-    sample = REGION,
+    sample = SAMPLE,
     Variant = variant,
     Class = group
   ) %>%
@@ -444,18 +446,18 @@ window %>%
 # Heterozygous sites per sample table
 vcf_snp %>%
   filter(ALT_FREQ <= snakemake@params$max_alt_freq) %>%
-  select(!GFF_FEATURE) %>%
+  select(!GB_FEATURE) %>%
   left_join(
     metadata,
-    by = c("REGION" = "ID")
+    by = c("SAMPLE" = "ID")
   ) %>%
-  group_by(REGION) %>%
+  group_by(SAMPLE) %>%
   summarise(
     CollectionDate = min(as.Date(CollectionDate)),
     n_PolymorphicSites = n_distinct(POS)
   ) %>%
   ungroup() %>%
-  rename(sample = REGION) %>%
+  rename(sample = SAMPLE) %>%
   unique() %>%
   write.csv(snakemake@output[["table_3"]], row.names = FALSE)
 

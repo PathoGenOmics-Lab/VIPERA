@@ -21,10 +21,11 @@ N_S_position <- read_delim(snakemake@input[["N_S"]])
 # Create SNP variable and select useful variables
 vcf <- vcf %>%
   dplyr::select(
+    SAMPLE,
     variant,
     REGION,
     ALT_FREQ,
-    GFF_FEATURE,
+    GB_FEATURE,
     synonimous,
     POS
   )
@@ -37,14 +38,14 @@ metadata <- metadata %>%
     )
   ) %>%
   select(ID, interval) %>%
-  rename(REGION = ID)
+  rename(SAMPLE = ID)
 
 vcf <- left_join(vcf, metadata)
 
 # PLOT
 log_info("Ploting dN and dS over time")
 plot_df <- vcf %>%
-  group_by(REGION, synonimous) %>%
+  group_by(SAMPLE, synonimous) %>%
   summarise(
     Freq = sum(ALT_FREQ, na.rm = TRUE)
   ) %>%
@@ -67,7 +68,7 @@ plot_df <- vcf %>%
     values_to = "value",
     names_to = "d"
   ) %>%
-  left_join(unique(select(vcf, REGION, interval)))
+  left_join(unique(select(vcf, SAMPLE, interval)))
 
 plot <- plot_df %>%
   filter(d != "w") %>%
@@ -134,7 +135,7 @@ ggsave(
 # PLOT TABLES
 log_info("Saving plot table")
 vcf %>%
-  group_by(REGION, synonimous) %>%
+  group_by(SAMPLE, synonimous) %>%
   summarise(
     Freq = sum(ALT_FREQ, na.rm = TRUE)
   ) %>%
@@ -148,9 +149,9 @@ vcf %>%
     ds = Yes / sum(N_S_position$S)
   ) %>%
   ungroup() %>%
-  left_join(unique(select(vcf, REGION, interval))) %>%
+  left_join(unique(select(vcf, SAMPLE, interval))) %>%
   transmute(
-    sample = REGION,
+    sample = SAMPLE,
     DaysSinceFirst = interval,
     dN = dn,
     dS = ds,

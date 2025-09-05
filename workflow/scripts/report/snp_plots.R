@@ -27,7 +27,7 @@ metadata <- read_csv(snakemake@input[["metadata"]])
 vcf <- read_delim(snakemake@input[["vcf"]])
 data <- metadata %>%
   filter(
-    ID %in% vcf$REGION
+    ID %in% vcf$SAMPLE
   ) %>%
   dplyr::select(
     ID,
@@ -44,6 +44,7 @@ date_order <- metadata %>%
 vcf <- vcf %>%
   dplyr::select(
     variant,
+    SAMPLE,
     REGION,
     ALT_FREQ,
     POS
@@ -51,10 +52,10 @@ vcf <- vcf %>%
 
 # Fill positions without alt frequency with 0
 vcf <- vcf %>%
-  complete(nesting(variant, POS), REGION, fill = list(ALT_FREQ = 0))
+  complete(nesting(variant, POS), SAMPLE, fill = list(ALT_FREQ = 0))
 
 # Join variants file and metadata file
-vcf <- left_join(vcf, data, by = c("REGION" = "ID"))
+vcf <- left_join(vcf, data, by = c("SAMPLE" = "ID"))
 
 # Calculate days since first sample
 vcf <- arrange(
@@ -126,7 +127,7 @@ volcano <- cor.df.fill %>%
     y = trans.p
   ) +
   geom_point() +
-  geom_label_repel(aes(label = label)) +
+  geom_label_repel(aes(label = label), max.overlaps = 1000) +
   xlim(c(-1, 1)) +
   geom_hline(
     aes(yintercept = -log10(0.05)),
@@ -235,7 +236,7 @@ log_info("Saving SNPs trends table")
 vcf %>%
   filter(variant %in% subset) %>%
   transmute(
-    sample = REGION,
+    sample = SAMPLE,
     POS = POS,
     NV = variant,
     ALT_FREQ = ALT_FREQ,
