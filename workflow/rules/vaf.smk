@@ -137,26 +137,6 @@ rule tsv_to_vcf:
         "../scripts/tsv_to_vcf.py"
 
 
-rule extract_vcf_fields:
-    threads: 1
-    conda: "../envs/snpeff.yaml"
-    params:
-        extract_columns = [
-            "CHROM", "REF", "POS", "ALT", "DP",
-            '"GEN[*].ALT_DP"', '"GEN[*].ALT_RV"', '"GEN[*].ALT_FREQ"',
-            '"GEN[*].ALT_QUAL"', '"ANN[*].GENE"', '"ANN[*].HGVS_P"'
-        ],
-        sep = ","
-    input:
-        vcf = OUTDIR/f"{OUTPUT_NAME}.vcf"
-    output:
-        tsv = OUTDIR/f"{OUTPUT_NAME}.vcf_fields.tsv"
-    log:
-        LOGDIR / "tsv_to_vcf" / "log.txt"
-    shell:
-        'SnpSift extractFields -s {params.sep:q} {input.vcf:q} {params.extract_columns} >{output.tsv:q} 2>{log:q}'
-
-
 rule variants_effect:
     threads: 1
     shadow: "minimal"
@@ -185,6 +165,26 @@ rule variants_effect:
 
         snpEff eff -dataDir {params.snpeff_data_dir} -noStats {params.ref_name} {input.vcf} > {output.ann_vcf}
         """
+
+
+rule extract_vcf_fields:
+    threads: 1
+    conda: "../envs/snpeff.yaml"
+    params:
+        extract_columns = [
+            "CHROM", "POS", "REF", "ALT",
+            '"ANN[*].IMPACT"', '"ANN[*].BIOTYPE"',
+            '"ANN[*].GENE"', '"ANN[*].GENEID"', '"ANN[*].FEATURE"', '"ANN[*].HGVS_P"', '"ANN[*].HGVS_C"'
+        ],
+        sep = ","
+    input:
+        vcf = OUTDIR/f"{OUTPUT_NAME}.annotated.vcf"
+    output:
+        tsv = OUTDIR/f"{OUTPUT_NAME}.vcf_fields.tsv"
+    log:
+        LOGDIR / "tsv_to_vcf" / "log.txt"
+    shell:
+        'SnpSift extractFields -s {params.sep:q} {input.vcf:q} {params.extract_columns} >{output.tsv:q} 2>{log:q}'
 
 
 rule vcf_to_tsv:
