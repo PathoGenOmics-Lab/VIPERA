@@ -197,6 +197,7 @@ rule vcf_to_tsv:
 
 rule compile_variants:
     threads: 1
+    conda: "../envs/renv.yaml"
     input: expand(OUTDIR/"{sample}.masked.filtered.tsv", sample=iter_samples())
     output:
         tsv = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
