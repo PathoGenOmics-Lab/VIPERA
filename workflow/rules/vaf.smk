@@ -195,6 +195,8 @@ rule format_vcf_fields_longer:
         tsv = OUTDIR/f"{OUTPUT_NAME}.vcf_fields.tsv"
     output:
         tsv = OUTDIR/f"{OUTPUT_NAME}.vcf_fields.longer.tsv"
+    log:
+        LOGDIR / "format_vcf_fields_longer" / "log.txt"
     script:
         "../scripts/format_vcf_fields_longer.R"
 
