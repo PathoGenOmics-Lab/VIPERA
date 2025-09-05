@@ -127,6 +127,8 @@ rule filter_tsv:
 rule tsv_to_vcf:
     threads: 1
     conda: "../envs/biopython.yaml"
+    params:
+        ref_name = config["ALIGNMENT_REFERENCE"],
     input: 
         tsv = OUTDIR/f"{OUTPUT_NAME}.masked.prefiltered.tsv",
     output:
