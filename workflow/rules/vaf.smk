@@ -42,12 +42,13 @@ rule snps_to_ancestor:
             -f renamed_reference.fasta \
             {input.bam} \
             | ivar variants \
-                -p {wildcards.sample} \
+                -p variants \
                 -q {params.ivar_quality} \
                 -t {params.ivar_freq} \
                 -m {params.ivar_depth} \
                 -g {input.gff} \
                 -r renamed_reference.fasta
+        mv variants.tsv {output.tsv:q}
         """
 
 
