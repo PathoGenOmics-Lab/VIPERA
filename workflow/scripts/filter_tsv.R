@@ -12,24 +12,22 @@ log_threshold(INFO)
 # Read inputs
 data <- read_tsv(snakemake@input[["tsv"]])
 
-# Filtering criteria:
-# - P-value < 0.05
-# - Depth >= 20
-# - For SNP more than 2 reads in each strand
+# Filtering
 is.deletion <- str_detect(
   data$ALT,
   "^[A-Z]",
   negate = TRUE
 )
-inBothStrands <- data$ALT_RV > 2 & data$ALT_DP > 2
-Depth <- (data$ALT_RV + data$ALT_DP) >= 20
+strand.mask <- data$ALT_RV > snakemake@params$min_alt_rv &
+  data$ALT_DP > snakemake@params$min_alt_dp
+depth.mask <- (data$ALT_RV + data$ALT_DP) >= snakemake@params$min_depth
 
 log_info("Filtering variants")
 data <- filter(
   data,
   as.logical(PASS),
-  Depth,
-  inBothStrands | is.deletion
+  depth.mask,
+  strand.mask | is.deletion
 )
 
 log_info("Finding synonymous and non synonymous variants")

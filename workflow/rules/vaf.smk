@@ -109,6 +109,10 @@ rule mask_tsv:
 rule filter_tsv:
     threads: 1
     conda: "../envs/renv.yaml"
+    params:
+        min_depth = 20,
+        min_alt_rv = 2,
+        min_alt_dp = 2,
     input: 
         tsv = OUTDIR/f"{OUTPUT_NAME}.masked.tsv",
         annotation = OUTDIR/"annotation.csv"
