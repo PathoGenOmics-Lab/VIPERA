@@ -18,7 +18,10 @@ annotation <- read_tsv(
   snakemake@input$annot,
   col_select = c("CHROM", "POS", "REF", "ALT", "VARIANT_NAME")
 ) %>%
-  distinct()
+  distinct() %>%
+  group_by(CHROM, POS, REF, ALT) %>%
+  mutate(VARIANT_NAME = paste(VARIANT_NAME, collapse = "|")) %>%
+  ungroup()
 
 log_info("Merging tables")
 merged <- left_join(
