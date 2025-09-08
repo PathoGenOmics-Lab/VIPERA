@@ -181,6 +181,19 @@ rule format_vcf_fields_longer:
         "../scripts/format_vcf_fields_longer.R"
 
 
+rule compile_vcf_fields_longer:
+    threads: 1
+    conda: "../envs/renv.yaml"
+    input:
+        tsv = OUTDIR/"vaf"/"{sample}.vcf_fields.longer.tsv"
+    output:
+        tsv = OUTDIR/f"{OUTPUT_NAME}.vcf_fields.longer.tsv"
+    log:
+        LOGDIR / "compile_vcf_fields_longer" / "log.txt"
+    script:
+        "../scripts/compile_vcf_fields_longer.R"
+
+
 rule vcf_to_tsv:
     threads: 1
     conda: "../envs/renv.yaml"
