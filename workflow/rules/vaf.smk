@@ -168,6 +168,7 @@ rule format_vcf_fields_longer:
     params:
         colnames_mapping = config["ANNOTATION"]["SNPEFF_COLS"],
         filter_include = config["ANNOTATION"]["FILTER_INCLUDE"],
+        filter_exclude = config["ANNOTATION"]["FILTER_EXCLUDE"],
         variant_name_pattern = lambda wildcards: config["ANNOTATION"]["VARIANT_NAME_PATTERN"],  # lambda to deactivate automatic wildcard expansion in pattern
         sep = ",",
     input:
