@@ -38,8 +38,8 @@ ANNOTATION:
   FILTER_INCLUDE:  # see: https://pcingola.github.io/SnpEff/adds/VCFannotationformat_v1.0.pdf
   #  IMPACT: [HIGH, MODERATE, LOW]
   FILTER_EXCLUDE:
-  #  EFFECT: [upstream_gene_variant, downstream_gene_variant]
-  VARIANT_NAME_PATTERN: "{GENE}:{coalesce(HGVS_P, HGVS_C)}"  # coalesce finds the first non-missing element
+    EFFECT: [upstream_gene_variant, downstream_gene_variant]
+  VARIANT_NAME_PATTERN: "{GENE}:{coalesce(HGVS_P, HGVS_C)}"  # dplyr's coalesce finds the first non-missing element
 DEMIX:
   PATHOGEN: "SARS-CoV-2"
   MIN_QUALITY: 20
