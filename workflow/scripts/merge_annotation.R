@@ -17,7 +17,8 @@ log_info("Reading annotation table")
 annotation <- read_tsv(
   snakemake@input$annot,
   col_select = c("CHROM", "POS", "REF", "ALT", "VARIANT_NAME")
-)
+) %>%
+  distinct()
 
 log_info("Merging tables")
 merged <- left_join(
@@ -28,6 +29,6 @@ merged <- left_join(
 
 log_info("Saving results")
 write_tsv(
-  tsv,
+  merged,
   snakemake@output$tsv
 )
