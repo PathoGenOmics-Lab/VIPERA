@@ -184,8 +184,7 @@ rule format_vcf_fields_longer:
 rule compile_vcf_fields_longer:
     threads: 1
     conda: "../envs/renv.yaml"
-    input:
-        tsv = OUTDIR/"vaf"/"{sample}.vcf_fields.longer.tsv"
+    input: expand(OUTDIR/"vaf"/"{sample}.vcf_fields.longer.tsv", sample=iter_samples())
     output:
         tsv = OUTDIR/f"{OUTPUT_NAME}.vcf_fields.longer.tsv"
     log:
