@@ -30,7 +30,7 @@ rule demix_plot:
 rule heatmap_plot_data:
     conda: "../envs/renv.yaml"
     input:
-        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
+        vcf =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         metadata = config["METADATA"]
     output:
         table = report(REPORT_DIR_TABLES/"heatmap.csv")
@@ -46,7 +46,7 @@ rule window:
         window = config["WINDOW"]["WIDTH"],
         step = config["WINDOW"]["STEP"]
     input:
-        vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
+        vcf = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         gb = OUTDIR/"reference.gb",
         features = config["FEATURES_JSON"]
     output:
@@ -105,7 +105,7 @@ rule general_NV_description:
         coordinates = config["COORDINATES_JSON"],
         regions = config["PLOT_GENOME_REGIONS"],
         window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
-        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
+        vcf =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         metadata = config["METADATA"]
     output:
         fig = report(REPORT_DIR_PLOTS/"figure_5a.png"),
@@ -230,7 +230,7 @@ rule evo_plots:
         design = config["PLOTS"]
     input: 
         N_S = OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv",
-        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
+        vcf =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         metadata = config["METADATA"]
     output:
         plot = report(REPORT_DIR_PLOTS/"figure_11.png"),
@@ -249,7 +249,7 @@ rule snp_plots:
         cor_method = config["COR"]["METHOD"],
         cor_exact = config["COR"]["EXACT"]
     input:
-        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
+        vcf =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         metadata = config["METADATA"]
     output:
         pseudovolcano = report(REPORT_DIR_PLOTS/"figure_6.png"),

@@ -22,7 +22,7 @@ N_S_position <- read_delim(snakemake@input[["N_S"]])
 vcf <- vcf %>%
   dplyr::select(
     SAMPLE,
-    variant,
+    VARIANT_NAME,
     REGION,
     ALT_FREQ,
     GB_FEATURE,

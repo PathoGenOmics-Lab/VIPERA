@@ -5,7 +5,7 @@ rule weighted_distances:
         samples = expand("{sample}", sample = iter_samples()),
         mask_class = ["mask"]
     input:
-        tsv = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
+        tsv = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         vcf = lambda wildcards: select_problematic_vcf(),
         ancestor = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
         reference = OUTDIR/"reference.fasta"

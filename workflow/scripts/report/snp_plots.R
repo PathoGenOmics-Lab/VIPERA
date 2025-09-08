@@ -43,7 +43,7 @@ date_order <- metadata %>%
 # Simplify features names and create SNP variable
 vcf <- vcf %>%
   dplyr::select(
-    variant,
+    VARIANT_NAME,
     SAMPLE,
     REGION,
     ALT_FREQ,
@@ -52,7 +52,7 @@ vcf <- vcf %>%
 
 # Fill positions without alt frequency with 0
 vcf <- vcf %>%
-  complete(nesting(variant, POS), SAMPLE, fill = list(ALT_FREQ = 0))
+  complete(nesting(VARIANT_NAME, POS), SAMPLE, fill = list(ALT_FREQ = 0))
 
 # Join variants file and metadata file
 vcf <- left_join(vcf, data, by = c("SAMPLE" = "ID"))
@@ -72,7 +72,7 @@ vcf <- arrange(
 # Get list with all different polymorphisms
 SNPs <- pull(
   vcf,
-  variant
+  VARIANT_NAME
 ) %>%
   unique()
 
@@ -89,7 +89,7 @@ cor.df.fill <- lapply(
   function(snp) {
     df <- filter(
       vcf,
-      variant == snp
+      VARIANT_NAME == snp
     )
 
     test <- cor.test(
@@ -161,14 +161,14 @@ sign <- filter(
 # SNPs which are in positions with more than one alternative allele
 dup <- vcf %>%
   select(
-    variant,
+    VARIANT_NAME,
     POS
   ) %>%
   unique() %>%
   group_by(POS) %>%
   filter(n() > 1) %>%
   ungroup() %>%
-  pull(variant) %>%
+  pull(VARIANT_NAME) %>%
   unique()
 
 subset <- c(sign, dup) %>%
@@ -179,12 +179,12 @@ plot.height <- ceiling(length(subset) / 4) * 42
 
 log_info("Plotting SNPs trends in time")
 panel <- vcf %>%
-  filter(variant %in% subset) %>%
+  filter(VARIANT_NAME %in% subset) %>%
   ggplot() +
   aes(
     x = interval,
     y = ALT_FREQ,
-    color = variant
+    color = VARIANT_NAME
   ) +
   scale_color_manual(values = sample(color, length(subset))) +
   geom_point() +
@@ -234,11 +234,11 @@ cor.df.fill %>%
 
 log_info("Saving SNPs trends table")
 vcf %>%
-  filter(variant %in% subset) %>%
+  filter(VARIANT_NAME %in% subset) %>%
   transmute(
     sample = SAMPLE,
     POS = POS,
-    NV = variant,
+    NV = VARIANT_NAME,
     ALT_FREQ = ALT_FREQ,
     DaysSinceFirst = interval
   ) %>%

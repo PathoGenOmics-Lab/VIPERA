@@ -19,11 +19,11 @@ date_order <- read_csv(snakemake@input[["metadata"]]) %>%
 
 # Create SNP variable and select useful variables from vcf
 vcf <- vcf %>%
-  dplyr::select(variant, SAMPLE, ALT_FREQ)
+  dplyr::select(VARIANT_NAME, SAMPLE, ALT_FREQ)
 
 vcf <- vcf %>%
   pivot_wider(
-    names_from = variant,
+    names_from = VARIANT_NAME,
     values_from = ALT_FREQ,
     values_fill = 0,
     values_fn = sum

@@ -193,26 +193,26 @@ rule compile_vcf_fields_longer:
         "../scripts/compile_vcf_fields_longer.R"
 
 
-rule vcf_to_tsv:
+rule merge_annotation:
     threads: 1
     conda: "../envs/renv.yaml"
     input:
-        ann_vcf = OUTDIR/"vaf"/"{sample}.annotated.vcf",
-        pre_tsv = OUTDIR/"vaf"/"{sample}.masked.prefiltered.tsv"
+        tsv = OUTDIR/"vaf"/"{sample}.masked.tsv",
+        annot = OUTDIR/"vaf"/"{sample}.vcf_fields.longer.tsv",
     output:
-        tsv = OUTDIR/"vaf"/"{sample}.masked.filtered.tsv"
+        tsv = OUTDIR/"vaf"/"{sample}.variants.tsv"
     log:
-        LOGDIR / "vcf_to_tsv" / "{sample}.log.txt"
+        LOGDIR / "merge_annotation" / "{sample}.log.txt"
     script:
-        "../scripts/vcf_to_tsv.R"
+        "../scripts/merge_annotation.R"
 
 
 rule compile_variants:
     threads: 1
     conda: "../envs/renv.yaml"
-    input: expand(OUTDIR/"vaf"/"{sample}.masked.filtered.tsv", sample=iter_samples())
+    input: expand(OUTDIR/"vaf"/"{sample}.variants.tsv", sample=iter_samples())
     output:
-        tsv = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv"
+        tsv = OUTDIR/f"{OUTPUT_NAME}.variants.tsv"
     log:
         LOGDIR / "compile_variants" / "log.txt"
     script:

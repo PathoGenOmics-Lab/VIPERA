@@ -14,7 +14,7 @@ tables <- lapply(
     snakemake@input,
     function(path) {
         read_tsv(path) %>%
-            mutate(SAMPLE = sub('\\.masked.filtered.tsv$', '', basename(path)))
+            mutate(SAMPLE = sub('\\.variants.tsv$', '', basename(path)))
     }
 )
 

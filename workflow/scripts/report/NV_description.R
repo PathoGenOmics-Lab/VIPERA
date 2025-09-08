@@ -40,7 +40,7 @@ date_order <- metadata %>%
 empty_vcf <- tibble(
   SAMPLE = date_order,
   REGION = as.character(NA),
-  variant = as.character(NA),
+  VARIANT_NAME = as.character(NA),
   ALT_FREQ = as.numeric(NA),
   GB_FEATURE = as.character(NA),
   synonimous = as.character(NA),
@@ -55,7 +55,7 @@ vcf <- vcf %>%
   dplyr::select(
     SAMPLE,
     REGION,
-    variant,
+    VARIANT_NAME,
     ALT_FREQ,
     GB_FEATURE,
     synonimous,
@@ -414,14 +414,14 @@ vcf %>%
   select(
     SAMPLE,
     POS,
-    variant,
+    VARIANT_NAME,
     ALT_FREQ,
     NV_class,
     group
   ) %>%
   rename(
     sample = SAMPLE,
-    Variant = variant,
+    Variant = VARIANT_NAME,
     Class = group
   ) %>%
   filter(ALT_FREQ > 0) %>%
@@ -464,11 +464,11 @@ vcf_snp %>%
 # Stats for reporting
 n_indels <- vcf %>%
   filter(NV_class == "INDEL") %>%
-  pull(variant) %>%
+  pull(VARIANT_NAME) %>%
   unique() %>%
   length()
 
-n_snv <- length(unique(vcf$variant)) - n_indels
+n_snv <- length(unique(vcf$VARIANT_NAME)) - n_indels
 model <- lm(n ~ CollectionDate, data = figur_SNP_table)
 
 # Calculate correlation, if possible
