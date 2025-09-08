@@ -199,7 +199,7 @@ rule merge_annotation:
     params:
         ref_name = config["ALIGNMENT_REFERENCE"],
     input:
-        tsv = OUTDIR/"vaf"/"{sample}.masked.tsv",
+        tsv = OUTDIR/"vaf"/"{sample}.masked.prefiltered.tsv",
         annot = OUTDIR/"vaf"/"{sample}.vcf_fields.longer.tsv",
     output:
         tsv = OUTDIR/"vaf"/"{sample}.variants.tsv"
