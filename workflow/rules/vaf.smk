@@ -151,12 +151,8 @@ rule extract_vcf_fields:
     threads: 1
     conda: "../envs/snpeff.yaml"
     params:
-        extract_columns = [
-            "CHROM", "POS", "REF", "ALT",
-            '"ANN[*].EFFECT"', '"ANN[*].IMPACT"', '"ANN[*].BIOTYPE"',
-            '"ANN[*].GENE"', '"ANN[*].GENEID"', '"ANN[*].FEATURE"', '"ANN[*].FEATUREID"', '"ANN[*].HGVS_P"', '"ANN[*].HGVS_C"'
-        ],
-        sep = ","
+        extract_columns = [f"'{col}'" for col in config["ANNOTATION"]["SNPEFF_COLS"].values()],
+        sep = ",",
     input:
         vcf = OUTDIR/"vaf"/"{sample}.annotated.vcf"
     output:
@@ -170,7 +166,10 @@ rule extract_vcf_fields:
 rule format_vcf_fields_longer:
     conda: "../envs/renv.yaml"
     params:
-        sep = ","
+        colnames_mapping = config["ANNOTATION"]["SNPEFF_COLS"],
+        filter_include = config["ANNOTATION"]["FILTER_INCLUDE"],
+        variant_name_pattern = config["ANNOTATION"]["VARIANT_NAME_PATTERN"],
+        sep = ",",
     input:
         tsv = OUTDIR/"vaf"/"{sample}.vcf_fields.tsv"
     output:
