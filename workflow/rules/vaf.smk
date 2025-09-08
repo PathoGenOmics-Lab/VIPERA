@@ -168,7 +168,7 @@ rule format_vcf_fields_longer:
     params:
         colnames_mapping = config["ANNOTATION"]["SNPEFF_COLS"],
         filter_include = config["ANNOTATION"]["FILTER_INCLUDE"],
-        variant_name_pattern = config["ANNOTATION"]["VARIANT_NAME_PATTERN"],
+        variant_name_pattern = lambda wildcards: config["ANNOTATION"]["VARIANT_NAME_PATTERN"],  # lambda to deactivate automatic wildcard expansion in pattern
         sep = ",",
     input:
         tsv = OUTDIR/"vaf"/"{sample}.vcf_fields.tsv"
