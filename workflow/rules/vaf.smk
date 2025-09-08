@@ -154,7 +154,7 @@ rule extract_vcf_fields:
         extract_columns = [
             "CHROM", "POS", "REF", "ALT",
             '"ANN[*].EFFECT"', '"ANN[*].IMPACT"', '"ANN[*].BIOTYPE"',
-            '"ANN[*].GENE"', '"ANN[*].GENEID"', '"ANN[*].FEATURE"', '"ANN[*].HGVS_P"', '"ANN[*].HGVS_C"'
+            '"ANN[*].GENE"', '"ANN[*].GENEID"', '"ANN[*].FEATURE"', '"ANN[*].FEATUREID"', '"ANN[*].HGVS_P"', '"ANN[*].HGVS_C"'
         ],
         sep = ","
     input:
