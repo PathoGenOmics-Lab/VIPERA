@@ -196,6 +196,8 @@ rule compile_vcf_fields_longer:
 rule merge_annotation:
     threads: 1
     conda: "../envs/renv.yaml"
+    params:
+        ref_name = config["ALIGNMENT_REFERENCE"],
     input:
         tsv = OUTDIR/"vaf"/"{sample}.masked.tsv",
         annot = OUTDIR/"vaf"/"{sample}.vcf_fields.longer.tsv",

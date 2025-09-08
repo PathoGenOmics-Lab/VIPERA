@@ -9,8 +9,11 @@ library(tidyverse)
 library(logger)
 log_threshold(INFO)
 
-log_info("Reading tables")
-variants <- read_tsv(snakemake@input$tsv)
+log_info("Reading variants table, replacing REGION with the reference name")
+variants <- read_tsv(snakemake@input$tsv) %>%
+  mutate(REGION = snakemake@params$ref_name)
+
+log_info("Reading annotation table")
 annotation <- read_tsv(
   snakemake@input$annot,
   col_select = c("CHROM", "POS", "REF", "ALT", "VARIANT_NAME")
@@ -20,7 +23,7 @@ log_info("Merging tables")
 merged <- left_join(
   variants,
   annotation,
-  by = c("CHROM", "POS", "REF", "ALT")
+  by = c("REGION" = "CHROM", "POS", "REF", "ALT")
 )
 
 log_info("Saving results")
