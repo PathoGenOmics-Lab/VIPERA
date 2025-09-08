@@ -8,7 +8,8 @@ sink(log, type = "output")
 library(tidyverse)
 
 read_tsv(snakemake@input$tsv) %>%
-    separate_rows(contains("[*]"), sep = snakemake@params$sep) %>%
+    separate_longer_delim(contains("[*]"), delim = snakemake@params$sep) %>%
+    mutate(across(contains("[*]"), ~ na_if(., ""))) %>%
     rename(all_of(unlist(snakemake@params$colnames_mapping))) %>%
     filter(
         !!!map2(
