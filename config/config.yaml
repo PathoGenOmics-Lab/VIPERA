@@ -27,15 +27,15 @@ ANNOTATION:
     POS: POS
     REF: REF
     ALT: ALT
-    EFFECT: "ANN[*].EFFECT"
-    IMPACT: "ANN[*].IMPACT"
+    EFFECT: "ANN[*].EFFECT"  # hard-coded column
+    IMPACT: "ANN[*].IMPACT"  # hard-coded column
     BIOTYPE: "ANN[*].BIOTYPE"
-    GENE: "ANN[*].GENE"
+    GENE: "ANN[*].GENE"      # hard-coded column
     GENEID: "ANN[*].GENEID"
     FEATURE: "ANN[*].FEATURE"
     FEATUREID: "ANN[*].FEATUREID"
-    HGVS_P: "ANN[*].HGVS_P"
-    HGVS_C: "ANN[*].HGVS_C"
+    HGVS_P: "ANN[*].HGVS_P"  # hard-coded column
+    HGVS_C: "ANN[*].HGVS_C"  # hard-coded column
     ERRORS: "ANN[*].ERRORS"  # hard-coded column
   FILTER_INCLUDE:
   #  IMPACT: [HIGH, MODERATE, LOW]
@@ -51,6 +51,16 @@ ANNOTATION:
       - WARNING_TRANSCRIPT_NO_START_CODON
       - WARNING_TRANSCRIPT_NO_STOP_CODON
   VARIANT_NAME_PATTERN: "{GENE}:{coalesce(HGVS_P, HGVS_C)}"  # dplyr's coalesce finds the first non-missing element
+  SELECT_COLS:
+    - CHROM
+    - POS
+    - REF
+    - ALT
+    - EFFECT
+    - IMPACT
+    - GENE
+    - HGVS_P
+    - HGVS_C
 DEMIX:
   PATHOGEN: "SARS-CoV-2"
   MIN_QUALITY: 20
