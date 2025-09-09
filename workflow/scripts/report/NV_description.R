@@ -42,7 +42,7 @@ empty_vcf <- tibble(
   REGION = as.character(NA),
   VARIANT_NAME = as.character(NA),
   ALT_FREQ = as.numeric(NA),
-  GB_FEATURE = as.character(NA),
+  EFFECT = as.character(NA),
   SYNONYMOUS = as.character(NA),
   POS = as.numeric(NA),
   ALT = as.character(NA),
@@ -57,7 +57,7 @@ vcf <- vcf %>%
     REGION,
     VARIANT_NAME,
     ALT_FREQ,
-    GB_FEATURE,
+    EFFECT,
     SYNONYMOUS,
     POS,
     ALT
@@ -93,7 +93,7 @@ vcf <- vcf %>%
       TRUE ~ "SNP"
     ),
     Class = case_when(
-      GB_FEATURE == "Intergenic" ~ "Intergenic",
+      EFFECT == "intergenic_region" ~ "Intergenic",
       TRUE ~ SYNONYMOUS
     ),
     POS = as.numeric(POS)
@@ -104,7 +104,7 @@ vcf <- vcf %>%
       NV_class == "INDEL" ~ str_length(ALT) - 1
     ),
     indel_class = case_when(
-      GB_FEATURE == "Intergenic" ~ "Intergenic",
+      EFFECT == "intergenic_region" ~ "Intergenic",
       NV_class == "INDEL" &
         indel_len %% 3 == 0 ~
         "In frame",
@@ -116,7 +116,7 @@ vcf <- vcf %>%
   ungroup() %>%
   mutate(
     group = case_when(
-      GB_FEATURE == "Intergenic" ~ "Intergenic",
+      EFFECT == "intergenic_region" ~ "Intergenic",
       NV_class == "SNP" ~ Class,
       NV_class == "INDEL" ~ indel_class
     )
@@ -446,7 +446,6 @@ window %>%
 # Heterozygous sites per sample table
 vcf_snp %>%
   filter(ALT_FREQ <= snakemake@params$max_alt_freq) %>%
-  select(!GB_FEATURE) %>%
   left_join(
     metadata,
     by = c("SAMPLE" = "ID")

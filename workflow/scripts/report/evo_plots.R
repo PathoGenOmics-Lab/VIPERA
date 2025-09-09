@@ -25,7 +25,6 @@ vcf <- vcf %>%
     VARIANT_NAME,
     REGION,
     ALT_FREQ,
-    GB_FEATURE,
     SYNONYMOUS,
     POS
   )

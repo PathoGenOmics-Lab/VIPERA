@@ -38,7 +38,10 @@ variants <- read_tsv(
 log_info("Reading annotation table")
 annotation <- read_tsv(
   snakemake@input$annot,
-  col_select = c("CHROM", "POS", "REF", "ALT", "VARIANT_NAME"),
+  col_select = c(
+    snakemake@params$snpeff_columns,
+    "VARIANT_NAME"
+  ),
   col_types = list(
     CHROM = col_character(),
     POS = col_integer(),
