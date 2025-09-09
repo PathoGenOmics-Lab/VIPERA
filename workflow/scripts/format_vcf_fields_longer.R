@@ -12,14 +12,6 @@ empty.to.na <- function(x) {
     x
 }
 
-separate_rows_if_exist <- function(df, col, sep) {
-    if (col %in% colnames(df)) {
-        separate_longer_delim(df, all_of(cols), delim = sep)
-    } else {
-        df
-    }
-}
-
 # Replace "" values with NA in R filter list
 # Snakemake passes filters like: list(ERRORS = c(""))
 filter.include <- lapply(snakemake@params$filter_include, empty.to.na)
@@ -34,7 +26,7 @@ read_tsv(snakemake@input$tsv) %>%
         convert = TRUE
     ) %>%
     # Separate &-delimited error column (more than one error/warning/info message per row is possible)
-    separate_rows_if_exist("ERRORS", sep = "&") %>%
+    separate_rows("ERRORS", sep = "&") %>%
     # Rename "...[*]..." columns using the provided lookup via Snakemake config
     rename(all_of(unlist(snakemake@params$colnames_mapping))) %>%
     # Apply dynamic filters from the Snakemake config:
