@@ -21,6 +21,7 @@ VC:
   IVAR_FREQ: 0.05
   IVAR_DEPTH: 30
 ANNOTATION:
+  # see: https://pcingola.github.io/SnpEff/adds/VCFannotationformat_v1.0.pdf
   SNPEFF_COLS:
     CHROM: CHROM
     POS: POS
@@ -36,11 +37,19 @@ ANNOTATION:
     HGVS_P: "ANN[*].HGVS_P"
     HGVS_C: "ANN[*].HGVS_C"
     ERRORS: "ANN[*].ERRORS"
-  FILTER_INCLUDE:  # see: https://pcingola.github.io/SnpEff/adds/VCFannotationformat_v1.0.pdf
-    ERRORS: [""]
+  FILTER_INCLUDE:
   #  IMPACT: [HIGH, MODERATE, LOW]
   FILTER_EXCLUDE:
     EFFECT: [upstream_gene_variant, downstream_gene_variant]
+    ERRORS:
+      - ERROR_CHROMOSOME_NOT_FOUND
+      - ERROR_OUT_OF_CHROMOSOME_RANGE
+      - WARNING_REF_DOES_NOT_MATCH_GENOME
+      - WARNING_SEQUENCE_NOT_AVAILABLE
+      - WARNING_TRANSCRIPT_INCOMPLETE
+      - WARNING_TRANSCRIPT_MULTIPLE_STOP_CODONS
+      - WARNING_TRANSCRIPT_NO_START_CODON
+      - WARNING_TRANSCRIPT_NO_STOP_CODON
   VARIANT_NAME_PATTERN: "{GENE}:{coalesce(HGVS_P, HGVS_C)}"  # dplyr's coalesce finds the first non-missing element
 DEMIX:
   PATHOGEN: "SARS-CoV-2"
