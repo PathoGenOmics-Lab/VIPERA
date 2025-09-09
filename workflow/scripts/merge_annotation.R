@@ -13,7 +13,7 @@ log_info("Reading variants table, replacing REGION with the reference name")
 variants <- read_tsv(
   snakemake@input$tsv,
   col_types = list(
-    CHROM = col_character(),
+    REGION = col_character(),
     POS = col_integer(),
     REF = col_character(),
     ALT = col_character()
