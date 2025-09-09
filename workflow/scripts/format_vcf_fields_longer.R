@@ -19,16 +19,23 @@ filter.exclude <- lapply(snakemake@params$filter_exclude, empty.to.na)
 
 # Process input table
 read_tsv(snakemake@input$tsv) %>%
+    
     # Separate <sep>-delimited "...[*]..." columns (e.g. ANN[*].EFFECT)
     separate_rows(
         contains("[*]"),
         sep = snakemake@params$sep,
         convert = TRUE
     ) %>%
-    # Separate &-delimited error column (more than one error/warning/info message per row is possible)
-    separate_rows("ANN[*].ERRORS", sep = "&") %>%
+    
     # Rename "...[*]..." columns using the provided lookup via Snakemake config
     rename(all_of(unlist(snakemake@params$colnames_mapping))) %>%
+    
+    # Separate &-delimited error column (more than one error/warning/info message per row is possible)
+    mutate(split_errors = strsplit(ERRORS, "&")) %>%
+    # Keep rows with none of the excluded ERRORS terms, if any
+    filter(map_lgl(split_errors, ~ !any(. %in% filter.exclude[["ERRORS"]]))) %>%
+    select(-split_errors) %>%
+    
     # Apply dynamic filters from the Snakemake config:
     # map2 pairs column names (.x) with value vectors (.y) and builds boolean expressions.
     # Inside the expr call, !! injects a single value into each expression.
@@ -48,9 +55,12 @@ read_tsv(snakemake@input$tsv) %>%
             ~ expr(!(.data[[!!.x]] %in% !!.y))
         )
     ) %>%
+    
     # Keep unique rows
     distinct() %>%
+    
     # Assign variant name using the pattern defined via Snakemake config
     mutate(VARIANT_NAME = str_glue(snakemake@params$variant_name_pattern)) %>%
+    
     # Write output file
     write_tsv(snakemake@output$tsv)
