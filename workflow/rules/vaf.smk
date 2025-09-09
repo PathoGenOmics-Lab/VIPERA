@@ -198,7 +198,7 @@ rule merge_annotation:
     conda: "../envs/renv.yaml"
     params:
         ref_name = config["ALIGNMENT_REFERENCE"],
-        snpeff_columns = config["ANNOTATION"]["SNPEFF_COLS"],
+        snpeff_columns = config["ANNOTATION"]["SNPEFF_COLS"].keys(),
     input:
         tsv = OUTDIR/"vaf"/"{sample}.masked.prefiltered.tsv",
         annot = OUTDIR/"vaf"/"{sample}.vcf_fields.longer.tsv",
