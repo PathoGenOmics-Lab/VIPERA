@@ -198,7 +198,6 @@ rule merge_annotation:
     conda: "../envs/renv.yaml"
     params:
         ref_name = config["ALIGNMENT_REFERENCE"],
-        select_columns = config["ANNOTATION"]["SELECT_COLS"],
     input:
         tsv = OUTDIR/"vaf"/"{sample}.masked.prefiltered.tsv",
         annot = OUTDIR/"vaf"/"{sample}.vcf_fields.longer.tsv",

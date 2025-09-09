@@ -51,16 +51,6 @@ ANNOTATION:
       - WARNING_TRANSCRIPT_NO_START_CODON
       - WARNING_TRANSCRIPT_NO_STOP_CODON
   VARIANT_NAME_PATTERN: "{GENE}:{coalesce(HGVS_P, HGVS_C)}"  # dplyr's coalesce finds the first non-missing element
-  SELECT_COLS:
-    - CHROM
-    - POS
-    - REF
-    - ALT
-    - EFFECT
-    - IMPACT
-    - GENE
-    - HGVS_P
-    - HGVS_C
 DEMIX:
   PATHOGEN: "SARS-CoV-2"
   MIN_QUALITY: 20
