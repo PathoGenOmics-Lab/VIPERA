@@ -34,7 +34,7 @@ read_tsv(snakemake@input$tsv) %>%
         convert = TRUE
     ) %>%
     # Separate &-delimited error column (more than one error/warning/info message per row is possible)
-    separate_rows_if_exist("ERRORS", sep = snakemake@params$sep) %>%
+    separate_rows_if_exist("ERRORS", sep = "&") %>%
     # Rename "...[*]..." columns using the provided lookup via Snakemake config
     rename(all_of(unlist(snakemake@params$colnames_mapping))) %>%
     # Apply dynamic filters from the Snakemake config:
