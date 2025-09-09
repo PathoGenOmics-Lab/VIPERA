@@ -39,7 +39,7 @@ log_info("Reading annotation table")
 annotation <- read_tsv(
   snakemake@input$annot,
   col_select = c(
-    unlist(snakemake@params$select_cols),
+    unlist(snakemake@params$select_columns),
     "VARIANT_NAME"
   ),
   col_types = list(
