@@ -7,19 +7,34 @@ sink(log, type = "output")
 
 library(tidyverse)
 
-# Replace "" values with NA in R filter list
-# Snakemake passes filters like: list(ERRORS = c(""))
 empty.to.na <- function(x) {
     x[x == ""] <- NA
     x
 }
+
+separate_rows_if_exist <- function(df, col, sep) {
+    if (col %in% colnames(df)) {
+        separate_longer_delim(df, all_of(cols), delim = sep)
+    } else {
+        df
+    }
+}
+
+# Replace "" values with NA in R filter list
+# Snakemake passes filters like: list(ERRORS = c(""))
 filter.include <- lapply(snakemake@params$filter_include, empty.to.na)
 filter.exclude <- lapply(snakemake@params$filter_exclude, empty.to.na)
 
 # Process input table
 read_tsv(snakemake@input$tsv) %>%
     # Separate <sep>-delimited "...[*]..." columns (e.g. ANN[*].EFFECT)
-    separate_rows(contains("[*]"), sep = snakemake@params$sep, convert = TRUE) %>%
+    separate_rows(
+        contains("[*]"),
+        sep = snakemake@params$sep,
+        convert = TRUE
+    ) %>%
+    # Separate &-delimited error column (more than one error/warning/info message per row is possible)
+    separate_rows_if_exist("ERRORS", sep = snakemake@params$sep) %>%
     # Rename "...[*]..." columns using the provided lookup via Snakemake config
     rename(all_of(unlist(snakemake@params$colnames_mapping))) %>%
     # Apply dynamic filters from the Snakemake config:
