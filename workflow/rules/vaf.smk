@@ -52,22 +52,6 @@ rule snps_to_ancestor:
         """
 
 
-rule annotation:
-    threads:1
-    conda: "../envs/biopython.yaml"
-    shadow: "shallow"
-    input:
-        gb = OUTDIR/"reference.gb",
-        ref = OUTDIR/"reference.fasta",
-        features = Path(config["FEATURES_JSON"]).resolve()
-    output:
-        df = temp(OUTDIR/"annotation.csv")
-    log:
-        LOGDIR / "annotation" / "log.txt"
-    script:
-        "../scripts/report/get_annotation.py"
-
-
 rule mask_tsv:
     threads: 1
     conda: "../envs/biopython.yaml"
@@ -92,8 +76,7 @@ rule filter_tsv:
         min_alt_rv = 2,
         min_alt_dp = 2,
     input: 
-        tsv = OUTDIR/"vaf"/"{sample}.masked.tsv",
-        annotation = OUTDIR/"annotation.csv"
+        tsv = OUTDIR/"vaf"/"{sample}.masked.tsv"
     output:
         filtered_tsv = temp(OUTDIR/"vaf"/"{sample}.masked.prefiltered.tsv")
     log:

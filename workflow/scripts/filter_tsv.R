@@ -43,13 +43,6 @@ data <- mutate(
 # Remove duplicated features
 data <- distinct(data, pick(!GFF_FEATURE), .keep_all = TRUE)
 
-# Change annotation to gb2seq annotation
-features <- read_csv(snakemake@input[["annotation"]])
-
-data <- data %>%
-  left_join(features) %>%
-  rename(GB_FEATURE = GEN)
-
 log_info("Saving results")
 write_tsv(
   data,
