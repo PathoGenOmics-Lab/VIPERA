@@ -35,7 +35,9 @@ ANNOTATION:
     FEATUREID: "ANN[*].FEATUREID"
     HGVS_P: "ANN[*].HGVS_P"
     HGVS_C: "ANN[*].HGVS_C"
+    ERRORS: "ANN[*].ERRORS"
   FILTER_INCLUDE:  # see: https://pcingola.github.io/SnpEff/adds/VCFannotationformat_v1.0.pdf
+    ERRORS: [""]
   #  IMPACT: [HIGH, MODERATE, LOW]
   FILTER_EXCLUDE:
     EFFECT: [upstream_gene_variant, downstream_gene_variant]
