@@ -19,9 +19,7 @@ filter.exclude <- lapply(snakemake@params$filter_exclude, empty.to.na)
 # Process input table
 read_tsv(snakemake@input$tsv) %>%
     # Separate <sep>-delimited "...[*]..." columns (e.g. ANN[*].EFFECT)
-    separate_longer_delim(contains("[*]"), delim = snakemake@params$sep) %>%
-    # Replace empty ("") fields with NA
-    mutate(across(contains("[*]"), ~ na_if(., ""))) %>%
+    separate_rows(contains("[*]"), sep = snakemake@params$sep, convert = TRUE) %>%
     # Rename "...[*]..." columns using the provided lookup via Snakemake config
     rename(all_of(unlist(snakemake@params$colnames_mapping))) %>%
     # Apply dynamic filters from the Snakemake config:

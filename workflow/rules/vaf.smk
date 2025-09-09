@@ -160,7 +160,7 @@ rule extract_vcf_fields:
     log:
         LOGDIR / "tsv_to_vcf" / "{sample}.log.txt"
     shell:
-        'SnpSift extractFields -s {params.sep:q} {input.vcf:q} {params.extract_columns} >{output.tsv:q} 2>{log:q}'
+        "SnpSift extractFields -e 'NA' -s {params.sep:q} {input.vcf:q} {params.extract_columns} >{output.tsv:q} 2>{log:q}"
 
 
 rule format_vcf_fields_longer:
