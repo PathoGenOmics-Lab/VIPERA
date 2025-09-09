@@ -19,7 +19,21 @@ variants <- read_tsv(
     ALT = col_character()
   )
 ) %>%
-  mutate(REGION = snakemake@params$ref_name)
+  mutate(
+    REGION = snakemake@params$ref_name,
+    is_insertion = startsWith(ALT, "+"),
+    is_deletion = startsWith(ALT, "-"),
+    REF_VCF = case_when(
+      is_deletion ~ paste0(REF, substring(ALT, 2)),
+      TRUE ~ REF
+    ),
+    ALT_VCF = case_when(
+      is_insertion ~ paste0(REF, substring(ALT, 2)),
+      is_deletion ~ REF,
+      TRUE ~ ALT
+    )
+  ) %>%
+  select(-is_insertion, -is_deletion)
 
 log_info("Reading annotation table")
 annotation <- read_tsv(
@@ -42,7 +56,12 @@ log_info("Merging tables")
 merged <- left_join(
   variants,
   annotation,
-  by = c("REGION" = "CHROM", "POS", "REF", "ALT")
+  by = c(
+    "REGION" = "CHROM",
+    "POS" = "POS",
+    "REF_VCF" = "REF",
+    "ALT_VCF" = "ALT"
+  )
 )
 
 log_info("Saving results")
