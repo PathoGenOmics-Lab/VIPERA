@@ -52,7 +52,11 @@ vcf <- vcf %>%
 
 # Fill positions without alt frequency with 0
 vcf <- vcf %>%
-  complete(nesting(REGION, VARIANT_NAME, POS), SAMPLE, fill = list(ALT_FREQ = 0))
+  complete(
+    nesting(REGION, VARIANT_NAME, POS),
+    SAMPLE,
+    fill = list(ALT_FREQ = 0)
+  )
 
 # Join variants file and metadata file
 vcf <- left_join(vcf, data, by = c("SAMPLE" = "ID"))
@@ -128,7 +132,7 @@ volcano <- cor.df.fill %>%
     y = trans.p
   ) +
   geom_point() +
-  geom_label_repel(aes(label = label), max.overlaps = 1000) +
+  geom_text_repel(aes(label = label), max.overlaps = 1000, direction = "x") +
   xlim(c(-1, 1)) +
   geom_hline(
     aes(yintercept = -log10(0.05)),
