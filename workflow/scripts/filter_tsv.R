@@ -34,7 +34,7 @@ log_info("Finding synonymous and non synonymous variants")
 # Adding synonymous variable
 data <- mutate(
   data,
-  synonimous = case_when(
+  SYNONYMOUS = case_when(
     REF_AA == ALT_AA ~ "Yes",
     TRUE ~ "No"
   )

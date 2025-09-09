@@ -26,7 +26,7 @@ vcf <- vcf %>%
     REGION,
     ALT_FREQ,
     GB_FEATURE,
-    synonimous,
+    SYNONYMOUS,
     POS
   )
 
@@ -45,12 +45,12 @@ vcf <- left_join(vcf, metadata)
 # PLOT
 log_info("Ploting dN and dS over time")
 plot_df <- vcf %>%
-  group_by(SAMPLE, synonimous) %>%
+  group_by(SAMPLE, SYNONYMOUS) %>%
   summarise(
     Freq = sum(ALT_FREQ, na.rm = TRUE)
   ) %>%
   pivot_wider(
-    names_from = synonimous,
+    names_from = SYNONYMOUS,
     values_from = Freq,
     values_fill = 0
   ) %>%
@@ -135,12 +135,12 @@ ggsave(
 # PLOT TABLES
 log_info("Saving plot table")
 vcf %>%
-  group_by(SAMPLE, synonimous) %>%
+  group_by(SAMPLE, SYNONYMOUS) %>%
   summarise(
     Freq = sum(ALT_FREQ, na.rm = TRUE)
   ) %>%
   pivot_wider(
-    names_from = synonimous,
+    names_from = SYNONYMOUS,
     values_from = Freq,
     values_fill = 0
   ) %>%

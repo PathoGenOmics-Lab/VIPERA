@@ -43,7 +43,7 @@ empty_vcf <- tibble(
   VARIANT_NAME = as.character(NA),
   ALT_FREQ = as.numeric(NA),
   GB_FEATURE = as.character(NA),
-  synonimous = as.character(NA),
+  SYNONYMOUS = as.character(NA),
   POS = as.numeric(NA),
   ALT = as.character(NA),
   NV_class = as.character(NA),
@@ -58,7 +58,7 @@ vcf <- vcf %>%
     VARIANT_NAME,
     ALT_FREQ,
     GB_FEATURE,
-    synonimous,
+    SYNONYMOUS,
     POS,
     ALT
   )
@@ -94,7 +94,7 @@ vcf <- vcf %>%
     ),
     Class = case_when(
       GB_FEATURE == "Intergenic" ~ "Intergenic",
-      TRUE ~ synonimous
+      TRUE ~ SYNONYMOUS
     ),
     POS = as.numeric(POS)
   ) %>%
