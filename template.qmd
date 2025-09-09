@@ -84,10 +84,10 @@ table <- read.csv(params$table)
 n.samples <- table %>% pull(Sample) %>% unique() %>% length()
 
 # Heatmap
-vcf <- read_csv(params$heat_tab) 
-row.names(vcf) <- vcf$`...1`
-vcf <- vcf[-1]
-cor.mat <- cor(vcf, method = params$cor_method)
+heatmap.df <- read_csv(params$heat_tab)
+row.names(heatmap.df) <- heatmap.df$`...1`
+heatmap.df <- heatmap.df[-1]
+cor.mat <- cor(heatmap.df, method = params$cor_method)
 cor.mat[is.na(cor.mat)] <- 0
 if (params$cor_method == "pearson") {
   cor.method.name <- "Pearson's"
@@ -279,7 +279,7 @@ heatmaply_cor(
   cor.mat,
   fontsize_row = 8, 
   fontsize_col = 8,
-  column_text_angle = 90
+  column_text_angle = 45
 )
 ```
 

@@ -29,6 +29,8 @@ vcf <- vcf %>%
     values_fn = sum
   ) %>%
   arrange(factor(SAMPLE, levels = date_order)) %>%
+  # Removes "|"-separated annotations, keeping the first one + ellipsis (clarifies heatmap)
+  rename_with(~ str_replace(., "^([^|]+)\\|.*$", "\\1(...)"), -SAMPLE) %>%
   column_to_rownames(var = "SAMPLE")
 
 log_info("Saving table to create heatmap")
