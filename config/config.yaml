@@ -2,8 +2,6 @@ ALIGNMENT_REFERENCE:
   "NC_045512.2"
 PROBLEMATIC_VCF:
   "https://raw.githubusercontent.com/W-L/ProblematicSites_SARS-CoV2/da322c32004f7b16bdaa6a8ee7fd24d56e79d9dc/problematic_sites_sarsCov2.vcf"
-FEATURES_JSON:
-  "config/sarscov2_features.json"
 COORDINATES_JSON:
   "config/sarscov2_coordinates.json"
 GENETIC_CODE_JSON:
@@ -65,6 +63,19 @@ DEMIX:
 WINDOW:
   WIDTH: 1000
   STEP: 50
+GB_FEATURES:
+  "ORF1ab polyprotein": "ORF1ab"
+  "ORF1a polyprotein": "ORF1ab"
+  "surface glycoprotein": "S"
+  "ORF3a protein": "ORF3a"
+  "envelope protein": "E"
+  "membrane glycoprotein": "M"
+  "ORF6 protein": "ORF6"
+  "ORF7a protein": "ORF7"
+  "ORF7b": "ORF7"
+  "ORF8 protein": "ORF8"
+  "nucleocapsid phosphoprotein": "N"
+  "ORF10 protein": "ORF10"
 GISAID:
   CREDENTIALS: "config/gisaid.yaml"
   DATE_COLUMN: "CollectionDate"

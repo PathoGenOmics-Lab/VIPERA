@@ -44,11 +44,11 @@ rule window:
     conda: "../envs/biopython.yaml"
     params:
         window = config["WINDOW"]["WIDTH"],
-        step = config["WINDOW"]["STEP"]
+        step = config["WINDOW"]["STEP"],
+        select_gb_features = config.get("GB_FEATURES", {}),  # if empty, uses all available features
     input:
         vcf = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         gb = OUTDIR/"reference.gb",
-        features = config["FEATURES_JSON"]
     output:
         window_df = temp(OUTDIR/f"{OUTPUT_NAME}.window.csv"),
     log:
@@ -229,7 +229,7 @@ rule evo_plots:
     params: 
         design = config["PLOTS"]
     input: 
-        N_S = OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv",
+        n_s_sites = OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv",
         vcf =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         metadata = config["METADATA"]
     output:

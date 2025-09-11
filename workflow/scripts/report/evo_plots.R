@@ -15,7 +15,7 @@ source(snakemake@params[["design"]])
 # Read inputs
 vcf <- read_delim(snakemake@input[["vcf"]])
 metadata <- read_delim(snakemake@input[["metadata"]])
-N_S_position <- read_delim(snakemake@input[["N_S"]])
+N_S_position <- read_delim(snakemake@input[["n_s_sites"]])
 
 # DATA PROCESSING
 # Create SNP variable and select useful variables

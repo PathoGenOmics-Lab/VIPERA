@@ -198,8 +198,8 @@ window_plot <- window %>%
   ggplot() +
   aes(
     x = position,
-    y = fractions,
-    color = gen
+    y = fraction,
+    color = feature
   ) +
   geom_point() +
   geom_line(
@@ -209,7 +209,7 @@ window_plot <- window %>%
   ) +
   scale_y_continuous(
     label = scales::percent,
-    limits = c(0, max(window$fractions) + 0.005)
+    limits = c(0, max(window$fraction) + 0.005)
   ) +
   xlim(c(0, 29903)) +
   scale_color_manual(values = GENE_PALETTE) +
@@ -235,7 +235,7 @@ window_plot_nsp <- window_plot +
     data = npc,
     aes(
       x = (summary_start + summary_end) / 2,
-      y = max(window$fractions) + 0.002,
+      y = max(window$fraction) + 0.002,
       label = summary_nsp
     ),
     inherit.aes = FALSE,
@@ -266,9 +266,8 @@ ggsave(
 
 # Zoom in in spike
 log_info("Plotting summary for variants in the spike")
-
 spike_pos <- window %>%
-  filter(gen == "S") %>%
+  filter(feature == "S") %>%
   pull(position)
 
 vcf_spike <- vcf %>%
@@ -278,12 +277,12 @@ vcf_spike <- vcf %>%
   )
 
 window_plot_spike <- window %>%
-  filter(gen == "S") %>%
+  filter(feature == "S") %>%
   ggplot() +
   aes(
     x = position,
-    y = fractions,
-    color = gen
+    y = fraction,
+    color = feature
   ) +
   geom_point() +
   geom_line(
@@ -293,7 +292,7 @@ window_plot_spike <- window %>%
   ) +
   scale_y_continuous(
     label = scales::percent,
-    limits = c(0, max(window$fractions) + 0.005)
+    limits = c(0, max(window$fraction) + 0.005)
   ) +
   xlim(c(min(spike_pos), max(spike_pos))) +
   scale_color_manual(
@@ -438,8 +437,8 @@ vcf %>%
 window %>%
   transmute(
     POS = position,
-    feature = gen,
-    prop_PolymorphicSites = fractions
+    feature = feature,
+    prop_PolymorphicSites = fraction
   ) %>%
   write.csv(snakemake@output[["table_1"]], row.names = FALSE)
 

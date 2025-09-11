@@ -11,7 +11,9 @@ from dark.fasta import FastaReads
 
 def split_into_codons(seq: str) -> list:
     """Split the complete CDS feature in to a list of codons"""
-    codons = [seq[i:i + 3] for i in range(0, len(seq), 3) if "N" not in seq[i:i + 3]]
+    codons = [
+        seq[i:i + 3] for i in range(0, len(seq), 3) if "N" not in seq[i:i + 3]
+    ]
     return codons
 
 
@@ -29,7 +31,7 @@ def calculate_potential_changes(genetic_code: dict) -> dict:
         for codon_p in range(0, 3):
             nts = ["A", "G", "T", "C"]
             # Do not consider self substitutions, e.g. A->A
-            nts.remove(codon[codon_p]) 
+            nts.remove(codon[codon_p])
             for nt in nts:
                 codon_mutated = list(codon)
                 # Mutate the basepair
@@ -43,49 +45,55 @@ def calculate_potential_changes(genetic_code: dict) -> dict:
 
 
 def get_feature_codons(alignment: Gb2Alignment, annotation: list) -> dict:
-    dct = {key:alignment.ntSequences(key)[1].sequence for key in annotation}
-    return {key:split_into_codons(item) for key,item in dct.items()}
+    dct = {key: alignment.ntSequences(key)[1].sequence for key in annotation}
+    return {key: split_into_codons(item) for key, item in dct.items()}
 
 
-def get_df(codons: dict, genetic_code: dict) -> pd.DataFrame:
-    keys = []
+def calculate_ns_sites(codons: dict, genetic_code: dict) -> pd.DataFrame:
+    features = []
     N_sites = []
     S_sites = []
     values = calculate_potential_changes(genetic_code)
     for key, item in codons.items():
-        keys.append(key)
+        features.append(key)
         N = sum([values["N"][x] for x in item if x in values["N"].keys()])
         S = sum([values["S"][x] for x in item if x in values["S"].keys()])
         N_sites.append(N)
-        S_sites.append(S) 
-    return pd.DataFrame({"gene": keys, "N": N_sites, "S": S_sites})
+        S_sites.append(S)
+    return pd.DataFrame({"gene": features, "N": N_sites, "S": S_sites})
 
 
 def main():
 
-    logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
-    
+    logging.basicConfig(
+        filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"],
+        level=logging.INFO
+    )
+
     logging.info("Reading features")
-    with open(snakemake.input.features) as f:
-        feature_list = list(json.load(f).keys())
+    feature_list = list(snakemake.params.gb_features.keys())
 
     logging.info("Reading genetic code")
     with open(snakemake.input.genetic_code) as f:
         genetic_code = json.load(f)
-    
+
     logging.info("Create alignment object")
     features = Features(snakemake.input.gb)
-    seq = list(FastaReads(snakemake.input.fasta))[0]
+    fasta_reads = list(FastaReads(snakemake.input.fasta))
+    if len(fasta_reads) > 1:
+        logging.warning(
+            f"More than one record found in {snakemake.input.fasta}, selecting the first one")
+    seq = fasta_reads[0]
     aln = Gb2Alignment(seq, features)
 
-    logging.info("Splitting ancestral sequence into codons")
-    codons_dict = get_feature_codons(aln, feature_list)
+    logging.info("Splitting input sequence into codons")
+    codons = get_feature_codons(aln, feature_list)
 
     logging.info("Calculating synonymous and non synonymous sites")
-    df = get_df(codons_dict, genetic_code)
+    df = calculate_ns_sites(codons, genetic_code)
 
     logging.info("Saving results")
-    df.to_csv(snakemake.output.csv,index= False)
+    df.to_csv(snakemake.output.csv, index=False)
 
 
 if __name__ == "__main__":
