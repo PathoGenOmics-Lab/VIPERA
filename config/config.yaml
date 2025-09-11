@@ -65,7 +65,6 @@ WINDOW:
   STEP: 50
 GB_FEATURES:
   "ORF1ab polyprotein": "ORF1ab"
-  "ORF1a polyprotein": "ORF1ab"
   "surface glycoprotein": "S"
   "ORF3a protein": "ORF3a"
   "envelope protein": "E"
