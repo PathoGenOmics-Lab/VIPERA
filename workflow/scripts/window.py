@@ -13,18 +13,38 @@ def window_calculation(sites: set, window: int, step: int, gb_features: Features
         if len(gb_features.getFeatureNames(position)) == 0:
             features.append("Intergenic")
         else:
-            # If more than one feature on a site, include both (sorted lexicographically)
-            features.append("|".join(sorted(gb_features.getFeatureNames(position))))
+            # Include all features on site
+            features.append(gb_features.getFeatureNames(position))
         # Add percent (excluding initial and final positions)
         if position - window not in range(1, lim_sup):
             fractions.append(0.0)
         else:
             # Calculate no. of polimorphisms in the window
-            num_snp = len([x for x in sites if x in range(
-                position - window, position + 1)])
+            num_snp = sum(
+                1 for x in sites if x in range(position - window, position + 1)
+            )
             fractions.append(num_snp / window)
         positions.append(position)
     return pd.DataFrame({"position": positions, "fraction": fractions, "feature": features})
+
+
+def select_and_format_features(window_features: set) -> str | None:
+    selected_features = sorted(
+        snakemake.params.select_gb_features[feat]
+        if feat in snakemake.params.select_gb_features
+        for feat in window_features
+    )
+    if len(selected_features) != 0:
+        return "|".join(selected_features)
+    else:
+        return None
+
+
+def format_features(window_features: set) -> str:
+    if len(window_features) != 0:
+        return "|".join(sorted(window_features))
+    else:
+        return None
 
 
 def main():
@@ -50,10 +70,11 @@ def main():
     )
 
     if len(snakemake.params.select_gb_features) != 0:
-        logging.info("Filtering and renaming genbank features")
-        windows = windows[
-            windows.feature.isin(snakemake.params.select_gb_features.keys())
-        ].replace(snakemake.params.select_gb_features)
+        logging.info("Selecting and formatting genbank features")
+        windows.feature = windows.feature.map(select_and_format_features)
+    else:
+        logging.info("Formatting genbank features")
+        windows.feature = windows.feature.map(format_features)
 
     logging.info("Saving results")
     windows.to_csv(snakemake.output.window_df, index=False)
