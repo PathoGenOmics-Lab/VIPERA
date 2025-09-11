@@ -29,7 +29,7 @@ theme_update(
 GENE_PALETTE <- c(
   M = "#B4D4B4",
   N = "#B7B7B8",
-  orf1ab = "#9CC4DC",
+  ORF1ab = "#9CC4DC",
   ORF3a = "#ECB4B7",
   ORF8 = "#996D2B",
   S = "#F5CC9E",
