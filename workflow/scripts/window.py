@@ -30,9 +30,11 @@ def window_calculation(sites: set, window: int, step: int, gb_features: Features
 
 def select_and_format_features(window_features: set) -> str | None:
     selected_features = sorted(
-        snakemake.params.select_gb_features[feat]
-        for feat in window_features
-        if feat in snakemake.params.select_gb_features
+        set(
+            snakemake.params.select_gb_features[feat]
+            for feat in window_features
+            if feat in snakemake.params.select_gb_features
+        )
     )
     if len(selected_features) != 0:
         return "|".join(selected_features)
