@@ -40,8 +40,6 @@ PLOT_GENOME_REGIONS:
   "config/nsp_annotation.csv"
 REPORT_QMD:
   "template.qmd"
-FEATURES_JSON:
-  "config/sarscov2_features.json"
 COORDINATES_JSON:
   "config/sarscov2_coordinates.json"
 GENETIC_CODE_JSON:
