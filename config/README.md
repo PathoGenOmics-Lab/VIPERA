@@ -130,7 +130,6 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
 
 - `ALIGNMENT_REFERENCE`: NCBI accession number of the reference record for sequence alignment.
 - `PROBLEMATIC_VCF`: URL or path of a VCF file containing problematic genome positions for masking.
-- `FEATURES_JSON`: path of a JSON file containing name equivalences of genome features for data visualization.
 - `COORDINATES_JSON`: path of a JSON file containing genome feature coordinates for data visualization.
 - `GENETIC_CODE_JSON`: path of a JSON file containing a genetic code for gene translation.
 - `TREE_MODEL`: substitution model used by IQTREE (see [docs](http://www.iqtree.org/doc/Substitution-Models)).
@@ -155,6 +154,18 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
 - `WINDOW`: sliding window of nucleotide variants per site configuration:
   - `WIDTH`: number of sites within windows.
   - `STEP`: number of sites between windows.
+- `GB_FEATURES`: optional mapping to filter which features from the GenBank file are used
+  by some analyses (e.g. rules `window` and `N_S_sites`).
+  If `GB_FEATURES` is empty or unset, all features are used.
+  Filtering is applied in order:
+  - `INCLUDE`: mapping of qualifier names to sequences of values.
+    If present, only features that match at least one key/value pair in `INCLUDE`
+    are included in the analyses. For example, having `INCLUDE: {gene: [S, N]}` keeps features whose `gene`
+    qualifier equals `S` or `N`.
+  - `EXCLUDE`: mapping of qualifier names to sequences of values.
+    After `INCLUDE` is applied, any feature that matches any key/value pair in `EXCLUDE`
+    is omitted. For example, having `EXCLUDE: {gene: [S, N]}` removes features whose
+    `gene` qualifier equals `S` or `N`.
 - `GISAID`: automatic context download configuration.
   - `CREDENTIALS`: path of the GISAID credentials in YAML format.
   - `DATE_COLUMN`: name of the column that contains sampling dates (YYYY-MM-DD) in the input target metadata.
@@ -169,6 +180,9 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
 - `PLOTS`: path of the R script that sets the design and style of data visualizations.
 - `PLOT_GENOME_REGIONS`: path of a CSV file containing genome regions, e.g. SARS-CoV-2 non-structural protein (NSP) coordinates, for data visualization.
 - `REPORT_QMD`: path of the report template in Quarto markdown (QMD) format.
+
+TODO: describe new entries in config.yaml
+TODO: describe issues with many cores (rules freyja and snps_to_ancestor)
 
 ## Workflow graphs
 
