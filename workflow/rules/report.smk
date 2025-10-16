@@ -45,9 +45,10 @@ rule window:
     params:
         window = config["WINDOW"]["WIDTH"],
         step = config["WINDOW"]["STEP"],
-        select_gb_features = config.get("GB_FEATURES", {}),  # if empty, uses all available features
+        features = config.get("GB_FEATURES", {}),
+        gb_qualifier_display = "gene"
     input:
-        vcf = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         gb = OUTDIR/"reference.gb",
     output:
         window_df = temp(OUTDIR/f"{OUTPUT_NAME}.window.csv"),

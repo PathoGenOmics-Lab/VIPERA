@@ -1,52 +1,57 @@
 #!/usr/bin/env python3
 
 import logging
-import json
 import pandas as pd
-from gb2seq.features import Features
+from typing import NewType, Dict, Iterable, List
+
+from Bio import SeqIO
+from Bio.SeqFeature import SeqFeature
+from Bio.SeqFeature import CompoundLocation, FeatureLocation
 
 
-def window_calculation(sites: set, window: int, step: int, gb_features: Features) -> pd.DataFrame:
+FeatureIndex = NewType("FeatureIndex", Dict[str, FeatureLocation | CompoundLocation])
+
+
+def index_features(features: Iterable[SeqFeature]) -> FeatureIndex:
+    index = FeatureIndex({})
+    for feature in features:
+        identifier = "|".join(feature.qualifiers.get(snakemake.params.gb_qualifier_display, []))
+        if identifier == "":
+            logging.error(f"Feature at {feature.location} has no qualifier '{snakemake.params.gb_qualifier_display}' and will be skipped")
+        elif feature.location is None:
+            logging.warning(f"Feature '{identifier}' has no location and will be skipped")
+        elif identifier in index:
+            logging.warning(f"Identifier '{identifier}' is already in feature index and will not be replaced by feature at {feature.location}")
+        else:
+            index[identifier] = feature.location
+    return index
+
+
+def feature_names_at(position: int, feature_index: FeatureIndex) -> List[str]:
+    return [name for name, location in feature_index.items() if position in location]
+
+
+def window_calculation(sites: set, window: int, step: int, size: int, feature_index: FeatureIndex) -> pd.DataFrame:
     positions, fractions, features = [], [], []
-    lim_sup = len(gb_features.reference.sequence) + 1
+    lim_sup = size + 1
     for position in range(1, lim_sup, step):
-        if len(gb_features.getFeatureNames(position)) == 0:
+        feature_names = ";".join(feature_names_at(position, feature_index))
+        if len(feature_names) == 0:
             features.append("Intergenic")
         else:
             # Include all features on site
-            features.append(gb_features.getFeatureNames(position))
+            features.append(feature_names)
         # Add percent (excluding initial and final positions)
         if position - window not in range(1, lim_sup):
             fractions.append(0.0)
         else:
-            # Calculate no. of polimorphisms in the window
+            # Calculate number of polymorphisms in the window
             num_snp = sum(
                 1 for x in sites if x in range(position - window, position + 1)
             )
             fractions.append(num_snp / window)
         positions.append(position)
     return pd.DataFrame({"position": positions, "fraction": fractions, "feature": features})
-
-
-def select_and_format_features(window_features: set) -> str | None:
-    selected_features = sorted(
-        set(
-            snakemake.params.select_gb_features[feat]
-            for feat in window_features
-            if feat in snakemake.params.select_gb_features
-        )
-    )
-    if len(selected_features) != 0:
-        return "|".join(selected_features)
-    else:
-        return None
-
-
-def format_features(window_features: set) -> str:
-    if len(window_features) != 0:
-        return "|".join(sorted(window_features))
-    else:
-        return None
 
 
 def main():
@@ -56,27 +61,46 @@ def main():
         level=logging.INFO
     )
 
-    logging.info("Reading input VCF")
-    df = pd.read_table(snakemake.input.vcf)
+    # Read input files
+    logging.info("Reading input variants file")
+    df = pd.read_table(snakemake.input.variants)
     sites = set(df.POS)
 
-    logging.info("Reading genbank features")
-    features = Features(snakemake.input.gb)
+    logging.info("Reading GenBank file")
+    gb = SeqIO.read(snakemake.input.gb, format="gb")
+
+    # Build feature iterator given the provided filters
+    if len(snakemake.params.features) == 0:
+        logging.debug("Selecting all features")
+        feature_iterator = iter(gb.features)
+    else:
+        included = snakemake.params.features.get("include", {})
+        excluded = snakemake.params.features.get("exclude", {})
+        logging.debug(f"Selecting features including any of {included} and excluding all of {excluded}")
+        feature_iterator = (
+            feature for feature in gb.features
+            if any(
+                (qualifier_value in included.get(qualifier_key, []))
+                for qualifier_key in included.keys()
+                for qualifier_value in feature.qualifiers.get(qualifier_key, [])
+            ) and all(
+                (qualifier_value not in excluded.get(qualifier_key, []))
+                for qualifier_key in excluded.keys()
+                for qualifier_value in feature.qualifiers.get(qualifier_key, [])
+            )
+        )
+
+    logging.info("Indexing feature locations")
+    feature_index = index_features(feature_iterator)
 
     logging.info("Calculating polimorphic sites sliding window")
     windows = window_calculation(
         sites,
         snakemake.params.window,
         snakemake.params.step,
-        features
+        len(gb),
+        feature_index
     )
-
-    if len(snakemake.params.select_gb_features) != 0:
-        logging.info("Selecting and formatting genbank features")
-        windows.feature = windows.feature.map(select_and_format_features)
-    else:
-        logging.info("Formatting genbank features")
-        windows.feature = windows.feature.map(format_features)
 
     logging.info("Saving results")
     windows.to_csv(snakemake.output.window_df, index=False)
