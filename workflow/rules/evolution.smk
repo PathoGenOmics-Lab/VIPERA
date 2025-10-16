@@ -2,7 +2,8 @@ rule N_S_sites:
     threads: 1
     conda: "../envs/biopython.yaml"
     params:
-        gb_features = config["GB_FEATURES"],
+        features = config.get("GB_FEATURES", {}),
+        gb_qualifier_display = "gene",
     input:
         fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
         gb = OUTDIR/"reference.gb",

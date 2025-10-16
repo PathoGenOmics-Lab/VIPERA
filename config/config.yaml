@@ -64,17 +64,20 @@ WINDOW:
   WIDTH: 1000
   STEP: 50
 GB_FEATURES:
-  "ORF1ab polyprotein": "ORF1ab"
-  "surface glycoprotein": "S"
-  "ORF3a protein": "ORF3a"
-  "envelope protein": "E"
-  "membrane glycoprotein": "M"
-  "ORF6 protein": "ORF6"
-  "ORF7a protein": "ORF7"
-  "ORF7b": "ORF7"
-  "ORF8 protein": "ORF8"
-  "nucleocapsid phosphoprotein": "N"
-  "ORF10 protein": "ORF10"
+  include:        # any
+    product:
+      - "ORF1ab polyprotein"
+      - "surface glycoprotein"
+      - "ORF3a protein"
+      - "envelope protein"
+      - "membrane glycoprotein"
+      - "ORF6 protein"
+      - "ORF7a protein"
+      - "ORF7b"
+      - "ORF8 protein"
+      - "nucleocapsid phosphoprotein"
+      - "ORF10 protein"
+  # exclude: ...  # all
 GISAID:
   CREDENTIALS: "config/gisaid.yaml"
   DATE_COLUMN: "CollectionDate"

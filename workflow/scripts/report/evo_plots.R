@@ -81,19 +81,19 @@ plot <- plot_df %>%
   geom_point(size = 3) +
   geom_line() +
   scale_color_manual(
-    name = "Parameter",
+    name = "",
     labels = DNDS_LABELS,
     values = DNDS_COLORS
   ) +
   scale_shape_manual(
-    name = "Parameter",
+    name = "",
     values = DNDS_SHAPES,
     labels = DNDS_LABELS
   ) +
   labs(
     y = "Substitution rate",
     x = "Days since the initial sampling",
-    color = "Parameter"
+    color = ""
   )
 
 ggsave(
@@ -119,7 +119,7 @@ plot_omega <- plot_df %>%
   labs(
     y = "w (dN/dS)",
     x = "Days since the initial sampling",
-    color = "Parameter"
+    color = ""
   )
 
 ggsave(
