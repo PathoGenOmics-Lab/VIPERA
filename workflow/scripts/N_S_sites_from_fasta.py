@@ -89,8 +89,8 @@ def main():
         logging.debug("Selecting all features")
         feature_iterator = iter(gb.features)
     else:
-        included = snakemake.params.features.get("include", {})
-        excluded = snakemake.params.features.get("exclude", {})
+        included = snakemake.params.features.get("INCLUDE", {})
+        excluded = snakemake.params.features.get("EXCLUDE", {})
         logging.debug(f"Selecting features including any of {included} and excluding all of {excluded}")
         feature_iterator = (
             feature for feature in gb.features

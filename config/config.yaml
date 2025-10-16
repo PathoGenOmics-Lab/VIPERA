@@ -64,7 +64,7 @@ WINDOW:
   WIDTH: 1000
   STEP: 50
 GB_FEATURES:
-  include:        # any
+  INCLUDE:        # any
     product:
       - "ORF1ab polyprotein"
       - "surface glycoprotein"
@@ -77,7 +77,7 @@ GB_FEATURES:
       - "ORF8 protein"
       - "nucleocapsid phosphoprotein"
       - "ORF10 protein"
-  # exclude: ...  # all
+  # EXCLUDE: ...  # all
 GISAID:
   CREDENTIALS: "config/gisaid.yaml"
   DATE_COLUMN: "CollectionDate"
