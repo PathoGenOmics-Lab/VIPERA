@@ -3,11 +3,12 @@
 import logging
 import json
 import itertools as it
-from typing import Dict
+from typing import Dict, Iterable
 
 import pandas as pd
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
+from Bio.SeqFeature import SeqFeature
 from Bio.Seq import Seq
 
 
@@ -68,6 +69,54 @@ def calculate_ns_sites(codons: dict, genetic_code: dict) -> pd.DataFrame:
     return pd.DataFrame({"feature": features, "N": N_sites, "S": S_sites})
 
 
+def iter_features_filtering(features: Iterable[SeqFeature], included: Dict[str, str], excluded: Dict[str, str]) -> Iterable[SeqFeature]:
+    # No filters
+    if len(included) == 0 and len(excluded) == 0:
+        logging.debug("Selecting all features")
+        return iter(features)
+    # Only inclusion filter
+    elif len(included) == 0 and len(excluded) != 0:
+        logging.debug(f"Selecting features excluding all of {excluded}")
+        return (
+            feature for feature in features
+            if all(
+                (qualifier_value not in excluded.get(qualifier_key, []))
+                for qualifier_key in excluded.keys()
+                for qualifier_value in feature.qualifiers.get(qualifier_key, [])
+            )
+        )
+    # Only exclusion filter
+    elif len(included) != 0 and len(excluded) == 0:
+        logging.debug(f"Selecting features including any of {included}")
+        return (
+            feature for feature in features
+            if any(
+                (qualifier_value in included.get(qualifier_key, []))
+                for qualifier_key in included.keys()
+                for qualifier_value in feature.qualifiers.get(qualifier_key, [])
+            )
+        )
+    # Inclusion then exclusion filter
+    else:
+        logging.debug(f"Selecting features including any of {included} and then excluding all of {excluded}")
+        included_features = (
+            feature for feature in features
+            if any(
+                (qualifier_value in included.get(qualifier_key, []))
+                for qualifier_key in included.keys()
+                for qualifier_value in feature.qualifiers.get(qualifier_key, [])
+            )
+        )
+        return (
+            feature for feature in included_features
+            if all(
+                (qualifier_value not in excluded.get(qualifier_key, []))
+                for qualifier_key in excluded.keys()
+                for qualifier_value in feature.qualifiers.get(qualifier_key, [])
+            )
+        )
+
+
 def main():
 
     logging.basicConfig(
@@ -85,29 +134,11 @@ def main():
     logging.info("Reading input FASTA")
     record = read_monofasta(snakemake.input.fasta)
 
-    if len(snakemake.params.features) == 0:
-        logging.debug("Selecting all features")
-        feature_iterator = iter(gb.features)
-    else:
-        included = snakemake.params.features.get("INCLUDE", {})
-        excluded = snakemake.params.features.get("EXCLUDE", {})
-        logging.debug(f"Selecting features including any of {included} and excluding all of {excluded}")
-        feature_iterator = (
-            feature for feature in gb.features
-            if any(
-                (qualifier_value in included.get(qualifier_key, []))
-                for qualifier_key in included.keys()
-                for qualifier_value in feature.qualifiers.get(qualifier_key, [])
-            ) and all(
-                (qualifier_value not in excluded.get(qualifier_key, []))
-                for qualifier_key in excluded.keys()
-                for qualifier_value in feature.qualifiers.get(qualifier_key, [])
-            )
-        )
-
     logging.info("Extracting CDS")
     coding_records = {}
-    for feature in feature_iterator:
+    included = snakemake.params.features.get("INCLUDE", {})
+    excluded = snakemake.params.features.get("EXCLUDE", {})
+    for feature in iter_features_filtering(gb.features, included, excluded):
         logging.debug(
             "Processing SeqFeature: "
             f"ID={feature.id} type={feature.type} location={feature.location} "
@@ -121,6 +152,7 @@ def main():
         elif identifier in coding_records:
             logging.warning(f"Identifier '{identifier}' is already among coding records and will not be replaced by feature at {feature.location}")
         else:
+            logging.debug(f"Adding feature")
             coding_records[identifier] = feature.extract(record)
 
     logging.info(f"Splitting {len(coding_records)} records into codons")

@@ -1,15 +1,62 @@
 #!/usr/bin/env python3
 
 import logging
-import pandas as pd
 from typing import NewType, Dict, Iterable, List
 
+import pandas as pd
 from Bio import SeqIO
-from Bio.SeqFeature import SeqFeature
-from Bio.SeqFeature import CompoundLocation, FeatureLocation
+from Bio.SeqFeature import SeqFeature, SimpleLocation, CompoundLocation
 
 
-FeatureIndex = NewType("FeatureIndex", Dict[str, FeatureLocation | CompoundLocation])
+FeatureIndex = NewType("FeatureIndex", Dict[str, SimpleLocation | CompoundLocation])
+
+
+def iter_features_filtering(features: Iterable[SeqFeature], included: Dict[str, str], excluded: Dict[str, str]) -> Iterable[SeqFeature]:
+    # No filters
+    if len(included) == 0 and len(excluded) == 0:
+        logging.debug("Selecting all features")
+        return iter(features)
+    # Only inclusion filter
+    elif len(included) == 0 and len(excluded) != 0:
+        logging.debug(f"Selecting features excluding all of {excluded}")
+        return (
+            feature for feature in features
+            if all(
+                (qualifier_value not in excluded.get(qualifier_key, []))
+                for qualifier_key in excluded.keys()
+                for qualifier_value in feature.qualifiers.get(qualifier_key, [])
+            )
+        )
+    # Only exclusion filter
+    elif len(included) != 0 and len(excluded) == 0:
+        logging.debug(f"Selecting features including any of {included}")
+        return (
+            feature for feature in features
+            if any(
+                (qualifier_value in included.get(qualifier_key, []))
+                for qualifier_key in included.keys()
+                for qualifier_value in feature.qualifiers.get(qualifier_key, [])
+            )
+        )
+    # Inclusion then exclusion filter
+    else:
+        logging.debug(f"Selecting features including any of {included} and then excluding all of {excluded}")
+        included_features = (
+            feature for feature in features
+            if any(
+                (qualifier_value in included.get(qualifier_key, []))
+                for qualifier_key in included.keys()
+                for qualifier_value in feature.qualifiers.get(qualifier_key, [])
+            )
+        )
+        return (
+            feature for feature in included_features
+            if all(
+                (qualifier_value not in excluded.get(qualifier_key, []))
+                for qualifier_key in excluded.keys()
+                for qualifier_value in feature.qualifiers.get(qualifier_key, [])
+            )
+        )
 
 
 def index_features(features: Iterable[SeqFeature]) -> FeatureIndex:
@@ -69,29 +116,12 @@ def main():
     logging.info("Reading GenBank file")
     gb = SeqIO.read(snakemake.input.gb, format="gb")
 
-    # Build feature iterator given the provided filters
-    if len(snakemake.params.features) == 0:
-        logging.debug("Selecting all features")
-        feature_iterator = iter(gb.features)
-    else:
-        included = snakemake.params.features.get("INCLUDE", {})
-        excluded = snakemake.params.features.get("EXCLUDE", {})
-        logging.debug(f"Selecting features including any of {included} and excluding all of {excluded}")
-        feature_iterator = (
-            feature for feature in gb.features
-            if any(
-                (qualifier_value in included.get(qualifier_key, []))
-                for qualifier_key in included.keys()
-                for qualifier_value in feature.qualifiers.get(qualifier_key, [])
-            ) and all(
-                (qualifier_value not in excluded.get(qualifier_key, []))
-                for qualifier_key in excluded.keys()
-                for qualifier_value in feature.qualifiers.get(qualifier_key, [])
-            )
-        )
-
     logging.info("Indexing feature locations")
-    feature_index = index_features(feature_iterator)
+    included = snakemake.params.features.get("INCLUDE", {})
+    excluded = snakemake.params.features.get("EXCLUDE", {})
+    feature_index = index_features(
+        iter_features_filtering(gb.features, included, excluded)
+    )
 
     logging.info("Calculating polimorphic sites sliding window")
     windows = window_calculation(
