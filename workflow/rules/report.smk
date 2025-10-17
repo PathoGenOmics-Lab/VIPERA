@@ -240,24 +240,84 @@ rule dnds_plots:
         "../scripts/report/dnds_plots.R"
 
 
-rule snp_plots:
+rule af_time_correlation_per_snp_data:
+    conda: "../envs/renv.yaml"
+    params:
+        cor_method = config["COR"]["METHOD"],
+        cor_exact = config["COR"]["EXACT"],
+    input:
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        metadata = config["METADATA"],
+    output:
+        fmt_variants = temp(OUTDIR/f"{OUTPUT_NAME}.variants.filled.dated.tsv"),
+        correlations = report(REPORT_DIR_TABLES/"af_time_correlation_per_snp.csv"),  # fig 6
+    log:
+        LOGDIR / "af_time_correlation_per_snp_data" / "log.txt"
+    script:
+        "../scripts/report/af_time_correlation_per_snp_data.R"
+
+
+rule af_time_correlation_per_snp_plot:
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"],
-        cor_method = config["COR"]["METHOD"],
-        cor_exact = config["COR"]["EXACT"]
     input:
-        vcf =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        metadata = config["METADATA"]
+        correlations = REPORT_DIR_TABLES/"af_time_correlation_per_snp.csv",
     output:
-        pseudovolcano = report(REPORT_DIR_PLOTS/"figure_6.png"),
-        snp_panel = report(REPORT_DIR_PLOTS/"figure_7.png"),
-        table_1 = report(REPORT_DIR_TABLES/"figure_6.csv"),
-        table_2 = report(REPORT_DIR_TABLES/"figure_7.csv")
+        plot = report(REPORT_DIR_PLOTS/"af_time_correlation_per_snp.png"),  # fig 6
     log:
-        LOGDIR / "snp_plots" / "log.txt"
+        LOGDIR / "af_time_correlation_per_snp_plot" / "log.txt"
     script:
-        "../scripts/report/snp_plots.R"
+        "../scripts/report/af_time_correlation_per_snp_plot.R"
+
+
+rule af_trajectory_panel_data:  # panel with AF trajectories in time
+    # TODO
+    conda: "../envs/renv.yaml"
+    input:
+        fmt_variants = OUTDIR/f"{OUTPUT_NAME}.variants.filled.dated.tsv",
+        correlations = REPORT_DIR_TABLES/"af_time_correlation_per_snp.csv",
+    output:
+        table = report(REPORT_DIR_TABLES/"af_trajectory_panel.csv"),  # fig 7
+    log:
+        LOGDIR / "af_trajectory_panel_data" / "log.txt"
+    script:
+        "../scripts/report/af_trajectory_panel_data.R"
+
+
+rule af_trajectory_panel_plot:  # panel with AF trajectories in time
+    # TODO
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+    input:
+        table = REPORT_DIR_TABLES/"af_trajectory_panel.csv",
+    output:
+        plot = report(REPORT_DIR_PLOTS/"af_trajectory_panel.png"),  # fig 7
+    log:
+        LOGDIR / "af_trajectory_panel_plot" / "log.txt"
+    script:
+        "../scripts/report/af_trajectory_panel_plot.R"
+
+
+# rule snp_plots:
+#     conda: "../envs/renv.yaml"
+#     params:
+#         design = config["PLOTS"],
+#         cor_method = config["COR"]["METHOD"],
+#         cor_exact = config["COR"]["EXACT"]
+#     input:
+#         vcf =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+#         metadata = config["METADATA"]
+#     output:
+#         pseudovolcano = report(REPORT_DIR_PLOTS/"figure_6.png"),
+#         snp_panel = report(REPORT_DIR_PLOTS/"figure_7.png"),
+#         table_1 = report(REPORT_DIR_TABLES/"figure_6.csv"),
+#         table_2 = report(REPORT_DIR_TABLES/"figure_7.csv")
+#     log:
+#         LOGDIR / "snp_plots" / "log.txt"
+#     script:
+#         "../scripts/report/snp_plots.R"
 
 
 rule summary_table:
@@ -284,8 +344,8 @@ rule report:
         fig_cor    = report(REPORT_DIR_PLOTS/"figure_4.png"),
         SNV        = report(REPORT_DIR_PLOTS/"figure_5a.png"),
         SNV_spike  = report(REPORT_DIR_PLOTS/"figure_5b.png"),
-        volcano    = report(REPORT_DIR_PLOTS/"figure_6.png"),
-        panel      = report(REPORT_DIR_PLOTS/"figure_7.png"),
+        volcano    = report(REPORT_DIR_TABLES/"af_time_correlation_per_snp.png"),
+        panel      = report(REPORT_DIR_TABLES/"af_trajectory_panel.png"),
         tree       = report(REPORT_DIR_PLOTS/"allele_freq_tree.png"),
         temest     = report(REPORT_DIR_PLOTS/"time_signal.png"),
         heat_table = report(REPORT_DIR_TABLES/"heatmap.csv"),
