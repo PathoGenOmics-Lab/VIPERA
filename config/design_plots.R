@@ -101,3 +101,9 @@ DNDS_SHAPES <- c(
   dN = 2,
   dS = 4
 )
+
+# Allele frequency trajectories panel color
+ALL.COLORS <- grDevices::colors()
+TRAJECTORY.PANEL.COLORS <- ALL.COLORS[
+  !grepl("(gray|grey|white|snow|azure|beige)", ALL.COLORS)
+]

@@ -33,7 +33,7 @@ p <- correlations %>%
   geom_hline(
     aes(yintercept = -log10(0.05)),
     linetype = 2,
-    color = "orange"
+    color = "red"
   ) +
   labs(
     x = "Correlation coefficient",

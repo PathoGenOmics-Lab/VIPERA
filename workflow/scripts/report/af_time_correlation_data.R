@@ -45,7 +45,7 @@ variants <- left_join(variants, metadata, by = c("SAMPLE" = "ID")) %>%
     CollectionDate
   ) %>%
   mutate(
-    interval = as.numeric(CollectionDate - min(CollectionDate))
+    interval = as.numeric(difftime(CollectionDate, min(CollectionDate), units = "days"))
   )
 
 # Save processed input
@@ -55,11 +55,7 @@ write_csv(variants, snakemake@output$fmt_variants)
 log_info("Calculating correlations")
 log_debug("Calculating unique SNPs")
 # Get list with all different polymorphisms
-unique.snps <- pull(
-  variants,
-  VARIANT_NAME
-) %>%
-  unique()
+unique.snps <- unique(variants$VARIANT_NAME)
 
 # Create an empty dataframe to be filled
 cor.df <- data.frame(
@@ -109,3 +105,34 @@ write_csv(
   correlations,
   snakemake@output[["correlations"]]
 )
+
+log_info("Selecting variants whose allele frequency is significantly correlated with time")
+significant.variants <- correlations %>%
+  filter(p.value.adj < 0.05) %>%
+  pull(variant) %>%
+  unique()
+
+log_info("Significant: {significant.variants}")
+
+log_info("Selecting variants in positions with more than one alternative allele")
+mult.alt.variants <- variants %>%
+  select(
+    VARIANT_NAME,
+    POS
+  ) %>%
+  distinct() %>%
+  group_by(POS) %>%
+  filter(n() > 1) %>%
+  ungroup() %>%
+  pull(VARIANT_NAME) %>%
+  unique()
+
+log_info("Mult all: {mult.alt.variants}")
+
+# Build selected subset to represent
+variant.selection <- unique(c(significant.variants, mult.alt.variants))
+
+log_info("Selection: {variant.selection}")
+
+log_info("Writing selected variants subset")
+write_lines(variant.selection, snakemake@output$subset)
