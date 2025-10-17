@@ -14,3 +14,17 @@ rule N_S_sites:
         LOGDIR / "N_S_sites" / "log.txt"
     script:
         "../scripts/N_S_sites_from_fasta.py"
+
+
+rule dnds_data:
+    conda: "../envs/renv.yaml"
+    input: 
+        n_s_sites = OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv",
+        variants =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        metadata = config["METADATA"]
+    output:
+        table = report(REPORT_DIR_TABLES/"dnds.csv")
+    log:
+        LOGDIR / "dnds_data" / "log.txt"
+    script:
+        "../scripts/dnds_data.R"

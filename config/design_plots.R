@@ -93,11 +93,11 @@ DNDS_LABELS <- c(
 )
 
 DNDS_COLORS <- c(
-  dn = "#E53E47",
-  ds = "#2C47F5"
+  dN = "#E53E47",
+  dS = "#2C47F5"
 )
 
 DNDS_SHAPES <- c(
-  dn = 2,
-  ds = 4
+  dN = 2,
+  dS = 4
 )

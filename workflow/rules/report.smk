@@ -225,22 +225,19 @@ rule time_signal_plot:
         "../scripts/report/time_signal_plot.R"
 
 
-rule evo_plots:
+rule dnds_plots:
     conda: "../envs/renv.yaml"
     params: 
         design = config["PLOTS"]
     input: 
-        n_s_sites = OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv",
-        vcf =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        metadata = config["METADATA"]
+        table = REPORT_DIR_TABLES/"dnds.csv",
     output:
-        plot = report(REPORT_DIR_PLOTS/"figure_11.png"),
-        plot_omega = report(REPORT_DIR_PLOTS/"figure_12.png"),
-        table = report(REPORT_DIR_TABLES/"figure_11.csv")
+        plot_dn_ds = report(REPORT_DIR_PLOTS/"dn_and_ds.png"),
+        plot_omega = report(REPORT_DIR_PLOTS/"dnds.png"),
     log:
         LOGDIR / "evo_plots" / "log.txt"
     script:
-        "../scripts/report/evo_plots.R"
+        "../scripts/report/dnds_plots.R"
 
 
 rule snp_plots:
@@ -292,8 +289,8 @@ rule report:
         tree       = report(REPORT_DIR_PLOTS/"allele_freq_tree.png"),
         temest     = report(REPORT_DIR_PLOTS/"time_signal.png"),
         heat_table = report(REPORT_DIR_TABLES/"heatmap.csv"),
-        evo        = report(REPORT_DIR_PLOTS/"figure_11.png"),
-        omega_plot = report(REPORT_DIR_PLOTS/"figure_12.png"),
+        evo        = report(REPORT_DIR_PLOTS/"dn_and_ds.png"),
+        omega_plot = report(REPORT_DIR_PLOTS/"dnds.png"),
         freyja_ts  = OUTDIR/"demixing"/"freyja_data"/"last_barcode_update.txt",
         value      = REPORT_DIR_TABLES/"diversity.json",
         stats_lm   = REPORT_DIR_TABLES/"time_signal.json",
