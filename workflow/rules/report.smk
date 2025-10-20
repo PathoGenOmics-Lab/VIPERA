@@ -277,6 +277,9 @@ rule af_trajectory_panel_plot:
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"],
+        n_plot_columns = 3,
+        plot_row_height_mm = 35,
+        plot_width_mm = 159.2,
         random_color_seed = 7291,
     input:
         fmt_variants = OUTDIR/f"{OUTPUT_NAME}.variants.filled.dated.tsv",
