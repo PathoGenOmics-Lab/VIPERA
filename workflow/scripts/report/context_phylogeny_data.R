@@ -16,6 +16,13 @@ log_threshold(INFO)
 # Import file with plots style
 source(snakemake@params[["design"]])
 
+# Format tree label for well supported nodes
+TREE_LEGEND_NAMES["boot_alrt_pass"] <- sprintf(
+  TREE_LEGEND_NAMES["boot_alrt_pass"],
+  snakemake@params[["boot_th"]], "%",
+  snakemake@params[["alrt_th"]], "%"
+)
+
 tree_ml <- read.tree(snakemake@input[["tree"]]) %>%
     root(
         snakemake@params[["ref_name"]],

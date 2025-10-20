@@ -128,8 +128,8 @@ rule context_phylogeny_data:
     params:
         design = config["PLOTS"],
         ref_name = config["ALIGNMENT_REFERENCE"],
-        boot_th = 95.0,
-        alrt_th = 80.0,
+        boot_th = config["UFBOOT"]["THRESHOLD"],
+        alrt_th = config["SHALRT"]["THRESHOLD"],
     input:
         target_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
         tree = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
@@ -148,6 +148,8 @@ rule context_phylogeny_plot:
         design = config["PLOTS"],
         plot_height_mm = 119.4,
         plot_width_mm = 159.2,
+        boot_th = config["UFBOOT"]["THRESHOLD"],
+        alrt_th = config["SHALRT"]["THRESHOLD"],
     input:
         tree = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
         json = REPORT_DIR_TABLES/"context_phylogeny.json",
@@ -332,8 +334,8 @@ rule report:
     params:
         workflow_version = get_repo_version(BASE_PATH.as_posix(), __version__),
         min_ivar_freq = config["VC"]["IVAR_FREQ"],
-        ufboot_reps = config["UFBOOT_REPS"],
-        shalrt_reps = config["SHALRT_REPS"],
+        ufboot_reps = config["UFBOOT"]["REPS"],
+        shalrt_reps = config["SHALRT"]["REPS"],
         name = config["OUTPUT_NAME"],
         use_bionj = config["USE_BIONJ"],
         cor_method = config["COR"]["METHOD"],

@@ -76,8 +76,8 @@ rule ml_context_tree:
     params:
         seqtype = "DNA",
         name = OUTPUT_NAME,
-        ufboot = config["UFBOOT_REPS"],
-        alrt = config["SHALRT_REPS"],
+        ufboot = config["UFBOOT"]["REPS"],
+        alrt = config["SHALRT"]["REPS"],
         outgroup = config["ALIGNMENT_REFERENCE"],
         model = config["TREE_MODEL"]
     input:

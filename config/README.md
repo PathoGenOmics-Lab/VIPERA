@@ -133,8 +133,11 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
 - `COORDINATES_JSON`: path of a JSON file containing genome feature coordinates for data visualization.
 - `GENETIC_CODE_JSON`: path of a JSON file containing a genetic code for gene translation.
 - `TREE_MODEL`: substitution model used by IQTREE (see [docs](http://www.iqtree.org/doc/Substitution-Models)).
-- `UFBOOT_REPS`: ultrafast bootstrap replicates for IQTREE (see [UFBoot](https://doi.org/10.1093/molbev/msx281)).
-- `SHALRT_REPS`: Shimodaira–Hasegawa approximate likelihood ratio test bootstrap replicates for IQTREE (see [SH-aLRT](https://doi.org/10.1093/sysbio/syq010)).
+- `UFBOOT` & `SHALRT`: settings for ultrafast bootstrap (see [UFBoot](https://doi.org/10.1093/molbev/msx281))
+  and Shimodaira–Hasegawa approximate likelihood ratio test bootstrap
+  (see [SH-aLRT](https://doi.org/10.1093/sysbio/syq010)) in IQTREE runs:
+  - `REPS`: number of replicates.
+  - `THRESHOLD`: value cutoff for visualization.
 - `VC`: variant calling configuration:
   - `MAX_DEPTH`: maximum depth at a position for `samtools mpileup` (option `-d`).
   - `MIN_QUALITY`: minimum base quality for `samtools mpileup` (option `-Q`).
