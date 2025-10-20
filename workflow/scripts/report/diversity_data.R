@@ -5,6 +5,8 @@ log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
 
+set.seed(snakemake@params$seed)
+
 library(ape)
 library(pegas)
 library(future.apply)

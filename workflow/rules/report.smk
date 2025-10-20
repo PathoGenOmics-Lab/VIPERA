@@ -64,6 +64,7 @@ rule diversity_data:
     params:
         bootstrap_reps = config["DIVERSITY_REPS"],
         aln_reference = config["ALIGNMENT_REFERENCE"],
+        seed = 7291,
     input:
         study_fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
         context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta",
