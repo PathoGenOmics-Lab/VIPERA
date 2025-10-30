@@ -1,12 +1,27 @@
+rule filter_genbank_features:
+    threads: 1
+    conda: "../envs/biopython.yaml"
+    params:
+        included = config.get("GB_FEATURES", {}).get("INCLUDE", {}),
+        excluded = config.get("GB_FEATURES", {}).get("EXCLUDE", {}),
+    input:
+        gb = OUTDIR/"reference.gb",
+    output:
+        gb = OUTDIR/"reference.cds.gb",
+    log:
+        LOGDIR / "filter_genbank_features" / "log.txt"
+    script:
+        "../scripts/filter_genbank_features.py"
+
+
 rule N_S_sites:
     threads: 1
     conda: "../envs/biopython.yaml"
     params:
-        features = config.get("GB_FEATURES", {}),
         gb_qualifier_display = "gene",
     input:
         fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
-        gb = OUTDIR/"reference.gb",
+        gb = OUTDIR/"reference.cds.gb",
         genetic_code = Path(config["GENETIC_CODE_JSON"]).resolve(),
     output:
         csv = temp(OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv"),
