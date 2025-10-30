@@ -130,7 +130,6 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
 
 - `ALIGNMENT_REFERENCE`: NCBI accession number of the reference record for sequence alignment.
 - `PROBLEMATIC_VCF`: URL or path of a VCF file containing problematic genome positions for masking.
-- `COORDINATES_JSON`: path of a JSON file containing genome feature coordinates for data visualization.
 - `GENETIC_CODE_JSON`: path of a JSON file containing a genetic code for gene translation.
 - `TREE_MODEL`: substitution model used by IQTREE (see [docs](http://www.iqtree.org/doc/Substitution-Models)).
 - `UFBOOT` & `SHALRT`: settings for ultrafast bootstrap (see [UFBoot](https://doi.org/10.1093/molbev/msx281))

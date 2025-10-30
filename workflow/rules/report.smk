@@ -95,6 +95,20 @@ rule diversity_plot:
         "../scripts/report/diversity_plot.R"
 
 
+rule extract_genbank_regions:
+    conda: "../envs/biopython.yaml"
+    params:
+        gb_qualifier = "gene",
+    input:
+        gb = OUTDIR/"reference.cds.gb",
+    output:
+        regions = temp(REPORT_DIR_TABLES/"genbank_regions.json"),
+    log:
+        LOGDIR / "extract_genbank_regions" / "log.txt"
+    script:
+        "../scripts/report/extract_genbank_regions.py"
+
+
 rule general_NV_description:
     conda: "../envs/renv.yaml"
     params:
@@ -104,15 +118,15 @@ rule general_NV_description:
         step = config["WINDOW"]["STEP"],
         max_alt_freq = 1.0 - config["VC"]["IVAR_FREQ"]
     input:
-        coordinates = config["COORDINATES_JSON"],
+        coordinates = REPORT_DIR_TABLES/"genbank_regions.json",
         regions = config["PLOT_GENOME_REGIONS"],
         window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
         vcf =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         metadata = config["METADATA"]
     output:
-        fig = report(REPORT_DIR_PLOTS/"figure_5a.png"),
-        fig_s = report(REPORT_DIR_PLOTS/"figure_5b.png"),
-        fig_cor = report(REPORT_DIR_PLOTS/"figure_4.png"),
+        fig = report(REPORT_DIR_PLOTS/"figure_5a.png"),      # panel
+        fig_s = report(REPORT_DIR_PLOTS/"figure_5b.png"),    # panel spike
+        fig_cor = report(REPORT_DIR_PLOTS/"figure_4.png"),   # SNPs vs time
         json = temp(OUTDIR/"summary_nv.json"),
         table_1 = report(REPORT_DIR_TABLES/"figure_5a.csv"),
         table_2 = report(REPORT_DIR_TABLES/"figure_5b.csv"),
