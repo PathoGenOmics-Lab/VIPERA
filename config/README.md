@@ -180,7 +180,7 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
   - `EXACT`: boolean flag indicating whether to compute an exact p-value when possible. This option applies only to certain methods and may be set to `null` (default) to let R decide automatically.
 - `LOG_PY_FMT`: logging format string for Python scripts.
 - `PLOTS`: path of the R script that sets the design and style of data visualizations.
-- `PLOT_GENOME_REGIONS`: path of a CSV file containing genome regions, e.g. SARS-CoV-2 non-structural protein (NSP) coordinates, for data visualization.
+- `PLOT_GENOME_REGIONS`: path of a CSV file containing genome regions, e.g. SARS-CoV-2 non-structural protein (NSP) coordinates, for data visualization (columns: `region`, `start`, `end`).
 - `REPORT_QMD`: path of the report template in Quarto markdown (QMD) format.
 
 TODO: describe new entries in config.yaml

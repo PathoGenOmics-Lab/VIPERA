@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
+import json
 from typing import NewType, Dict, Iterable, List
 
 import pandas as pd
@@ -134,6 +135,13 @@ def main():
 
     logging.info("Saving results")
     windows.to_csv(snakemake.output.window_df, index=False)
+
+    logging.info("Saving window settings to JSON file")
+    with open(snakemake.output.json, "w") as fw:
+        json.dump(
+            {"window": snakemake.params.window, "step": snakemake.params.step},
+            fw
+        )
 
 
 if __name__ == "__main__":

@@ -66,3 +66,8 @@ rule fetch_problematic_vcf:
         select_problematic_vcf()
     shell:
         "curl {params.url} -o {output} -s 2> {log}"
+
+
+rule create_empty_file:
+    output:
+        temp(touch(OUTDIR/"empty.txt"))

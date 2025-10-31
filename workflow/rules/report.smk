@@ -51,7 +51,8 @@ rule window:
         variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         gb = OUTDIR/"reference.gb",
     output:
-        window_df = temp(OUTDIR/f"{OUTPUT_NAME}.window.csv"),
+        window_df = temp(REPORT_DIR_TABLES/"window.csv"),
+        json = temp(REPORT_DIR_TABLES/"window.json"),
     log:
         LOGDIR / "window" / "log.txt"
     script:
@@ -109,32 +110,122 @@ rule extract_genbank_regions:
         "../scripts/report/extract_genbank_regions.py"
 
 
-rule general_NV_description:
+rule polymorphic_sites_over_time_data:
     conda: "../envs/renv.yaml"
     params:
-        samples = expand("{sample}", sample = iter_samples()),
-        design = config["PLOTS"],
-        window = config["WINDOW"]["WIDTH"],
-        step = config["WINDOW"]["STEP"],
-        max_alt_freq = 1.0 - config["VC"]["IVAR_FREQ"]
+        max_alt_freq = 1.0 - config["VC"]["IVAR_FREQ"],
     input:
-        coordinates = REPORT_DIR_TABLES/"genbank_regions.json",
-        regions = config["PLOT_GENOME_REGIONS"],
-        window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
-        vcf =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        metadata = config["METADATA"]
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        metadata = config["METADATA"],
     output:
-        fig = report(REPORT_DIR_PLOTS/"figure_5a.png"),      # panel
-        fig_s = report(REPORT_DIR_PLOTS/"figure_5b.png"),    # panel spike
-        fig_cor = report(REPORT_DIR_PLOTS/"figure_4.png"),   # SNPs vs time
-        json = temp(OUTDIR/"summary_nv.json"),
-        table_1 = report(REPORT_DIR_TABLES/"figure_5a.csv"),
-        table_2 = report(REPORT_DIR_TABLES/"figure_5b.csv"),
-        table_3 = report(REPORT_DIR_TABLES/"figure_4.csv")
+        table = REPORT_DIR_PLOTS/"polymorphic_sites_over_time.csv",
+        json = temp(REPORT_DIR_TABLES/"polymorphic_sites_over_time.json"),
     log:
-        LOGDIR / "general_NV_description" / "log.txt"
+        LOGDIR / "polymorphic_sites_over_time_data" / "log.txt"
     script:
-        "../scripts/report/NV_description.R"
+        "../scripts/report/polymorphic_sites_over_time_data.R"
+
+
+rule polymorphic_sites_over_time_plot:
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+    input:
+        table = REPORT_DIR_PLOTS/"polymorphic_sites_over_time.csv",
+    output:
+        plot = report(REPORT_DIR_PLOTS/"polymorphic_sites_over_time.png"),
+    log:
+        LOGDIR / "polymorphic_sites_over_time_plot" / "log.txt"
+    script:
+        "../scripts/report/polymorphic_sites_over_time_plot.R"
+
+
+rule nv_panel_data:
+    conda: "../envs/renv.yaml"
+    input:
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        metadata = config["METADATA"],
+    output:
+        table = REPORT_DIR_TABLES/"nv_panel.csv",
+        json = temp(REPORT_DIR_TABLES/"nv_panel.json"),
+    log:
+        LOGDIR / "nv_panel_data" / "log.txt"
+    script:
+        "../scripts/report/nv_panel_data.R"
+
+
+rule nv_panel_zoom_on_feature_data:
+    input:
+        table = REPORT_DIR_TABLES/"nv_panel.csv",
+        regions = REPORT_DIR_TABLES/"genbank_regions.json",
+    output:
+        table = temp(REPORT_DIR_TABLES/"nv_panel.{region_name}.csv"),
+    log:
+        LOGDIR / "nv_panel_zoom_on_feature_data" / "{region_name}.log.txt"
+    script:
+        "../scripts/report/nv_panel_zoom_on_feature_data.py"
+
+
+rule window_zoom_on_feature_data:
+    input:
+        table = REPORT_DIR_TABLES/"window.csv",
+        regions = REPORT_DIR_TABLES/"genbank_regions.json",
+    output:
+        table = temp(REPORT_DIR_TABLES/"window.{region_name}.csv"),
+    log:
+        LOGDIR / "window_zoom_on_feature_data" / "{region_name}.log.txt"
+    script:
+        "../scripts/report/window_zoom_on_feature_data.py"
+
+
+rule nv_panel_plot:
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+        window_step = config["WINDOW"]["STEP"],
+        plot_height_mm = 250,
+        plot_width_mm = 240,
+    input:
+        panel = REPORT_DIR_TABLES/"nv_panel.csv",
+        window = REPORT_DIR_TABLES/"window.csv",
+        regions = REPORT_DIR_TABLES/"genbank_regions.json",
+        highlight_window_regions = config["PLOT_GENOME_REGIONS"],
+    output:
+        plot = report(REPORT_DIR_PLOTS/"nv_panel.png"),
+    log:
+        LOGDIR / "nv_panel_plot" / "log.txt"
+    script:
+        "../scripts/report/nv_panel_plot.R"
+
+
+use rule nv_panel_plot as nv_panel_plot_S with:
+    input:
+        panel = REPORT_DIR_TABLES/"nv_panel.S.csv",
+        window = REPORT_DIR_TABLES/"window.S.csv",
+        regions = REPORT_DIR_TABLES/"genbank_regions.json",
+        highlight_window_regions = OUTDIR/"empty.txt",
+    output:
+        plot = report(REPORT_DIR_PLOTS/"nv_panel.S.png"),
+    log:
+        LOGDIR / "nv_panel_plot_S" / "log.txt"
+
+
+rule merge_json_files:
+    input:
+        REPORT_DIR_TABLES/"nv_panel.json",
+        REPORT_DIR_TABLES/"polymorphic_sites_over_time.json",
+        REPORT_DIR_TABLES/"window.json",
+    output:
+        json = REPORT_DIR_TABLES/"nv_panel_summary.json",
+    run:
+        import json
+        result = {}
+        for path in input:
+            with open(path) as f:
+                d = json.load(f)
+            result |= d  # will replace existing keys
+        with open(output.json, "w") as fw:
+            json.dump(result, fw, indent=2)
 
 
 rule context_phylogeny_data:
@@ -329,9 +420,9 @@ rule report:
         demix     = report(REPORT_DIR_PLOTS/"demix.png"),
         tree_ml    = report(REPORT_DIR_PLOTS/"context_phylogeny.png"),
         diversity  = report(REPORT_DIR_PLOTS/"diversity.png"),
-        fig_cor    = report(REPORT_DIR_PLOTS/"figure_4.png"),
-        SNV        = report(REPORT_DIR_PLOTS/"figure_5a.png"),
-        SNV_spike  = report(REPORT_DIR_PLOTS/"figure_5b.png"),
+        fig_cor    = report(REPORT_DIR_PLOTS/"polymorphic_sites_over_time.png"),
+        SNV        = report(REPORT_DIR_PLOTS/"nv_panel.png"),
+        SNV_spike  = report(REPORT_DIR_PLOTS/"nv_panel.S.png"),
         volcano    = report(REPORT_DIR_PLOTS/"af_time_correlation.png"),
         panel      = report(REPORT_DIR_PLOTS/"af_trajectory_panel.png"),
         tree       = report(REPORT_DIR_PLOTS/"allele_freq_tree.png"),
@@ -344,7 +435,7 @@ rule report:
         stats_lm   = REPORT_DIR_TABLES/"time_signal.json",
         stats_ml   = REPORT_DIR_TABLES/"context_phylogeny.json",
         table      = OUTDIR/"summary_table.csv",
-        sum_nv     = OUTDIR/"summary_nv.json",
+        sum_nv     = REPORT_DIR_TABLES/"nv_panel_summary.json",
     params:
         workflow_version = get_repo_version(BASE_PATH.as_posix(), __version__),
         min_ivar_freq = config["VC"]["IVAR_FREQ"],
