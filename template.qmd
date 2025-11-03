@@ -16,7 +16,7 @@ format:
     toc-title: Summary
     number-sections: true
 css: config/report.styles.css
-editor: visual
+editor: source
 params:
   ufboot_reps: ""
   shalrt_reps: ""
@@ -169,7 +169,7 @@ $`r stats[["boot"]]`$% and a SH-aLRT score of $`r stats[["alrt"]]`$% (@fig-tree_
 ![Maximum-likelihood phylogeny with $`r params$ufboot_reps`$ UFBoot
 and $`r params$shalrt_reps`$ SH-aLRT support replicates of the
 target dataset and its context samples. The clade that contains the target
-samples is squared in red.](`r params$tree_ml`){#fig-tree_ml}
+samples is squared.](`r params$tree_ml`){#fig-tree_ml}
 
 ### Nucleotide diversity comparison
 
@@ -238,8 +238,8 @@ The correlation of the allele frequency of each NV with the time since the
 initial sampling has been calculated (@fig-volcano).
 
 ![`r cor.method.name` correlation coefficients and adjusted p-values of
-allele frequencies with time. Red dashed line indicates adjusted $p = 0.05$.
-Labeled dots represent nucleotide variants correlated with time
+allele frequencies with time. The dashed line indicates adjusted (false discovery rate) $p = 0.05$.
+Labeled dots represent nucleotide variants whose allele frequency is correlated with time
 (adjusted $p < 0.05$).](`r params$volcano`){#fig-volcano}
 
 Significantly correlated nucleotide variants are described in more detail in @fig-panel.
@@ -262,8 +262,8 @@ $`r correlation`$ and a p-value of $`r p_value_lm`$. The estimated evolutionary
 rate is $`r sub_rate`$ number of changes per year (@fig-tempest).
 
 ![Scatterplot depicting the relationship between root-to-tip
-distances and the number of days passed since the first sample. The red
-line shows the linear model fit.](`r params$tempest`){#fig-tempest}
+distances and the number of days passed since the first sample. The solid
+line represents the linear model fit.](`r params$tempest`){#fig-tempest}
 
 ### Correlation between alternative alleles
 
@@ -273,13 +273,17 @@ zooming in on specific regions.
 
 ```{r heatmap, echo = F, message = F, fig.align = 'center'}
 #| label: fig-heatmap
-#| fig-cap: "Interactive hierarchically clustered heatmap of the pairwise correlation coefficients between the time series of allele frequencies in the case study."
+#| fig-width: 6.27
+#| fig-height: 6.27
+#| fig-cap: "Interactive hierarchically clustered heatmap of the pairwisecorrelation coefficients between the time series of allele frequencies in the case study."
 
 heatmaply_cor(
   cor.mat,
   fontsize_row = 8, 
   fontsize_col = 8,
-  column_text_angle = 45
+  column_text_angle = 45,
+  width  = 600,
+  height = 600
 )
 ```
 
