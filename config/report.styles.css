@@ -9,15 +9,15 @@
   } 
 
 .title {
-  font-family: Montserrat;
+  font-family: "Noto Sans";
   color: #FFFFFF
 }
 .quarto-title p {
-  font-family: Montserrat;
+  font-family: "Noto Sans";
   color: #FFFFFF
 }
 html {
-  font-family: Montserrat;
+  font-family: "Noto Sans";
   color: #000000;
   text-align: justify;
 }

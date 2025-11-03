@@ -8,13 +8,13 @@ showtext_auto(enable = FALSE)
 showtext_opts(dpi = 200)
 
 # Tema
-font_add_google("Montserrat", "Montserrat")
+font_add_google("Noto Sans", "Noto Sans")
 showtext_auto()
 
 theme_set(theme_minimal())
 
 theme_update(
-  text = element_text(size = 16, family = "Montserrat"),
+  text = element_text(size = 16, family = "Noto Sans"),
   axis.title = element_text(size = 16),
   axis.line = element_line(
     linewidth = 0.5,
