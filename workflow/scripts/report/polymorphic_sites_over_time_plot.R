@@ -25,7 +25,7 @@ p <- df %>%
     alpha = 0.6,
     colour = "orange"
   ) +
-  geom_point(size = 1, shape = 1) +
+  geom_point(size = 2, shape = 1) +
   labs(
     x = "Days since the initial sampling",
     y = "No. of polimorphic sites"

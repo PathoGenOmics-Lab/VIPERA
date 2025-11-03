@@ -39,7 +39,7 @@ annotation <- read_csv(snakemake@input$annotation)
 log_info("Plotting M-L tree with context samples")
 p <- ggtree(tree_ml, layout = "circular") %<+%
   annotation +
-  geom_highlight(node = json$target_mrca, colour = "red", alpha = 0) +
+  geom_highlight(node = json$target_mrca, colour = "orange", alpha = 0) +
   geom_point(aes(color = Class, size = Class)) +
   geom_treescale(1.05 * json$max_tip_length) +
   geom_rootedge(0.05 * json$max_tip_length) +

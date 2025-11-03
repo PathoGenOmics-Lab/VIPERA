@@ -8,7 +8,6 @@ sink(log, type = "output")
 library(tidyverse)
 library(jsonlite)
 library(ape)
-library(ggtree)
 library(logger)
 
 log_threshold(INFO)
@@ -23,40 +22,44 @@ TREE_LEGEND_NAMES["boot_alrt_pass"] <- sprintf(
   snakemake@params[["alrt_th"]], "%"
 )
 
+log_info("Reading tree")
 tree_ml <- read.tree(snakemake@input[["tree"]]) %>%
-    root(
-        snakemake@params[["ref_name"]],
-        resolve.root = TRUE
-    )
+  root(
+    snakemake@params[["ref_name"]],
+    resolve.root = TRUE
+  )
+log_debug("Read tree with {length(tree_ml$node.label)} labels")
 
+log_info("Reading target names from FASTA")
 target_names <- read.dna(
-    snakemake@input[["target_fasta"]],
-    format = "fasta",
-    as.matrix = FALSE,
+  snakemake@input[["target_fasta"]],
+  format = "fasta",
+  as.matrix = FALSE,
 )
+log_debug("Read {length(target_names)} records")
 
+log_info("Processing target names")
 target_names <- target_names[
-    !startsWith(names(target_names), snakemake@config[["ALIGNMENT_REFERENCE"]])
+  !startsWith(names(target_names), snakemake@config[["ALIGNMENT_REFERENCE"]])
 ]
 target_names <- names(target_names)
+log_debug("{length(target_names)} records remaining after processing")
 
 # ML tree with context data
 # Internal nodes color
 # Node labels contain SH-aLRT/UFboot values
+log_info("Reading support values from labels")
+labels <- strsplit(tree_ml$node.label, "/")
 aLRT.values <- sapply(
-    strsplit(tree_ml$node.label, "/"),
-    function(x) {
-        as.numeric(x[1])
-    }
+  labels,
+  function(x) as.numeric(x[1])
 )
-
 bootstrap.values <- sapply(
-    strsplit(tree_ml$node.label, "/"),
-    function(x) {
-        as.numeric(x[2])
-    }
+  labels,
+  function(x) as.numeric(x[2])
 )
 
+log_info("Calculating support mask for the given thresholds")
 aLRT.mask <- aLRT.values >= snakemake@params[["alrt_th"]]
 boot.mask <- bootstrap.values >= snakemake@params[["boot_th"]]
 
@@ -73,15 +76,15 @@ tree_ml.labels <- tree_ml$tip.label[1:tree_ml.nodes]
 tree_ml.node.pass <- c(rep(FALSE, tree_ml.ntips), aLRT.mask & boot.mask)
 
 ml.tree.annot <- tibble(
-    node = 1:tree_ml.nodes,
+  node = 1:tree_ml.nodes,
 ) %>%
-    mutate(
-        Class = case_when(
-            tree_ml.labels %in% target_names ~ TREE_LEGEND_NAMES["tip_label"],
-            tree_ml.node.pass ~ TREE_LEGEND_NAMES["boot_alrt_pass"],
-            TRUE ~ NA
-        )
+  mutate(
+    Class = case_when(
+      tree_ml.labels %in% target_names ~ TREE_LEGEND_NAMES["tip_label"],
+      tree_ml.node.pass ~ TREE_LEGEND_NAMES["boot_alrt_pass"],
+      TRUE ~ NA
     )
+  )
 
 # Write output files
 log_info("Writing tree annotation")
@@ -90,22 +93,22 @@ write_csv(ml.tree.annot, snakemake@output$annotation)
 log_info("Writing JSON data")
 target.node <- tree_ml$node.label[target.mrca - length(tree_ml$tip.label)]
 list(
-    "boot" = strsplit(target.node, "/")[[1]][2] %>% as.numeric(),
-    "alrt" = strsplit(target.node, "/")[[1]][1] %>% as.numeric(),
-    "monophyly" = ifelse(
-        is.monophyletic(tree_ml, target_names),
-        "are",
-        "are not"
-    ),
-    "target_mrca" = target.mrca,
-    "clade_tips" = target.mrca.clade.ntips,
-    "max_tip_length" = max(node.depth.edgelength(tree_ml)[
-        1:length(tree_ml$tip.label)
-    ]),
-    "root" = snakemake@params[["ref_name"]]
+  "boot" = strsplit(target.node, "/")[[1]][2] %>% as.numeric(),
+  "alrt" = strsplit(target.node, "/")[[1]][1] %>% as.numeric(),
+  "monophyly" = ifelse(
+    is.monophyletic(tree_ml, target_names),
+    "are",
+    "are not"
+  ),
+  "target_mrca" = target.mrca,
+  "clade_tips" = target.mrca.clade.ntips,
+  "max_tip_length" = max(node.depth.edgelength(tree_ml)[
+    1:length(tree_ml$tip.label)
+  ]),
+  "root" = snakemake@params[["ref_name"]]
 ) %>%
-    write_json(
-        snakemake@output$json,
-        auto_unbox = TRUE,
-        digits = NA
-    )
+  write_json(
+    snakemake@output$json,
+    auto_unbox = TRUE,
+    digits = NA
+  )

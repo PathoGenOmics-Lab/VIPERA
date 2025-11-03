@@ -29,9 +29,9 @@ p <- time.signal %>%
     method = "lm",
     fill = "gray95",
     alpha = 0.6,
-    color = "red"
+    color = "orange"
   ) +
-  geom_point() +
+  geom_point(size = 2, shape = 1) +
   labs(
     y = "Root-to-tip distance",
     x = "Days since the initial sampling"

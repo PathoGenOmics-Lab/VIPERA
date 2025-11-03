@@ -27,13 +27,18 @@ p <- correlations %>%
     x = coefficient,
     y = trans.p
   ) +
-  geom_point() +
-  geom_text_repel(aes(label = label), max.overlaps = 1000, direction = "x") +
+  geom_text_repel(aes(label = label), max.overlaps = 10000, direction = "x") +
+  geom_point(
+    data = function(x) subset(x, !is.na(label)),
+    color = "orange",
+    size = 2
+  ) +
+  geom_point(size = 2, shape = 1) +
   xlim(c(-1, 1)) +
   geom_hline(
     aes(yintercept = -log10(0.05)),
     linetype = 2,
-    color = "red"
+    color = "orange"
   ) +
   labs(
     x = "Correlation coefficient",
