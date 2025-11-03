@@ -32,7 +32,10 @@ selected.colors <- sample(TRAJECTORY.PANEL.COLORS, length(selected.variants))
 log_debug("Selected color: {selected.colors}")
 p <- variants %>%
   filter(VARIANT_NAME %in% selected.variants) %>%
-  mutate(gPOS = reorder(paste0("g.", POS), POS)) %>%
+  mutate(
+    gPOS = paste0("g.", POS),
+    gPOS = reorder(gPOS, POS)
+  ) %>%
   ggplot() +
   aes(
     x = interval,
