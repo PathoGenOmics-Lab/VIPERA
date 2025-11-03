@@ -130,6 +130,8 @@ rule polymorphic_sites_over_time_plot:
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"],
+        plot_width_mm = 159.2,
+        plot_height_mm = 119.4,
     input:
         table = REPORT_DIR_PLOTS/"polymorphic_sites_over_time.csv",
     output:
@@ -183,8 +185,8 @@ rule nv_panel_plot:
     params:
         design = config["PLOTS"],
         window_step = config["WINDOW"]["STEP"],
-        plot_height_mm = 250,
-        plot_width_mm = 240,
+        plot_height_mm = 250.0,
+        plot_width_mm = 240.0,
     input:
         panel = REPORT_DIR_TABLES/"nv_panel.csv",
         window = REPORT_DIR_TABLES/"window.csv",
@@ -336,7 +338,9 @@ rule time_signal_plot:
 rule dnds_plots:
     conda: "../envs/renv.yaml"
     params: 
-        design = config["PLOTS"]
+        design = config["PLOTS"],
+        plot_height_mm = 119.4,
+        plot_width_mm = 159.2,
     input: 
         table = REPORT_DIR_TABLES/"dnds.csv",
     output:
@@ -370,6 +374,8 @@ rule af_time_correlation_plot:
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"],
+        plot_height_mm = 119.4,
+        plot_width_mm = 159.2,
     input:
         correlations = REPORT_DIR_TABLES/"af_time_correlation.csv",
     output:

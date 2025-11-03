@@ -35,8 +35,8 @@ log_info("Saving plot")
 ggsave(
   filename = snakemake@output$plot,
   plot = p,
-  width = 250,
-  height = 119.4,
+  width = snakemake@params$plot_width_mm,
+  height = snakemake@params$plot_height_mm,
   units = "mm",
   dpi = 250
 )

@@ -53,8 +53,8 @@ p.dn.ds <- plot.df %>%
 ggsave(
   filename = snakemake@output$plot_dn_ds,
   plot = p.dn.ds,
-  width = 159.2,
-  height = 119.4,
+  width = snakemake@params$plot_width_mm,
+  height = snakemake@params$plot_height_mm,
   units = "mm",
   dpi = 250
 )
@@ -78,8 +78,8 @@ p.omega <- plot.df %>%
 ggsave(
   filename = snakemake@output$plot_omega,
   plot = p.omega,
-  width = 159.2,
-  height = 119.4,
+  width = snakemake@params$plot_width_mm,
+  height = snakemake@params$plot_height_mm,
   units = "mm",
   dpi = 250
 )
