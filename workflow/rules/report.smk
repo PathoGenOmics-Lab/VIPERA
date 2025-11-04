@@ -30,7 +30,7 @@ rule demix_plot:
 rule heatmap_plot_data:
     conda: "../envs/renv.yaml"
     input:
-        vcf =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        variants =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         metadata = config["METADATA"]
     output:
         table = report(REPORT_DIR_TABLES/"heatmap.csv")

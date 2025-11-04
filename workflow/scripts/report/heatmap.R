@@ -14,7 +14,7 @@ library(logger)
 
 log_threshold(INFO)
 
-vcf <- read_tsv(snakemake@input[["vcf"]])
+variants <- read_tsv(snakemake@input[["variants"]])
 
 # Obtain sample names ordered by CollectionDate
 date_order <- read_csv(snakemake@input[["metadata"]]) %>%
@@ -22,10 +22,10 @@ date_order <- read_csv(snakemake@input[["metadata"]]) %>%
   pull(ID) %>%
   unique()
 
-# Create SNP variable and select useful variables from vcf
-vcf <- vcf %>% select(VARIANT_NAME, SAMPLE, ALT_FREQ)
+# Create SNP variable and select useful variables
+variants <- variants %>% select(VARIANT_NAME, SAMPLE, ALT_FREQ)
 
-vcf <- vcf %>%
+variants <- variants %>%
   pivot_wider(
     names_from = VARIANT_NAME,
     values_from = ALT_FREQ,
@@ -38,4 +38,4 @@ vcf <- vcf %>%
   column_to_rownames(var = "SAMPLE")
 
 log_info("Saving table to create heatmap")
-write.csv(vcf, snakemake@output[["table"]])
+write.csv(variants, snakemake@output[["table"]])
