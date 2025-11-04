@@ -12,6 +12,16 @@ For example, existing [profiles](https://snakemake.readthedocs.io/en/stable/gett
 are cross-compatible as well, but note that the `--use-conda` flag is deprecated starting with Snakemake 8.
 Instead, use `--software-deployment-method conda`.
 
+## tl;dr
+
+- **Needs**:
+  - Snakemake 7.19 or later.
+  - One FASTA per sample.
+  - One BAM per sample.
+  - One metadata CSV with columns `ID`, `CollectionDate` (YYYY-MM-DD), `ResidenceCity` and `GISAIDEPI` (can be empty).
+- **Setup**: edit [targets.yaml](/config/targets.yaml) (set `SAMPLES` and `METADATA`, at least) or build it using [`build_targets.py`](/build_targets.py). Leave `CONTEXT_FASTA: null` to auto-download from GISAID (needs `config/gisaid.yaml` with your username and password) or set a local FASTA path if download fails (see GISAID disclaimer).
+- **Run**: `snakemake (--use-conda | --sdm conda) -c4`.
+
 ## Inputs and outputs
 
 The workflow requires a set of FASTA files (one per target sample), a corresponding set of
