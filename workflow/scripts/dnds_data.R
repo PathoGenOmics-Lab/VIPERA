@@ -40,7 +40,7 @@ log_debug("Adding metadata to variants table")
 variants <- left_join(variants, metadata)
 
 log_info("Reading N/S sites")
-N_S_position <- read_delim(snakemake@input[["n_s_sites"]])
+n_s_position <- read_delim(snakemake@input[["n_s_sites"]])
 
 log_info("Computing dN/dS over time (NG86)")
 dn.ds <- variants %>%
@@ -54,8 +54,8 @@ dn.ds <- variants %>%
     values_fill = 0
   ) %>%
   transmute(
-    dn = No / sum(N_S_position$N),
-    ds = Yes / sum(N_S_position$S)
+    dn = No / sum(n_s_position$N),
+    ds = Yes / sum(n_s_position$S)
   ) %>%
   ungroup() %>%
   left_join(unique(select(variants, SAMPLE, interval))) %>%

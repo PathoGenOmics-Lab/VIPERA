@@ -157,7 +157,7 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
   - `WIDTH`: number of sites within windows.
   - `STEP`: number of sites between windows.
 - `GB_FEATURES`: optional mapping to filter which features from the GenBank file are used
-  by some analyses (e.g. rules `window` and `N_S_sites`).
+  by some analyses (e.g. rules `window` and `n_s_sites`).
   If `GB_FEATURES` is empty or unset, all features are used.
   Filtering is applied in order:
   - `INCLUDE`: mapping of qualifier names to sequences of values.

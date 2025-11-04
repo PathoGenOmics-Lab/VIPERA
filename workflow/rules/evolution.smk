@@ -14,7 +14,7 @@ rule filter_genbank_features:
         "../scripts/filter_genbank_features.py"
 
 
-rule N_S_sites:
+rule n_s_sites:
     threads: 1
     conda: "../envs/biopython.yaml"
     params:
@@ -24,17 +24,17 @@ rule N_S_sites:
         gb = OUTDIR/"reference.cds.gb",
         genetic_code = Path(config["GENETIC_CODE_JSON"]).resolve(),
     output:
-        csv = temp(OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv"),
+        csv = temp(OUTDIR/f"{OUTPUT_NAME}.ancestor.n_s.sites.csv"),
     log:
-        LOGDIR / "N_S_sites" / "log.txt"
+        LOGDIR / "n_s_sites" / "log.txt"
     script:
-        "../scripts/N_S_sites_from_fasta.py"
+        "../scripts/n_s_sites_from_fasta.py"
 
 
 rule dnds_data:
     conda: "../envs/renv.yaml"
     input: 
-        n_s_sites = OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv",
+        n_s_sites = OUTDIR/f"{OUTPUT_NAME}.ancestor.n_s.sites.csv",
         variants =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         metadata = config["METADATA"]
     output:
