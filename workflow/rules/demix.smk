@@ -67,12 +67,6 @@ rule demix:
     log:
         LOGDIR / "demix" / "{sample}.log.txt"
     shell:
-        "RAYON_NUM_THREADS={threads} "
-        "JULIA_NUM_THREADS={threads} "
-        "BLAS_NUM_THREADS={threads} "
-        "OPENBLAS_NUM_THREADS={threads}"
-        "MKL_NUM_THREADS={threads} "
-        "OMP_NUM_THREADS={threads} "
         "freyja demix "
         "{input.variants_file:q} "
         "{input.depth_file:q} "
@@ -88,6 +82,7 @@ rule demix:
         "--relaxedthresh {params.relaxed_mrca_thresh} "
         "--solver {params.solver} "
         "--output {output.demix_file} "
+        "--max-solver-threads {threads} "
         ">{log} 2>&1"
 
 
