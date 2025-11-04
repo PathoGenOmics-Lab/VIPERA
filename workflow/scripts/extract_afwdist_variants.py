@@ -47,6 +47,14 @@ def build_ancestor_variant_table(ancestor: Seq, reference: Seq, reference_name: 
     return df
 
 
+DTYPES = {
+    "sample": "object",
+    "position": "int64",
+    "sequence": "object",
+    "frequency": "float64"
+}
+
+
 if __name__ == "__main__":
 
     logging.basicConfig(filename=snakemake.log[0], format=snakemake.config["LOG_PY_FMT"], level=logging.INFO)
@@ -81,7 +89,12 @@ if __name__ == "__main__":
     logging.info(f"Combined table has {len(all_variants)} variants")
 
     logging.info("Renaming and selecting columns")
-    output = all_variants.rename(columns=colnames)[list(colnames.values())]
+    output = (
+        all_variants
+        .rename(columns=colnames)
+        [list(colnames.values())]
+        .astype(DTYPES)
+    )
     logging.info("Filtering sites")
     output = output[~output.position.isin(masked_sites)]
     logging.info(f"There are {len(output)} rows left")
