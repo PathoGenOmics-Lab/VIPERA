@@ -1,35 +1,42 @@
-.quarto-title-block .quarto-title-banner {
-    background: #27445C;
-    background-image: url(logo_pathogenomics.png);
-    background-size: 100px;
-    background-position: right;
-    background-repeat: no-repeat;
-    padding-right: 10px;
-    background-origin: content-box; 
-  } 
-
-.title {
-  font-family: "Noto Sans";
-  color: #FFFFFF
-}
-.quarto-title p {
-  font-family: "Noto Sans";
-  color: #FFFFFF
-}
 html {
   font-family: "Noto Sans";
-  color: #000000;
   text-align: justify;
+}
+
+body {
+  color: black;
+}
+
+.quarto-title-block .quarto-title-banner {
+  background-color: #27445C;
+  background-image: url("logo_pathogenomics.png");
+  background-size: 100px;
+  background-position: right;
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  padding-right: 10px;
+  background-blend-mode: normal;
+  filter: none;
+  mix-blend-mode: normal;
+  color: white;
+}
+.quarto-title-block .quarto-title-banner .title,
+.quarto-title-block .quarto-title-banner p {
+  color: inherit;
+  -webkit-text-fill-color: inherit;
+  opacity: 1;
 }
 
 h1, h2, h3 {
   text-align: left;
   font-weight: bold;
+  color: #27445C
 }
+
 #quarto-sidebar-toc-left {
   text-align: left;
 }
 
 .header-section-number {
-  color:#000000
+  color: #27445C
 }

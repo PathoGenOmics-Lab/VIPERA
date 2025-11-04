@@ -423,6 +423,7 @@ rule report:
     shadow: "shallow"
     input:
         qmd        = Path(config["REPORT_QMD"]).resolve(),
+        css        = Path(config["REPORT_CSS"]).resolve(),
         demix      = report(REPORT_DIR_PLOTS/"demix.png"),
         tree_ml    = report(REPORT_DIR_PLOTS/"context_phylogeny.png"),
         diversity  = report(REPORT_DIR_PLOTS/"diversity.png"),
@@ -457,8 +458,9 @@ rule report:
     shell:
         "set +o pipefail; "
         "Rscript -e \"quarto::quarto_render("
-            "input = '{input.qmd}', "
+            "input = '{input.qmd:q}', "
             "execute_params=list("
+                "css='{input.css:q}', "
                 "ufboot_reps='{params.ufboot_reps}', "
                 "shalrt_reps='{params.shalrt_reps}', "
                 "min_ivar_freq='{params.min_ivar_freq}', "

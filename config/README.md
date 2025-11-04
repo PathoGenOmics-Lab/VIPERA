@@ -182,9 +182,7 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
 - `PLOTS`: path of the R script that sets the design and style of data visualizations.
 - `PLOT_GENOME_REGIONS`: path of a CSV file containing genome regions, e.g. SARS-CoV-2 non-structural protein (NSP) coordinates, for data visualization (columns: `region`, `start`, `end`).
 - `REPORT_QMD`: path of the report template in Quarto markdown (QMD) format.
-
-TODO: describe new entries in config.yaml
-TODO: describe issues with many cores (rules freyja and snps_to_ancestor)
+- `REPORT_CSS`: path of the report stylesheet definition in CSS format.
 
 ## Workflow graphs
 

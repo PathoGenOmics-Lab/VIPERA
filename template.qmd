@@ -15,9 +15,10 @@ format:
     toc-location: left
     toc-title: Summary
     number-sections: true
-css: config/report.styles.css
+css: "`r params$css`"
 editor: source
 params:
+  css: ""
   ufboot_reps: ""
   shalrt_reps: ""
   min_ivar_freq: ""
@@ -84,9 +85,9 @@ table <- read.csv(params$table)
 n.samples <- table %>% pull(Sample) %>% unique() %>% length()
 
 # Heatmap
-heatmap.df <- read_csv(params$heat_tab)
+heatmap.df <- read.csv(params$heat_tab)
 row.names(heatmap.df) <- heatmap.df$`...1`
-heatmap.df <- heatmap.df[-1]
+heatmap.df[1] <- NULL
 cor.mat <- cor(heatmap.df, method = params$cor_method)
 cor.mat[is.na(cor.mat)] <- 0
 if (params$cor_method == "pearson") {
@@ -114,8 +115,7 @@ freyja.timestamp <- read_file(params$freyja_ts) %>%
 
 ## Summary of the target samples dataset
 
-```{r summary_table, echo = F,message = F}
-#| label: tbl-summary
+```{r tbl-summary, echo = F,message = F}
 #| tbl-cap: Target dataset summary
 
 table %>%
@@ -268,19 +268,17 @@ line represents the linear model fit.](`r params$tempest`){#fig-tempest}
 ### Correlation between alternative alleles
 
 To detect possible interactions between mutations, pairwise correlation between allele
-frequencies are calculated (@fig-heatmap). The heatmap is an interactive figure that allows
+frequencies have been calculated (@fig-heatmap). The heatmap is an interactive figure that allows
 zooming in on specific regions.
 
-```{r heatmap, echo = F, message = F, fig.align = 'center'}
-#| label: fig-heatmap
-#| fig-width: 6.27
-#| fig-height: 6.27
+```{r fig-heatmap, echo = F, message = F, warning = F, fig.align = 'center'}
 #| fig-cap: "Interactive hierarchically clustered heatmap of the pairwisecorrelation coefficients between the time series of allele frequencies in the case study."
 
 heatmaply_cor(
   cor.mat,
-  fontsize_row = 8, 
-  fontsize_col = 8,
+  grid_gap = 0.25,
+  fontsize_row = 7, 
+  fontsize_col = 7,
   column_text_angle = 45,
   width  = 600,
   height = 600

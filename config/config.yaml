@@ -97,3 +97,5 @@ PLOT_GENOME_REGIONS:
   "config/nsp_annotation.csv"
 REPORT_QMD:
   "template.qmd"
+REPORT_CSS:
+  "config/report.styles.css"
