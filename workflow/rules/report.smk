@@ -423,7 +423,7 @@ rule report:
     shadow: "shallow"
     input:
         qmd        = Path(config["REPORT_QMD"]).resolve(),
-        demix     = report(REPORT_DIR_PLOTS/"demix.png"),
+        demix      = report(REPORT_DIR_PLOTS/"demix.png"),
         tree_ml    = report(REPORT_DIR_PLOTS/"context_phylogeny.png"),
         diversity  = report(REPORT_DIR_PLOTS/"diversity.png"),
         fig_cor    = report(REPORT_DIR_PLOTS/"polymorphic_sites_over_time.png"),
@@ -456,8 +456,7 @@ rule report:
         LOGDIR / "report" / "log.txt"
     shell:
         "set +o pipefail; "
-        "Rscript -e 'library(quarto)' "
-        "-e \"quarto_render("
+        "Rscript -e \"quarto::quarto_render("
             "input = '{input.qmd}', "
             "execute_params=list("
                 "ufboot_reps='{params.ufboot_reps}', "
