@@ -4,7 +4,7 @@ rule demix_plot_data:
         summary_demixing = OUTDIR/"demixing"/"summary.csv",
         metadata = config["METADATA"]
     output:
-        data = report(REPORT_DIR_TABLES/"demix.csv")
+        data = REPORT_DIR_TABLES/"demix.csv"
     log:
         LOGDIR / "demix_plot_data" / "log.txt"
     script:
@@ -121,7 +121,7 @@ rule window_data:
         variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         gb = OUTDIR/"reference.gb",
     output:
-        window_df = temp(REPORT_DIR_TABLES/"window.csv"),
+        window_df = REPORT_DIR_TABLES/"window.csv",
         json = temp(REPORT_DIR_TABLES/"window.json"),
     log:
         LOGDIR / "window_data" / "log.txt"
@@ -264,7 +264,7 @@ rule allele_freq_tree_data:
     input:
         dist = OUTDIR/"distances.csv",
     output:
-        tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
+        tree = REPORT_DIR_TABLES/"allele_freq_tree.nwk",
     log:
         LOGDIR / "allele_freq_tree_data" / "log.txt"
     script:
@@ -299,7 +299,7 @@ rule time_signal_data:
         metadata = config["METADATA"],
     output:
         table = report(REPORT_DIR_TABLES/"time_signal.csv"),
-        json = REPORT_DIR_TABLES/"time_signal.json"
+        json = REPORT_DIR_TABLES/"time_signal.json",
     log:
         LOGDIR / "time_signal_data" / "log.txt"
     script:
@@ -348,7 +348,7 @@ rule af_time_correlation_data:
         variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         metadata = config["METADATA"],
     output:
-        fmt_variants = temp(OUTDIR/f"{OUTPUT_NAME}.variants.filled.dated.tsv"),
+        fmt_variants = temp(REPORT_DIR_TABLES/"variants.filled.dated.tsv"),
         correlations = report(REPORT_DIR_TABLES/"af_time_correlation.csv"),
         subset = REPORT_DIR_TABLES/"af_time_correlation.subset.txt",
     log:
@@ -382,7 +382,7 @@ rule af_trajectory_panel_plot:
         plot_width_mm = 159.2,
         random_color_seed = 7291,
     input:
-        fmt_variants = OUTDIR/f"{OUTPUT_NAME}.variants.filled.dated.tsv",
+        fmt_variants = REPORT_DIR_TABLES/"variants.filled.dated.tsv",
         subset = REPORT_DIR_TABLES/"af_time_correlation.subset.txt"
     output:
         plot = report(REPORT_DIR_PLOTS/"af_trajectory_panel.png"),
@@ -398,7 +398,7 @@ rule summary_table:
         report = report(OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv"),
         metadata = config["METADATA"]
     output:
-        table = temp(OUTDIR/"summary_table.csv")
+        table = REPORT_DIR_TABLES/"summary_table.csv"
     log:
         LOGDIR / "summary_table" / "log.txt"
     script:
