@@ -27,38 +27,6 @@ rule demix_plot:
         "../scripts/report/demix_plot.R"
 
 
-rule heatmap_plot_data:
-    conda: "../envs/renv.yaml"
-    input:
-        variants =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        metadata = config["METADATA"]
-    output:
-        table = report(REPORT_DIR_TABLES/"heatmap.csv")
-    log:
-        LOGDIR / "heatmap" / "log.txt"
-    script:
-        "../scripts/report/heatmap.R"
-
-
-rule window:
-    conda: "../envs/biopython.yaml"
-    params:
-        window = config["WINDOW"]["WIDTH"],
-        step = config["WINDOW"]["STEP"],
-        features = config.get("GB_FEATURES", {}),
-        gb_qualifier_display = "gene"
-    input:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        gb = OUTDIR/"reference.gb",
-    output:
-        window_df = temp(REPORT_DIR_TABLES/"window.csv"),
-        json = temp(REPORT_DIR_TABLES/"window.json"),
-    log:
-        LOGDIR / "window" / "log.txt"
-    script:
-        "../scripts/window.py"
-
-
 rule diversity_data:
     threads: 4
     conda: "../envs/renv.yaml"
@@ -140,6 +108,25 @@ rule polymorphic_sites_over_time_plot:
         LOGDIR / "polymorphic_sites_over_time_plot" / "log.txt"
     script:
         "../scripts/report/polymorphic_sites_over_time_plot.R"
+
+
+rule window_data:
+    conda: "../envs/biopython.yaml"
+    params:
+        window = config["WINDOW"]["WIDTH"],
+        step = config["WINDOW"]["STEP"],
+        features = config.get("GB_FEATURES", {}),
+        gb_qualifier_display = "gene"
+    input:
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        gb = OUTDIR/"reference.gb",
+    output:
+        window_df = temp(REPORT_DIR_TABLES/"window.csv"),
+        json = temp(REPORT_DIR_TABLES/"window.json"),
+    log:
+        LOGDIR / "window_data" / "log.txt"
+    script:
+        "../scripts/report/window_data.py"
 
 
 rule nv_panel_data:
@@ -275,7 +262,7 @@ rule allele_freq_tree_data:
         use_bionj = config["USE_BIONJ"],
         ref_name = config["ALIGNMENT_REFERENCE"],
     input:
-        dist = REPORT_DIR_TABLES/"distances.csv",
+        dist = OUTDIR/"distances.csv",
     output:
         tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
     log:
@@ -434,9 +421,9 @@ rule report:
         panel      = report(REPORT_DIR_PLOTS/"af_trajectory_panel.png"),
         tree       = report(REPORT_DIR_PLOTS/"allele_freq_tree.png"),
         temest     = report(REPORT_DIR_PLOTS/"time_signal.png"),
-        heat_table = report(REPORT_DIR_TABLES/"heatmap.csv"),
         evo        = report(REPORT_DIR_PLOTS/"dn_and_ds.png"),
         omega_plot = report(REPORT_DIR_PLOTS/"dnds.png"),
+        heat_table = report(OUTDIR/"vaf"/"pairwise_trajectory_correlation.csv"),
         freyja_ts  = OUTDIR/"demixing"/"freyja_data"/"last_barcode_update.txt",
         value      = REPORT_DIR_TABLES/"diversity.json",
         stats_lm   = REPORT_DIR_TABLES/"time_signal.json",

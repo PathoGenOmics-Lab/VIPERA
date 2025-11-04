@@ -203,3 +203,16 @@ use rule concat_vcf_fields as concat_variants with:
         expand(OUTDIR/"vaf"/"{sample}.variants.tsv", sample=iter_samples()),
     output:
         OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+
+
+rule pairwise_trajectory_correlation:
+    conda: "../envs/renv.yaml"
+    input:
+        variants =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        metadata = config["METADATA"],
+    output:
+        table = report(OUTDIR/"vaf"/"pairwise_trajectory_correlation.csv"),
+    log:
+        LOGDIR / "pairwise_trajectory_correlation" / "log.txt"
+    script:
+        "../scripts/report/pairwise_trajectory_correlation.R"

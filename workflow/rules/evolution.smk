@@ -38,7 +38,7 @@ rule dnds_data:
         variants =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         metadata = config["METADATA"]
     output:
-        table = report(REPORT_DIR_TABLES/"dnds.csv")
+        table = report(OUTDIR/"dnds.csv")
     log:
         LOGDIR / "dnds_data" / "log.txt"
     script:
