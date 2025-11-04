@@ -4,11 +4,11 @@ rule snps_to_ancestor:
     shadow: "minimal"
     conda: "../envs/var_calling.yaml"
     params:
-        max_depth = config["VC"]["MAX_DEPTH"],
-        min_quality = config["VC"]["MIN_QUALITY"],
-        ivar_quality = config["VC"]["IVAR_QUALITY"],
-        ivar_freq = config["VC"]["IVAR_FREQ"],
-        ivar_depth = config["VC"]["IVAR_DEPTH"]
+        mpileup_depth = config["VC"]["MAX_DEPTH"],
+        mpileup_quality = 0,
+        ivar_quality = config["VC"]["MIN_QUALITY"],
+        ivar_freq = config["VC"]["MIN_FREQ"],
+        ivar_depth = config["VC"]["MIN_DEPTH"],
     input:
         reference_fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
         bam = get_input_bam,
@@ -35,10 +35,10 @@ rule snps_to_ancestor:
         samtools mpileup \
             -aa \
             --ignore-overlaps \
-            -d {params.max_depth} \
+            -d {params.mpileup_depth} \
             --count-orphans \
             --no-BAQ \
-            -Q {params.min_quality} \
+            -Q {params.mpileup_quality} \
             -f renamed_reference.fasta \
             {input.bam} \
             | ivar variants \
@@ -215,4 +215,4 @@ rule pairwise_trajectory_correlation:
     log:
         LOGDIR / "pairwise_trajectory_correlation" / "log.txt"
     script:
-        "../scripts/report/pairwise_trajectory_correlation.R"
+        "../scripts/pairwise_trajectory_correlation.R"

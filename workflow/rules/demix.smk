@@ -28,6 +28,7 @@ rule demix_preprocessing:
         bam = get_input_bam,
         ref_fasta = lambda wildcards: select_mapping_references_fasta()
     params:
+        max_depth = config["DEMIX"]["MAX_DEPTH"],
         minq = config["DEMIX"]["MIN_QUALITY"],
     output:
         depth_file = OUTDIR/"demixing"/"{sample}/{sample}_depth.txt",
@@ -37,7 +38,7 @@ rule demix_preprocessing:
         ivar = LOGDIR / "demix_preprocessing" / "{sample}_ivar.log.txt",
     shell:
         "set -euo pipefail && "
-        "samtools mpileup -aa -A -d 600000 -Q {params.minq} -q 0 -B -f {input.ref_fasta:q} {input.bam:q} >sample.pileup 2>{log.pileup:q} && "
+        "samtools mpileup -aa -A -d {params.max_depth} -Q {params.minq} -q 0 -B -f {input.ref_fasta:q} {input.bam:q} >sample.pileup 2>{log.pileup:q} && "
         "ivar variants -p variants -q {params.minq} -r {input.ref_fasta:q} >{log.ivar:q} 2>&1 <sample.pileup && "
         "cut -f1-4 sample.pileup >{output.depth_file:q} && "
         "mv variants.tsv {output.variants_file:q}"

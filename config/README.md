@@ -140,14 +140,14 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
   - `REPS`: number of replicates.
   - `THRESHOLD`: value cutoff for visualization.
 - `VC`: variant calling configuration:
-  - `MAX_DEPTH`: maximum depth at a position for `samtools mpileup` (option `-d`).
-  - `MIN_QUALITY`: minimum base quality for `samtools mpileup` (option `-Q`).
-  - `IVAR_QUALITY`: minimum base quality for `ivar variants` (option `-q`).
-  - `IVAR_FREQ`: minimum frequency threshold for `ivar variants` (option `-t`).
-  - `IVAR_DEPTH`: minimum read depth for `ivar variants` (option `-m`).
+  - `MIN_QUALITY`: minimum base quality for `ivar variants` (option `-q`).
+  - `MIN_FREQ`: minimum frequency threshold for `ivar variants` (option `-t`).
+  - `MIN_DEPTH`: minimum read depth for `ivar variants` (option `-m`).
+  - `MAX_DEPTH`: maximum read depth for `samtools mpileup` (option `-d`).
 - `DEMIX`: demixing configuration (uses [Freyja](https://github.com/andersen-lab/Freyja), see also [its docs](https://andersen-lab.github.io/Freyja/index.html)):
   - `PATHOGEN`: pathogen of interest for `freyja update` (option `--pathogen`); must be 'SARS-CoV-2'.
   - `MIN_QUALITY`: minimum quality for `freyja variants` (option `--minq`).
+  - `MAX_DEPTH`: maximum read depth for `samtools mpileup` (option `-d`).
   - `COV_CUTOFF`: minimum depth to calculate the reported "coverage" (percent of sites with that depth) for `freyja demix` (option `--covcut`).
   - `MIN_ABUNDANCE`: minimum lineage estimated abundance for `freyja demix` (option `--eps`).
   - `CONFIRMED_ONLY`: exclude unconfirmed lineages in `freyja demix` (option `--confirmedonly`).

@@ -81,7 +81,7 @@ rule extract_genbank_regions:
 rule polymorphic_sites_over_time_data:
     conda: "../envs/renv.yaml"
     params:
-        max_alt_freq = 1.0 - config["VC"]["IVAR_FREQ"],
+        max_alt_freq = 1.0 - config["VC"]["MIN_FREQ"],
     input:
         variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         metadata = config["METADATA"],
@@ -428,11 +428,11 @@ rule report:
         value      = REPORT_DIR_TABLES/"diversity.json",
         stats_lm   = REPORT_DIR_TABLES/"time_signal.json",
         stats_ml   = REPORT_DIR_TABLES/"context_phylogeny.json",
-        table      = OUTDIR/"summary_table.csv",
+        table      = REPORT_DIR_TABLES/"summary_table.csv",
         sum_nv     = REPORT_DIR_TABLES/"nv_panel_summary.json",
     params:
         workflow_version = get_repo_version(BASE_PATH.as_posix(), __version__),
-        min_ivar_freq = config["VC"]["IVAR_FREQ"],
+        min_ivar_freq = config["VC"]["MIN_FREQ"],
         ufboot_reps = config["UFBOOT"]["REPS"],
         shalrt_reps = config["SHALRT"]["REPS"],
         name = config["OUTPUT_NAME"],
