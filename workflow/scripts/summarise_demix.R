@@ -5,8 +5,12 @@ log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
 
-library(tidyverse)
+library(dplyr)
+library(readr)
+library(tidyr)
+library(stringr)
 library(logger)
+
 log_threshold(INFO)
 
 # Empty dataframe to be filled with data

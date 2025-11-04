@@ -1,6 +1,6 @@
 # Jordi Sevilla
 
-library(tidyverse)
+library(ggplot2)
 library(showtext)
 
 # Ajustes ####

@@ -5,9 +5,11 @@ log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
 
-library(tidyverse)
+library(readr)
+library(dplyr)
 library(jsonlite)
 library(logger)
+
 log_threshold(INFO)
 
 log_info("Reading variants")

@@ -7,7 +7,11 @@ sink(log, type = "output")
 
 set.seed(snakemake@params$random_color_seed)  # seed for sampling colors
 
-library(tidyverse)
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(glue)
+library(logger)
 library(logger)
 log_threshold(INFO)
 
@@ -40,7 +44,7 @@ p <- variants %>%
   aes(
     x = interval,
     y = ALT_FREQ,
-    color = reorder(glue::glue("{gPOS}\n{VARIANT_NAME}"), POS)
+    color = reorder(glue("{gPOS}\n{VARIANT_NAME}"), POS)
   ) +
   scale_color_manual(values = selected.colors) +
   geom_point() +

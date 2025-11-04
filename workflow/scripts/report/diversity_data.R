@@ -9,10 +9,12 @@ set.seed(snakemake@params$seed)
 
 library(ape)
 library(pegas)
+library(future)
 library(future.apply)
-library(tidyverse)
+library(readr)
 library(jsonlite)
 library(logger)
+
 log_threshold(INFO)
 
 # Pi calculation

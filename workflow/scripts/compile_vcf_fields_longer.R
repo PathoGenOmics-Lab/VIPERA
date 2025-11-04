@@ -5,19 +5,21 @@ log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
 
-library(tidyverse)
+library(readr)
+library(dplyr)
 library(logger)
+
 log_threshold(INFO)
 
-log_info("Reading input partial tables with VCF extracted fields and adding sample column")
+log_info("Reading input partial tables with VCF fields and adding sample column")
 tables <- lapply(
-    snakemake@input,
-    function(path) {
-        read_tsv(path) %>%
-            mutate(SAMPLE = sub('\\.vcf_fields.longer.tsv$', '', basename(path)))
-    }
+  snakemake@input,
+  function(path) {
+    read_tsv(path) %>%
+      mutate(SAMPLE = sub("\\.vcf_fields.longer.tsv$", "", basename(path)))
+  }
 )
 
 log_info("Binding and writing table")
 bind_rows(tables) %>%
-    write_tsv(snakemake@output$tsv)
+  write_tsv(snakemake@output$tsv)

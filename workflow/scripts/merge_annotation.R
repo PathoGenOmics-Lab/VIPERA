@@ -5,8 +5,10 @@ log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
 
-library(tidyverse)
+library(dplyr)
+library(readr)
 library(logger)
+
 log_threshold(INFO)
 
 log_info("Reading variants table, replacing REGION with the reference name")

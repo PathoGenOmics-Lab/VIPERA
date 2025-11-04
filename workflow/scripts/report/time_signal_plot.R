@@ -5,7 +5,9 @@ log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
 
-library(tidyverse)
+library(readr)
+library(dplyr)
+library(ggplot2)
 library(logger)
 
 log_threshold(INFO)

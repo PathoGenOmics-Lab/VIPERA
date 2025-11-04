@@ -5,8 +5,9 @@ log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
 
-library(tidyverse)
+library(dplyr)
 library(logger)
+
 log_threshold(INFO)
 
 metadata <- read.csv(snakemake@input[["metadata"]])

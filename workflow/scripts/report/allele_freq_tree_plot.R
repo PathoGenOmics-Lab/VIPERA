@@ -5,8 +5,10 @@ log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
 
-library(tidyverse)
+library(dplyr)
+library(readr)
 library(ape)
+library(ggplot2)
 library(ggtree)
 library(logger)
 

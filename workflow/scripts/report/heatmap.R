@@ -5,8 +5,13 @@ log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
 
-library(tidyverse)
+library(dplyr)
+library(readr)
+library(tidyr)
+library(tibble)
+library(stringr)
 library(logger)
+
 log_threshold(INFO)
 
 vcf <- read_tsv(snakemake@input[["vcf"]])
@@ -18,8 +23,7 @@ date_order <- read_csv(snakemake@input[["metadata"]]) %>%
   unique()
 
 # Create SNP variable and select useful variables from vcf
-vcf <- vcf %>%
-  dplyr::select(VARIANT_NAME, SAMPLE, ALT_FREQ)
+vcf <- vcf %>% select(VARIANT_NAME, SAMPLE, ALT_FREQ)
 
 vcf <- vcf %>%
   pivot_wider(

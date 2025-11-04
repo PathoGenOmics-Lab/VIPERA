@@ -5,9 +5,12 @@ log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
 
-library(tidyverse)
+library(dplyr)
+library(readr)
+library(ggplot2)
 library(jsonlite)
 library(logger)
+
 log_threshold(INFO)
 
 # Import file with plots style
