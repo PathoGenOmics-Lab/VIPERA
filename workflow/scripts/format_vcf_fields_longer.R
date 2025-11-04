@@ -64,8 +64,12 @@ read_tsv(snakemake@input$tsv) %>%
   # Keep unique rows
   distinct() %>%
 
-  # Assign variant name using the pattern defined via Snakemake config
-  mutate(VARIANT_NAME = str_glue(snakemake@params$variant_name_pattern)) %>%
+  mutate(
+    # Assign variant name using the pattern defined via Snakemake config
+    VARIANT_NAME = str_glue(snakemake@params$variant_name_pattern),
+    # Assign sample name
+    SAMPLE = snakemake@params$sample
+  ) %>%
 
   # Write output file
   write_tsv(snakemake@output$tsv)

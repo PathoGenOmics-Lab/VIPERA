@@ -72,7 +72,10 @@ merged <- left_join(
     "REF_VCF" = "REF",
     "ALT_VCF" = "ALT"
   )
-)
+) %>%
+  mutate(
+    SAMPLE = snakemake@params$sample
+  )
 
 log_info("Saving results")
 write_tsv(

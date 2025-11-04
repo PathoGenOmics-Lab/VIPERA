@@ -149,37 +149,43 @@ rule extract_vcf_fields:
 rule format_vcf_fields_longer:
     conda: "../envs/renv.yaml"
     params:
+        sample = "{sample}",
         colnames_mapping = config["ANNOTATION"]["SNPEFF_COLS"],
         filter_include = config["ANNOTATION"]["FILTER_INCLUDE"],
         filter_exclude = config["ANNOTATION"]["FILTER_EXCLUDE"],
         variant_name_pattern = lambda wildcards: config["ANNOTATION"]["VARIANT_NAME_PATTERN"],  # lambda to deactivate automatic wildcard expansion in pattern
         sep = ",",
     input:
-        tsv = OUTDIR/"vaf"/"{sample}.vcf_fields.tsv"
+        tsv = OUTDIR/"vaf"/"{sample}.vcf_fields.tsv",
     output:
-        tsv = OUTDIR/"vaf"/"{sample}.vcf_fields.longer.tsv"
+        tsv = OUTDIR/"vaf"/"{sample}.vcf_fields.longer.tsv",
     log:
         LOGDIR / "format_vcf_fields_longer" / "{sample}.log.txt"
     script:
         "../scripts/format_vcf_fields_longer.R"
 
 
-rule compile_vcf_fields_longer:
-    threads: 1
-    conda: "../envs/renv.yaml"
-    input: expand(OUTDIR/"vaf"/"{sample}.vcf_fields.longer.tsv", sample=iter_samples())
+rule concat_vcf_fields:
+    params:
+        sep = "\t",
+    input:
+        expand(OUTDIR/"vaf"/"{sample}.vcf_fields.longer.tsv", sample=iter_samples()),
     output:
-        tsv = OUTDIR/f"{OUTPUT_NAME}.vcf_fields.longer.tsv"
-    log:
-        LOGDIR / "compile_vcf_fields_longer" / "log.txt"
-    script:
-        "../scripts/compile_vcf_fields_longer.R"
+        OUTDIR/f"{OUTPUT_NAME}.vcf_fields.longer.tsv",
+    run:
+        import pandas as pd
+        from functools import reduce
+        reduce(
+            lambda a, b: pd.concat((a, b), axis="rows", ignore_index=True),
+            (pd.read_csv(path, sep=params.sep) for path in input)
+        ).to_csv(output[0], sep=params.sep, index=False)
 
 
 rule merge_annotation:
     threads: 1
     conda: "../envs/renv.yaml"
     params:
+        sample = "{sample}",
         ref_name = config["ALIGNMENT_REFERENCE"],
     input:
         tsv = OUTDIR/"vaf"/"{sample}.masked.prefiltered.tsv",
@@ -192,13 +198,8 @@ rule merge_annotation:
         "../scripts/merge_annotation.R"
 
 
-rule compile_variants:
-    threads: 1
-    conda: "../envs/renv.yaml"
-    input: expand(OUTDIR/"vaf"/"{sample}.variants.tsv", sample=iter_samples())
+use rule concat_vcf_fields as concat_variants with:
+    input:
+        expand(OUTDIR/"vaf"/"{sample}.variants.tsv", sample=iter_samples()),
     output:
-        tsv = OUTDIR/f"{OUTPUT_NAME}.variants.tsv"
-    log:
-        LOGDIR / "compile_variants" / "log.txt"
-    script:
-        "../scripts/compile_variants.R"
+        OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
