@@ -17,37 +17,6 @@ VC:
   MIN_FREQ: 0.05
   MIN_DEPTH: 30
   MAX_DEPTH: 1000000
-ANNOTATION:
-  # see: https://pcingola.github.io/SnpEff/adds/VCFannotationformat_v1.0.pdf
-  SNPEFF_COLS:
-    CHROM: CHROM
-    POS: POS
-    REF: REF
-    ALT: ALT
-    EFFECT: "ANN[*].EFFECT"  # hard-coded column
-    IMPACT: "ANN[*].IMPACT"  # hard-coded column
-    BIOTYPE: "ANN[*].BIOTYPE"
-    GENE: "ANN[*].GENE"      # hard-coded column
-    GENEID: "ANN[*].GENEID"
-    FEATURE: "ANN[*].FEATURE"
-    FEATUREID: "ANN[*].FEATUREID"
-    HGVS_P: "ANN[*].HGVS_P"  # hard-coded column
-    HGVS_C: "ANN[*].HGVS_C"  # hard-coded column
-    ERRORS: "ANN[*].ERRORS"  # hard-coded column
-  FILTER_INCLUDE:
-  #  IMPACT: [HIGH, MODERATE, LOW]
-  FILTER_EXCLUDE:
-    EFFECT: [upstream_gene_variant, downstream_gene_variant]
-    ERRORS:
-      - ERROR_CHROMOSOME_NOT_FOUND
-      - ERROR_OUT_OF_CHROMOSOME_RANGE
-      - WARNING_REF_DOES_NOT_MATCH_GENOME
-      - WARNING_SEQUENCE_NOT_AVAILABLE
-      - WARNING_TRANSCRIPT_INCOMPLETE
-      - WARNING_TRANSCRIPT_MULTIPLE_STOP_CODONS
-      - WARNING_TRANSCRIPT_NO_START_CODON
-      - WARNING_TRANSCRIPT_NO_STOP_CODON
-  VARIANT_NAME_PATTERN: "{GENE}:{coalesce(HGVS_P, HGVS_C)}"  # dplyr's coalesce finds the first non-missing element
 DEMIX:
   PATHOGEN: "SARS-CoV-2"
   MIN_QUALITY: 20
@@ -78,6 +47,37 @@ GB_FEATURES:
       - "nucleocapsid phosphoprotein"
       - "ORF10 protein"
   # EXCLUDE: ...  # all
+ANNOTATION:
+  # see: https://pcingola.github.io/SnpEff/adds/VCFannotationformat_v1.0.pdf
+  SNPEFF_COLS:
+    CHROM: CHROM
+    POS: POS
+    REF: REF
+    ALT: ALT
+    EFFECT: "ANN[*].EFFECT"
+    IMPACT: "ANN[*].IMPACT"
+    BIOTYPE: "ANN[*].BIOTYPE"
+    GENE: "ANN[*].GENE"
+    GENEID: "ANN[*].GENEID"
+    FEATURE: "ANN[*].FEATURE"
+    FEATUREID: "ANN[*].FEATUREID"
+    HGVS_P: "ANN[*].HGVS_P"
+    HGVS_C: "ANN[*].HGVS_C"
+    ERRORS: "ANN[*].ERRORS"
+  FILTER_INCLUDE:
+  #  IMPACT: [HIGH, MODERATE, LOW]
+  FILTER_EXCLUDE:
+    EFFECT: [upstream_gene_variant, downstream_gene_variant]
+    ERRORS:
+      - ERROR_CHROMOSOME_NOT_FOUND
+      - ERROR_OUT_OF_CHROMOSOME_RANGE
+      - WARNING_REF_DOES_NOT_MATCH_GENOME
+      - WARNING_SEQUENCE_NOT_AVAILABLE
+      - WARNING_TRANSCRIPT_INCOMPLETE
+      - WARNING_TRANSCRIPT_MULTIPLE_STOP_CODONS
+      - WARNING_TRANSCRIPT_NO_START_CODON
+      - WARNING_TRANSCRIPT_NO_STOP_CODON
+  VARIANT_NAME_PATTERN: "{GENE}:{coalesce(HGVS_P, HGVS_C)}"
 GISAID:
   CREDENTIALS: "config/gisaid.yaml"
   DATE_COLUMN: "CollectionDate"

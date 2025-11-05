@@ -180,6 +180,12 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
     After `INCLUDE` is applied, any feature that matches any key/value pair in `EXCLUDE`
     is omitted. For example, having `EXCLUDE: {gene: [S, N]}` removes features whose
     `gene` qualifier equals `S` or `N`.
+- `ANNOTATION`: settings for variant annotation and functional effect prediction using [SnpEff](https://pcingola.github.io/SnpEff/), which uses `ALIGNMENT_REFERENCE` for selecting the database to annotate.
+  - `SNPEFF_COLS`: mapping of column names (which appear in result tables) to VCF fields (extracted after annotation with [SnpSift](https://pcingola.github.io/SnpEff/#snpsift)). Some columns are hard-coded in the code, so removing them is not advised. Additional columns can be added as needed.
+  - `FILTER_INCLUDE` & `FILTER_EXCLUDE`: mapping of column names (from `SNPEFF_COLS`) to lists of values used for filtering the annotated variants table. `FILTER_INCLUDE` is applied first, then `FILTER_EXCLUDE`.
+    - `FILTER_INCLUDE`: keeps variants that match at least one listed value.
+    - `FILTER_EXCLUDE`: removes variant that matches any listed value.
+  - `VARIANT_NAME_PATTERN`: string template used to build the variant name shown in the results table (column `VARIANT_NAME`). The template is interpreted with [glue](https://glue.tidyverse.org/) and can use any column name from `SNPEFF_COLS` and some R functions. For example, `"{GENE}:{coalesce(HGVS_P, HGVS_C)}"` creates names like `S:p.D614G` (using `HGVS_P` when available, otherwise `HGVS_C`).
 - `GISAID`: automatic context download configuration.
   - `CREDENTIALS`: path of the GISAID credentials in YAML format.
   - `DATE_COLUMN`: name of the column that contains sampling dates (YYYY-MM-DD) in the input target metadata.
