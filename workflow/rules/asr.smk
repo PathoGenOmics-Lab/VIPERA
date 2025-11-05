@@ -28,7 +28,7 @@ rule ancestor_fasta:
     params:
         node_id = "Node1",
         indeterminate_char = "N",
-        name = OUTPUT_NAME
+        name = "case_ancestor",
     input:
         state_file = OUTDIR/"tree"/f"{OUTPUT_NAME}.state"
     output:
