@@ -18,7 +18,7 @@ log_threshold(INFO)
 # Read distance tree and root
 log_info("Reading tree")
 tree <- read.tree(snakemake@input$tree) %>%
-  root(snakemake@params$ref_name, resolve.root = TRUE)
+  root(snakemake@params$outgroup_id, resolve.root = TRUE)
 
 # Read metadata
 log_info("Reading metadata")
@@ -33,14 +33,15 @@ time.signal <- distRoot(
 ) %>%
   as.data.frame() %>%
   rownames_to_column(var = "ID") %>%
-  filter(ID != snakemake@params$ref_name) %>%
+  filter(ID != snakemake@params$outgroup_id) %>%
   rename(distance = ".") %>%
   left_join(
     select(
       metadata,
       ID,
       CollectionDate
-    )
+    ),
+    by = "ID"
   ) %>%
   mutate(
     date_interval = as.numeric(

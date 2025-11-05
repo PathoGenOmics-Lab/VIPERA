@@ -260,7 +260,7 @@ rule allele_freq_tree_data:
     conda: "../envs/renv.yaml"
     params:
         use_bionj = config["USE_BIONJ"],
-        ref_name = config["ALIGNMENT_REFERENCE"],
+        outgroup_id = config["ALIGNMENT_REFERENCE"],
     input:
         dist = OUTDIR/f"{OUTPUT_NAME}.distances.csv",
     output:
@@ -275,7 +275,7 @@ rule allele_freq_tree_plot:
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"],
-        ref_name = config["ALIGNMENT_REFERENCE"],
+        outgroup_id = config["ALIGNMENT_REFERENCE"],
         plot_height_mm = 119.4,
         plot_width_mm = 159.2,
     input:
@@ -293,7 +293,7 @@ rule allele_freq_tree_plot:
 rule time_signal_data:
     conda: "../envs/renv.yaml"
     params:
-        ref_name = config["ALIGNMENT_REFERENCE"],
+        outgroup_id = config["ALIGNMENT_REFERENCE"],
     input:
         tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
         metadata = config["METADATA"],

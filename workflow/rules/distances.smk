@@ -22,7 +22,7 @@ rule extract_afwdist_variants:
 rule afwdist_weighted_distances:
     conda: "../envs/afwdist.yaml"
     params:
-        extra_args = ""
+        extra_args = "",
     input:
         variants = OUTDIR/f"{OUTPUT_NAME}.variants.afwdist.csv",
         reference = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
@@ -41,7 +41,7 @@ rule afwdist_weighted_distances:
 rule format_afwdist_results:
     conda: "../envs/biopython.yaml"
     params:
-        samples = sorted(iter_samples()),
+        samples = sorted(iter_samples()) + [config["ALIGNMENT_REFERENCE"]],
     input:
         distances = OUTDIR/f"{OUTPUT_NAME}.distances.raw.csv",
     output:

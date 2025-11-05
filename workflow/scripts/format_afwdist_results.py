@@ -13,6 +13,7 @@ if __name__ == "__main__":
 
     logging.info("Initializing formatted output")
     output = pd.DataFrame(
+        data=0.0,
         columns=snakemake.params.samples,
         index=snakemake.params.samples,
         dtype="float64"

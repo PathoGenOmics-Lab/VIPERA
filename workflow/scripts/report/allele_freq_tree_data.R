@@ -46,7 +46,7 @@ tree <- matrix %>%
   as.matrix() %>%
   as.dist() %>%
   tree_method() %>%
-  root(snakemake@params$ref_name, resolve.root = TRUE)
+  root(snakemake@params$outgroup_id, resolve.root = TRUE)
 
 # Resolve possible negative edge lengths in tree
 log_info("Resolving negative edge lengths")

@@ -25,16 +25,16 @@ metadata <- read_csv(snakemake@input$metadata)
 
 # Extract names from records
 log_debug("Reading FASTA")
-study_names <- read.dna(
+study_records <- read.dna(
   snakemake@input$study_fasta,
   format = "fasta",
   as.matrix = FALSE,
 )
 log_debug("Extracting names")
-study_names <- study_names[
-  !startsWith(names(study_names), snakemake@params$ref_name)
+study_records <- study_records[
+  !startsWith(names(study_records), snakemake@params$outgroup_id)
 ]
-study_names <- names(study_names)
+study_names <- names(study_records)
 
 # Obtain sample names ordered by CollectionDate
 log_debug("Sorting names by collection date")
@@ -59,19 +59,21 @@ tree_tiplab <- data.frame(
   ) %>%
   ungroup() %>%
   add_row(
-    ID = snakemake@params$ref_name,
+    ID = snakemake@params$outgroup_id,
     order = 0,
-    tip_label = snakemake@params$ref_name
+    tip_label = snakemake@params$outgroup_id
   )
 
 # Read distance tree and root
 log_info("Reading tree")
 tree <- read.tree(snakemake@input$tree) %>%
-  root(snakemake@params$ref_name, resolve.root = TRUE)
+  root(snakemake@params$outgroup_id, resolve.root = TRUE)
 
 # Plot
 log_info("Plotting distance tree")
-max.tip.length <- max(node.depth.edgelength(tree)[1:length(tree$tip.label)])
+max.tip.length <- max(
+  node.depth.edgelength(tree)[seq_along(length(tree$tip.label))]
+)
 p <- ggtree(tree) %<+% tree_tiplab +
   geom_tiplab(aes(label = tip_label)) +
   geom_treescale(1.1 * max.tip.length) +
