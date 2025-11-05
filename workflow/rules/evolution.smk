@@ -31,15 +31,15 @@ rule n_s_sites:
         "../scripts/n_s_sites_from_fasta.py"
 
 
-rule dnds_data:
+rule calculate_dnds:
     conda: "../envs/renv.yaml"
     input: 
         n_s_sites = OUTDIR/f"{OUTPUT_NAME}.ancestor.n_s.sites.csv",
         variants =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         metadata = config["METADATA"]
     output:
-        table = report(OUTDIR/"dnds.csv")
+        table = OUTDIR/f"{OUTPUT_NAME}.dnds.csv",
     log:
-        LOGDIR / "dnds_data" / "log.txt"
+        LOGDIR / "calculate_dnds" / "log.txt"
     script:
-        "../scripts/dnds_data.R"
+        "../scripts/calculate_dnds.R"

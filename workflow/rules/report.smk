@@ -329,7 +329,7 @@ rule dnds_plots:
         plot_height_mm = 119.4,
         plot_width_mm = 159.2,
     input: 
-        table = REPORT_DIR_TABLES/"dnds.csv",
+        table = OUTDIR/f"{OUTPUT_NAME}.dnds.csv",
     output:
         plot_dn_ds = report(REPORT_DIR_PLOTS/"dn_and_ds.png"),
         plot_omega = report(REPORT_DIR_PLOTS/"dnds.png"),
