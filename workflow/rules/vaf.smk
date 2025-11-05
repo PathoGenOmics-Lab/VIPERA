@@ -1,5 +1,5 @@
 rule snps_to_ancestor:
-    threads: 1
+    threads: 2
     retries: 3
     shadow: "minimal"
     conda: "../envs/var_calling.yaml"
