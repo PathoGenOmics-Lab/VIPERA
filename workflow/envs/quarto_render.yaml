@@ -6,5 +6,4 @@ dependencies:
   - quarto==1.8.25
   - deno==2.3.1
   - r-tidyverse==2.0.0
-  - r-quarto==1.5.1
   - r-heatmaply==1.6.0

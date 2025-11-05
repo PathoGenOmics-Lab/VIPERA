@@ -4,8 +4,8 @@ subtitle: "Workflow version: `r params$workflow_version`"
 date: last-modified
 date-format: "YYYY-MM-DD"
 title-block-banner: true
-format: 
-  html: 
+format:
+  html:
     page-layout: article
     embed-resources: true
     smooth-scroll: true
@@ -15,36 +15,35 @@ format:
     toc-location: left
     toc-title: Summary
     number-sections: true
-css: "`r params$css`"
+css: __CSSPLACEHOLDER__
 editor: source
 params:
-  css: ""
-  ufboot_reps: ""
-  shalrt_reps: ""
-  min_ivar_freq: ""
-  workflow_version: ""
-  use_bionj: ""
-  cor_method: ""
-  div: ""
-  demix: ""
-  tree: ""
-  tempest: ""
-  SNV: ""
-  SNV_s: ""
-  evo: ""
-  div_value: ""
-  panel: ""
-  volcano: ""
-  tree_ml: ""
-  fig_cor_snp: ""
-  stats_lm: ""
-  stats_ml: ""
-  table: ""
-  sum_nv: ""
-  heat_tab: ""
-  omega_plot: ""
-  name: ""
-  freyja_ts: ""
+  ufboot_reps:
+  shalrt_reps:
+  min_ivar_freq:
+  workflow_version:
+  use_bionj:
+  cor_method:
+  div:
+  demix:
+  tree:
+  tempest:
+  SNV:
+  SNV_s:
+  evo:
+  div_value:
+  panel:
+  volcano:
+  tree_ml:
+  fig_cor_snp:
+  stats_lm:
+  stats_ml:
+  table:
+  sum_nv:
+  heat_tab:
+  omega_plot:
+  name:
+  freyja_ts:
 output-file: report.html
 ---
 <head>
