@@ -262,7 +262,7 @@ rule allele_freq_tree_data:
         use_bionj = config["USE_BIONJ"],
         ref_name = config["ALIGNMENT_REFERENCE"],
     input:
-        dist = OUTDIR/"distances.csv",
+        dist = OUTDIR/f"{OUTPUT_NAME}.distances.csv",
     output:
         tree = REPORT_DIR_TABLES/"allele_freq_tree.nwk",
     log:

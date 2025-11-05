@@ -27,7 +27,7 @@ rule afwdist_weighted_distances:
         variants = OUTDIR/f"{OUTPUT_NAME}.variants.afwdist.csv",
         reference = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
     output:
-        distances = temp(OUTDIR/"distances.raw.csv"),
+        distances = temp(OUTDIR/f"{OUTPUT_NAME}.distances.raw.csv"),
     log:
         LOGDIR/"afwdist_weighted_distances"/"log.txt"
     shell:
@@ -43,9 +43,9 @@ rule format_afwdist_results:
     params:
         samples = sorted(iter_samples()),
     input:
-        distances = OUTDIR/"distances.raw.csv",
+        distances = OUTDIR/f"{OUTPUT_NAME}.distances.raw.csv",
     output:
-        distances = OUTDIR/"distances.csv",
+        distances = OUTDIR/f"{OUTPUT_NAME}.distances.csv",
     log:
         LOGDIR/"format_afwdist_results"/"log.txt"
     script:
