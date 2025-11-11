@@ -207,7 +207,7 @@ blue line shows the linear model fit.](`r params$fig_cor_snp`){#fig-fig_cor_snp}
 
 ### Description of intra-host nucleotide variants
 
-A total of $`r n_SNV`$ different single nucleotide variants (SNV) and $`r n_INDELS`$
+A total of $`r n_SNV`$ different nucleotide variants (NV) and $`r n_INDELS`$
 insertions and deletions (indels) have been detected along the genome (@fig-SNV).
 
 ::: {.panel-tabset}
@@ -216,7 +216,7 @@ insertions and deletions (indels) have been detected along the genome (@fig-SNV)
 
 ![Summary of the intra-host accumulation of nucleotide variants,
 using the reconstructed dataset ancestor as reference. A) Nucleotide
-variants per site along the SARS-CoV-2 genome. Relative abundance of NVs is calculated
+variants per site along the SARS-CoV-2 genome. Relative abundance of variants is calculated
 with a sliding window of width $`r nv.counts[["window"]]`$ nucleotides and a step of
 $`r nv.counts[["step"]]`$. Labels indicate the coding regions of the non structural
 proteins (NSP) within ORF1ab. B) Genome variation along the genome for each sample.
@@ -227,7 +227,7 @@ at the bottom, and the latest, at the top.](`r params$SNV`){#fig-SNV}
 
 ![Summary of the intra-host accumulation of nucleotide variants
 in the spike sequence, using the reconstructed dataset ancestor as reference. A) Nucleotide
-variants per site along the S gene. Relative abundance of NVs is calculated
+variants per site along the S gene. Relative abundance of variants is calculated
 with a sliding window of width $`r nv.counts[["window"]]`$ nucleotides and a step of
 $`r nv.counts[["step"]]`$. B) Genome variation along the S gene for each sample.
 The Y-axis displays samples in chronological order, with the earliest collection date
@@ -237,7 +237,7 @@ at the bottom, and the latest, at the top.](`r params$SNV_s`){#fig-SNV_s}
 
 ### Temporal signal of the intra-host mutations
 
-The correlation of the allele frequency of each NV with the time since the
+`r cor.method.name` correlation of the allele frequency of each variant with the time since the
 initial sampling has been calculated (@fig-volcano).
 
 ![`r cor.method.name` correlation coefficients and adjusted p-values of
