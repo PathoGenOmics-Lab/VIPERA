@@ -1,6 +1,6 @@
 FROM condaforge/miniforge3:latest
 LABEL io.github.snakemake.containerized="true"
-LABEL io.github.snakemake.conda_env_hash="d883c5236d6779c015257dd3adab712fee0805655dfc5ccdc99b24758b7249a5"
+LABEL io.github.snakemake.conda_env_hash="7071b22b1161190c06be3ac061ab0019a1a8d3038532c9134e070a3875414ef5"
 
 # Step 2: Retrieve conda environments
 
@@ -99,7 +99,7 @@ COPY workflow/envs/pangolin.yaml /conda-envs/fd645c541ee7a3d43fb9167441b77888/en
 
 # Conda environment:
 #   source: workflow/envs/quarto_render.yaml
-#   prefix: /conda-envs/b33b29b10147e6767116c7a41920d484
+#   prefix: /conda-envs/96f3c1cec4b3ce5d72f708992272e9c1
 #   channels:
 #     - conda-forge
 #   dependencies:
@@ -108,10 +108,9 @@ COPY workflow/envs/pangolin.yaml /conda-envs/fd645c541ee7a3d43fb9167441b77888/en
 #     - quarto==1.8.25
 #     - deno==2.3.1
 #     - r-tidyverse==2.0.0
-#     - r-quarto==1.5.1
 #     - r-heatmaply==1.6.0
-RUN mkdir -p /conda-envs/b33b29b10147e6767116c7a41920d484
-COPY workflow/envs/quarto_render.yaml /conda-envs/b33b29b10147e6767116c7a41920d484/environment.yaml
+RUN mkdir -p /conda-envs/96f3c1cec4b3ce5d72f708992272e9c1
+COPY workflow/envs/quarto_render.yaml /conda-envs/96f3c1cec4b3ce5d72f708992272e9c1/environment.yaml
 
 # Conda environment:
 #   source: workflow/envs/renv.yaml
@@ -169,7 +168,7 @@ RUN conda env create --prefix /conda-envs/9c24a867826615972cc288081976e7fc --fil
     conda env create --prefix /conda-envs/0a608afb24723cb6fa8aef748f5efbc8 --file /conda-envs/0a608afb24723cb6fa8aef748f5efbc8/environment.yaml && \
     conda env create --prefix /conda-envs/04a3347f94ddf7e21c34bc49e5246076 --file /conda-envs/04a3347f94ddf7e21c34bc49e5246076/environment.yaml && \
     conda env create --prefix /conda-envs/fd645c541ee7a3d43fb9167441b77888 --file /conda-envs/fd645c541ee7a3d43fb9167441b77888/environment.yaml && \
-    conda env create --prefix /conda-envs/b33b29b10147e6767116c7a41920d484 --file /conda-envs/b33b29b10147e6767116c7a41920d484/environment.yaml && \
+    conda env create --prefix /conda-envs/96f3c1cec4b3ce5d72f708992272e9c1 --file /conda-envs/96f3c1cec4b3ce5d72f708992272e9c1/environment.yaml && \
     conda env create --prefix /conda-envs/8ad6cdcf265d30289788da99d5bf9fff --file /conda-envs/8ad6cdcf265d30289788da99d5bf9fff/environment.yaml && \
     conda env create --prefix /conda-envs/0adafb79cb1bec58ef4c77bf4cca4f95 --file /conda-envs/0adafb79cb1bec58ef4c77bf4cca4f95/environment.yaml && \
     conda env create --prefix /conda-envs/5150d0f0a91d7f7a789a06f453d63479 --file /conda-envs/5150d0f0a91d7f7a789a06f453d63479/environment.yaml && \
