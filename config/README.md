@@ -202,24 +202,31 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
 - `REPORT_QMD`: path of the report template in Quarto markdown (QMD) format.
 - `REPORT_CSS`: path of the report stylesheet definition in CSS format.
 
-## Workflow graphs
+## Workflow visualization
 
-To generate a simplified rule graph, run:
+Snakemake enables easy visualization of workflows and rule relationships. The `--rulegraph` option outputs a DOT file that describes dependencies between rules. The example below produces an image using Graphviz:
 
 ```shell
-snakemake --rulegraph | dot -Tpng > .rulegraph.png
+snakemake --forceall --rulegraph | dot -Tpng >.rulegraph.png
 ```
 
 ![Snakemake rule graph](/.rulegraph.png)
 
-To generate the directed acyclic graph (DAG) of all rules
-to be executed, run:
+The same graph can also be rendered with other tools such as [snakevision](https://github.com/OpenOmics/snakevision) (v0.1.0).
 
 ```shell
-snakemake --forceall --dag | dot -Tpng > .dag.png
+snakemake --forceall --rulegraph | snakevision -s all -o .rulegraph_sv.svg
 ```
 
-![Snakemake rule graph](/.dag.png)
+![Snakemake rule graph using snakevision](/.rulegraph_sv.svg)
+
+The `--dag` option emits an directed acyclic graph (DAG) that corresponds to the rule instances that would be executed for the current dataset. The example below produces an image using Graphviz:
+
+```shell
+snakemake --forceall --dag | dot -Tpng >.dag.png
+```
+
+![Snakemake DAG](/.dag.png)
 
 ## Run modes
 
