@@ -52,6 +52,16 @@ output-file: report.html
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap" rel="stylesheet">
 </head>
 
+```{r funcs, echo = F, message = F, include = F}
+display.num <- function(n) {
+  sci <- if (n < 1e-3 || n > 1e4) {
+    sub("e\\+?(-?)(\\d+)", " × 10^{\\1\\2}", 
+        formatC(n, format = "e", digits = 3))
+  } else {
+    formatC(n, format = "f", digits = 5)
+  }
+}
+```
 
 ```{r read, echo = F, message = F, include = F}
 library(jsonlite)
@@ -266,12 +276,12 @@ line represents the linear model fit.](`r params$tempest`){#fig-tempest}
 
 ### Correlation between alternative alleles
 
-To detect possible interactions between mutations, pairwise correlation between allele
-frequencies have been calculated (@fig-heatmap). The heatmap is an interactive figure that allows
-zooming in on specific regions.
+`r cor.method.name` correlation coefficients of allele frequencies between pairs
+of variants were calculated to detect interactions between them (@fig-heatmap).
+The heatmap is interactive and allows zooming in on specific regions.
 
 ```{r fig-heatmap, echo = F, message = F, warning = F, fig.align = 'center'}
-#| fig-cap: "Interactive hierarchically clustered heatmap of the pairwisecorrelation coefficients between the time series of allele frequencies in the case study."
+#| fig-cap: "Interactive heatmap with hierarchical clustering of the pairwise correlation coefficients between the time series of allele frequencies in the case study."
 
 heatmaply_cor(
   cor.mat,
@@ -279,6 +289,7 @@ heatmaply_cor(
   fontsize_row = 7, 
   fontsize_col = 7,
   column_text_angle = 45,
+  label_names = c("row", "column", "coefficient"),
   width  = 600,
   height = 600
 )
