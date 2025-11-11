@@ -56,7 +56,6 @@ output-file: report.html
 display.num <- function(n, digits) {
   format(n, digits = digits, nsmall = digits)
 }
-Sys.setlocale("LC_ALL", "English")
 ```
 
 ```{r read, echo = F, message = F, include = F}
@@ -115,7 +114,7 @@ if (params$use_bionj) {
 # Freyja timestamp
 freyja.timestamp <- read_file(params$freyja_ts) %>%
   as.POSIXct(., format = "%m_%d_%Y-%H-%M") %>%
-  strftime(., format = "%d %B %Y at %H:%M")
+  strftime(., format = "%Y-%m-%d at %H:%M")
 ```
 
 ## Summary of the target samples dataset
