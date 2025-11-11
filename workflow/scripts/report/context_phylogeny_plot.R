@@ -21,8 +21,8 @@ source(snakemake@params[["design"]])
 # Format tree label for well supported nodes
 TREE_LEGEND_NAMES["boot_alrt_pass"] <- sprintf(
   TREE_LEGEND_NAMES["boot_alrt_pass"],
-  snakemake@params[["boot_th"]], "%",
-  snakemake@params[["alrt_th"]], "%"
+  100 * snakemake@params[["boot_th"]], "%",
+  100 * snakemake@params[["alrt_th"]], "%"
 )
 
 log_info("Reading JSON data")

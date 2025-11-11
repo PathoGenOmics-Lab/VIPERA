@@ -42,8 +42,8 @@ GENE_PALETTE <- c(
 # Nucleotide diversity
 DIVERSITY_PALETTE <- c(
   density_fill = "#fcbf49",
-  density_color = "#eae2b7",
-  value_color = "#d62828",
+  density_color = "#ffaa00",
+  value_color = "#D944AA",
   dnorm_color = "#f77f00"
 )
 
@@ -60,7 +60,7 @@ TREE_NODE_SIZE <- c(
 
 TREE_LEGEND_NAMES <- c(
   tip_label = "Target samples",
-  boot_alrt_pass = "UFBoot ≥ %.2f%s & SH-aLRT ≥ %.2f%s"
+  boot_alrt_pass = "UFBoot ≥ %s%s & SH-aLRT ≥ %s%s"
 )
 
 # Nucleotide variants classification colors and labels
