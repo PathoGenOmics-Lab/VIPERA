@@ -52,15 +52,11 @@ output-file: report.html
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap" rel="stylesheet">
 </head>
 
-```{r funcs, echo = F, message = F, include = F}
-display.num <- function(n) {
-  sci <- if (n < 1e-3 || n > 1e4) {
-    sub("e\\+?(-?)(\\d+)", " × 10^{\\1\\2}", 
-        formatC(n, format = "e", digits = 3))
-  } else {
-    formatC(n, format = "f", digits = 5)
-  }
+```{r setup, echo = F, message = F, include = F}
+display.num <- function(n, digits) {
+  format(n, digits = digits, nsmall = digits)
 }
+Sys.setlocale("LC_ALL", "English")
 ```
 
 ```{r read, echo = F, message = F, include = F}
@@ -81,7 +77,7 @@ stats <- append(
 )
 correlation <- stats[["r2"]]
 sub_rate <- stats[["sub_rate"]]
-sub_rate <- round(sub_rate, digits = 2)
+sub_rate <- display.num(sub_rate, 2)
 p_value_lm <- stats[["pvalue"]]
 
 # NV counts
@@ -183,21 +179,20 @@ samples is squared.](`r params$tree_ml`){#fig-tree_ml}
 ### Nucleotide diversity comparison
 
 Nucleotide diversity (π) has been calculated for $`r div_values[["boot.reps"]]`$ random
-sample subsets of size $`r div_values[["sample.size"]]`$, extracted
-from the context dataset. The distribution of the nuclotide diversity is assumed to
-`r div_values[["norm.text"]]` be normal after performing a Shapiro-Wilk test
-(p-value of $`r div_values[["normal.pvalue"]]`$).
+subsets of size $`r div_values[["sample.size"]]`$ drawn from the context dataset.
+A Shapiro–Wilk test indicates the distribution is `r div_values[["norm.text"]]`
+normal (p-value of $`r div_values[["normal.pvalue"]]`$).
 
-The nucleotide diversity of the target samples is $`r format(div_values[["diversity"]], scientific = TRUE) `$ (vertical line in @fig-div).
-Assuming the independence of the context samples, the `r div_values[["type.test"]]`
-p-value of the context samples having a nucleotide diversity (smooth curve in @fig-div)
-as low as that of the target dataset is $`r div_values[["p.value"]]`$.
+The nucleotide diversity of the target samples is $`r display.num(div_values[["diversity"]], 3)`$
+(vertical line in @fig-div). Assuming the context subsets are independent, the
+`r div_values[["type.test"]]` test gives a p-value of $`r display.num(div_values[["p.value"]], 3)`$
+for observing a nucleotide diversity as low as that of the target samples.
 
-![Analysis of the nucleotide diversity (π). The smooth curve describes
-a normal distribution with the same mean and standard deviation as the distribution
-of π from $`r div_values[["boot.reps"]]`$ subsets of $`r div_values[["sample.size"]]`$
-sequences from the context. The vertical line indicates the π value of the
-target samples.](`r params$div`){#fig-div}
+![Distribution of nucleotide diversity (π) calculated from $`r div_values[["boot.reps"]]`$
+random subsets of $`r div_values[["sample.size"]]`$ sequences from the context dataset.
+The shaded area shows the empirical density; the overlaid curve is the normal distribution
+with the same mean and standard deviation.
+The vertical line marks the π value of the target samples.](`r params$div`){#fig-div}
 
 ## Evolutionary trajectory of the serially-sampled SARS-CoV-2 infection
 
@@ -205,7 +200,7 @@ target samples.](`r params$div`){#fig-div}
 
 Sites with minor allele frequency $> `r params$min_ivar_freq`$ are considered polymorphic.
 The linear association between the collection date of the samples and the number of
-polymorphic sites has an $R^2$ of $`r nv.counts[["r2"]]`$ and a p-value of
+polymorphic sites has an $R^2$ of $`r display.num(nv.counts[["r2"]], 4)`$ and a p-value of
 $`r nv.counts[["value"]]`$ (@fig-fig_cor_snp).
 
 ![Number of polymorphic sites along time. The
@@ -267,7 +262,7 @@ frequency-weighted distances.](`r params$tree`){#fig-tree}
 
 To estimate the evolutionary rate, root-to-tip distances measured on the previous
 tree (@fig-tree) have been correlated with time, obtaining a $R^2$ of
-$`r correlation`$ and a p-value of $`r p_value_lm`$. The estimated evolutionary
+$`r display.num(correlation, 4)`$ and a p-value of $`r p_value_lm`$. The estimated evolutionary
 rate is $`r sub_rate`$ number of changes per year (@fig-tempest).
 
 ![Scatterplot depicting the relationship between root-to-tip

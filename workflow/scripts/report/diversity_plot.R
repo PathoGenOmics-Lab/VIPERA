@@ -31,21 +31,25 @@ p <- data.frame(pi = divs) %>%
     fill = DIVERSITY_PALETTE["density_fill"],
     alpha = 0.7,
     bw = 0.000001,
+    linewidth = 0.5,
     color = DIVERSITY_PALETTE["density_color"]
-  ) +
-  geom_vline(
-    xintercept = json$diversity,
-    color = DIVERSITY_PALETTE["value_color"]
   ) +
   stat_function(
     fun = dnorm,
     args = list(mean = mean(divs), sd = sd(divs)),
-    color = DIVERSITY_PALETTE["dnorm_color"]
+    color = DIVERSITY_PALETTE["dnorm_color"],
+    linewidth = 1
+  ) +
+  geom_vline(
+    xintercept = json$diversity,
+    color = DIVERSITY_PALETTE["value_color"],
+    linewidth = 1
   ) +
   labs(
     x = "π",
     y = "Density"
-  )
+  ) +
+  xlim(0, NA)
 
 ggsave(
   filename = snakemake@output[["plot"]],
