@@ -63,6 +63,7 @@ COPY workflow/envs/freyja.yaml /conda-envs/bb4c5f3a509433cc08861582fab4a705/envi
 #     - r-logger==0.2.2
 RUN mkdir -p /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f
 COPY workflow/envs/gisaidr.yaml /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f/environment.yaml
+COPY workflow/envs/gisaidr.post-deploy.sh /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f/post-deploy.sh
 
 # Conda environment:
 #   source: workflow/envs/iqtree.yaml
