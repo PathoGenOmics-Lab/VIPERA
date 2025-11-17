@@ -74,12 +74,14 @@ rule ml_context_tree:
     conda: "../envs/iqtree.yaml"
     shadow: "shallow"
     params:
+        seed = 7291,
         seqtype = "DNA",
         name = OUTPUT_NAME,
-        ufboot = config["UFBOOT_REPS"],
-        alrt = config["SHALRT_REPS"],
+        ufboot = config["UFBOOT"]["REPS"],
+        alrt = config["SHALRT"]["REPS"],
         outgroup = config["ALIGNMENT_REFERENCE"],
-        model = config["TREE_MODEL"]
+        model = config["TREE_MODEL"],
+        max_iterations_convergence = 1000,
     input:
         fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
         outgroup_aln = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
@@ -89,14 +91,11 @@ rule ml_context_tree:
     log:
         LOGDIR / "ml_context_tree" / "log.txt"
     shell:
-        """
-        exec >{log}                                                                    
-        exec 2>&1
-        
-        awk '/^>/{{p=seen[$0]++}}!p' {input.fasta} {input.outgroup_aln} > aln.fasta
-        mkdir -p {output.folder}
-        iqtree2 \
-            -B {params.ufboot} -alrt {params.alrt} \
-            -o {params.outgroup} -T AUTO --threads-max {threads} -s aln.fasta \
-            --seqtype {params.seqtype} -m {params.model} --prefix {output.folder}/{params.name}
-        """
+        "exec >{log} && exec 2>&1; "
+        "awk '/^>/{{p=seen[$0]++}}!p' {input.fasta} {input.outgroup_aln} >aln.fasta && "
+        "mkdir -p {output.folder} && "
+        "iqtree2 -seed {params.seed} "
+            "-bb {params.ufboot} -alrt {params.alrt} "
+            "-o {params.outgroup} -T AUTO --threads-max {threads} -s aln.fasta "
+            "-nm {params.max_iterations_convergence} "
+            "--seqtype {params.seqtype} -m {params.model} --prefix {output.folder}/{params.name}"

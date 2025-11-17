@@ -1,6 +1,6 @@
 # Jordi Sevilla
 
-library(tidyverse)
+library(ggplot2)
 library(showtext)
 
 # Ajustes ####
@@ -8,13 +8,13 @@ showtext_auto(enable = FALSE)
 showtext_opts(dpi = 200)
 
 # Tema
-font_add_google("Montserrat", "Montserrat")
+font_add_google("Noto Sans", "Noto Sans")
 showtext_auto()
 
 theme_set(theme_minimal())
 
 theme_update(
-  text = element_text(size = 16, family = "Montserrat"),
+  text = element_text(size = 16, family = "Noto Sans"),
   axis.title = element_text(size = 16),
   axis.line = element_line(
     linewidth = 0.5,
@@ -25,12 +25,11 @@ theme_update(
   panel.grid = element_line(linewidth = 0.17, color = "lightgray")
 )
 
-
-# CONFIG
-gene_colors = c(
+# Gene palette
+GENE_PALETTE <- c(
   M = "#B4D4B4",
   N = "#B7B7B8",
-  orf1ab = "#9CC4DC",
+  ORF1ab = "#9CC4DC",
   ORF3a = "#ECB4B7",
   ORF8 = "#996D2B",
   S = "#F5CC9E",
@@ -40,20 +39,32 @@ gene_colors = c(
   ORF10 = "#CACB5D"
 )
 
+# Nucleotide diversity
+DIVERSITY_PALETTE <- c(
+  density_fill = "#fcbf49",
+  density_color = "#ffaa00",
+  value_color = "#D944AA",
+  dnorm_color = "#f77f00"
+)
 
 # M-L tree colors and labels
-tree_colors = c(
+TREE_PALETTE <- c(
   tip_label = "#D944AA99",
   boot_alrt_pass = "#64ACEEB2"
 )
 
-node.size <- c(
+TREE_NODE_SIZE <- c(
   tip_label = 2,
   boot_alrt_pass = 0.8
 )
 
+TREE_LEGEND_NAMES <- c(
+  tip_label = "Target samples",
+  boot_alrt_pass = "UFBoot ≥ %s%s & SH-aLRT ≥ %s%s"
+)
+
 # Nucleotide variants classification colors and labels
-NV_colors <- c(
+NV_TYPE_PALETTE <- c(
   Frameshift = "#568D63",
   "In frame" = "black",
   Intergenic = "#B27CF9",
@@ -61,7 +72,7 @@ NV_colors <- c(
   Yes = "#0248FD"
 )
 
-NV_names <- c(
+NV_TYPE_NAMES <- c(
   Frameshift = "Frameshift",
   "In frame" = "Inframe",
   Intergenic = "Intergenic",
@@ -70,17 +81,23 @@ NV_names <- c(
 )
 
 # dn ds colors and labels
-dnds.labels <- c(
+DNDS_LABELS <- c(
   dn = "dN",
   ds = "dS"
 )
 
-dnds.colors <- c(
-  dn = "#E53E47",
-  ds = "#2C47F5"
+DNDS_COLORS <- c(
+  dN = "#E53E47",
+  dS = "#2C47F5"
 )
 
-dnds.shapes <- c(
-  dn = 2,
-  ds = 4
+DNDS_SHAPES <- c(
+  dN = 2,
+  dS = 4
 )
+
+# Allele frequency trajectories panel color
+ALL.COLORS <- grDevices::colors()
+TRAJECTORY.PANEL.COLORS <- ALL.COLORS[
+  !grepl("(gray|grey|white|snow|azure|beige)", ALL.COLORS)
+]

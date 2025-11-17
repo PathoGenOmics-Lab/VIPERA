@@ -26,7 +26,7 @@ jobs:
           environment-file: .test/environment_v8.yaml
       - name: Run test pipeline
         shell: bash -el {0}
-        run: snakemake --snakefile .test/Snakefile --configfile config/config.yaml .test/targets.yaml --use-conda -c1 --conda-frontend conda
+        run: snakemake --snakefile .test/Snakefile --configfile config/config.yaml .test/targets.yaml --use-conda -c1 --conda-frontend conda --keep-going --notemp
       - name: Pack logs
         if: success() || failure()
         shell: bash -el {0}

@@ -23,11 +23,9 @@ PLOTS:
 PROBLEMATIC_VCF:
   "https://raw.githubusercontent.com/W-L/ProblematicSites_SARS-CoV2/da322c32004f7b16bdaa6a8ee7fd24d56e79d9dc/problematic_sites_sarsCov2.vcf"
 VC:
-  MAX_DEPTH: 0
   MIN_QUALITY: 0
-  IVAR_QUALITY: 0
-  IVAR_FREQ: 0.05
-  IVAR_DEPTH: 5
+  MIN_FREQ: 0.05
+  MIN_DEPTH: 5
 DEMIX:
   MIN_QUALITY: 0
   COV_CUTOFF: 0
@@ -40,7 +38,5 @@ PLOT_GENOME_REGIONS:
   "config/nsp_annotation.csv"
 REPORT_QMD:
   "template.qmd"
-FEATURES_JSON:
-  "config/sarscov2_features.json"
 GENETIC_CODE_JSON:
   "config/standard_genetic_code.json"

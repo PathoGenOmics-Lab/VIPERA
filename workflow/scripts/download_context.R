@@ -6,9 +6,12 @@ sink(log, type = "message")
 sink(log, type = "output")
 
 library(GISAIDR)
-library(tidyverse)
+library(dplyr)
+library(readr)
 library(glue)
+library(lubridate)
 library(logger)
+
 log_threshold(INFO)
 
 CHKPT.ERROR.MSG <- paste(
@@ -34,9 +37,7 @@ needed.columns <- c(
 )
 needed.columns.mask <- needed.columns %in% colnames(sample.metadata)
 if (!all(needed.columns.mask)) {
-  print(glue(
-    "Please ensure column '{needed.columns[!needed.columns.mask]}' is present"
-  ))
+  log_error("Please ensure column '{needed.columns[!needed.columns.mask]}' is present")
   stop(glue(
     "Missing columns in '{snakemake@input[['metadata']]}'. Alternatively:\n{CHKPT.ERROR.MSG}"
   ))
@@ -51,24 +52,20 @@ log_info("Getting time windows for context samles")
 # Get time windows
 dates <- sample.metadata %>%
   pull(snakemake@params[["date_column"]]) %>%
-  as.numeric
+  as.numeric()
 window.quantile.offset <- (1 - snakemake@params[["date_window_span"]]) / 2
 min.date <- as_date(quantile(dates, window.quantile.offset, na.rm = TRUE))
 max.date <- as_date(quantile(dates, 1 - window.quantile.offset, na.rm = TRUE))
 padded.min.date <- min.date - snakemake@params[["date_window_paddding_days"]]
 padded.max.date <- max.date + snakemake@params[["date_window_paddding_days"]]
-print(glue(
-  "Time window (span={snakemake@params[['date_window_span']]}): {round(interval(min.date, max.date) / days(1))} days (from {min.date} to {max.date})"
-))
-print(glue(
-  "Padded time window (padding={snakemake@params[['date_window_paddding_days']]} days): {round(interval(padded.min.date, padded.max.date) / days(1))} days (from {padded.min.date} to {padded.max.date})"
-))
+log_info("Time window (span={snakemake@params[['date_window_span']]}): {round(interval(min.date, max.date) / days(1))} days (from {min.date} to {max.date})")
+log_info("Padded time window (padding={snakemake@params[['date_window_paddding_days']]} days): {round(interval(padded.min.date, padded.max.date) / days(1))} days (from {padded.min.date} to {padded.max.date})")
 
 log_info("Getting locations for context samples")
 # Get locations (if there are multiple, sample from all of them)
 locations <- sample.metadata %>%
   pull(snakemake@params[["location_column"]]) %>%
-  unique
+  unique()
 
 # GISAID login
 creds.list <- yaml::read_yaml(snakemake@params[["gisaid_creds"]])
@@ -105,7 +102,7 @@ samples.accids <- sample.metadata %>%
   pull(snakemake@params[["samples_gisaid_accession_column"]])
 filtered.accids <- metadata %>% filter(accession_id %in% samples.accids)
 metadata <- metadata %>% filter(!accession_id %in% samples.accids)
-print(glue("{nrow(metadata)} accession_ids remaining after GISAID ID filter"))
+log_info("{nrow(metadata)} accession_ids remaining after GISAID ID filter")
 
 # Checkpoint: enforce a minimum number of samples to have at least
 # as many possible combinations as random subsample replicates.

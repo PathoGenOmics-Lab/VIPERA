@@ -2,29 +2,82 @@ ALIGNMENT_REFERENCE:
   "NC_045512.2"
 PROBLEMATIC_VCF:
   "https://raw.githubusercontent.com/W-L/ProblematicSites_SARS-CoV2/da322c32004f7b16bdaa6a8ee7fd24d56e79d9dc/problematic_sites_sarsCov2.vcf"
-FEATURES_JSON:
-  "config/sarscov2_features.json"
 GENETIC_CODE_JSON:
   "config/standard_genetic_code.json"
 TREE_MODEL:
   "GTR+F+I+G4"
-UFBOOT_REPS:
-  1000
-SHALRT_REPS:
-  1000
+UFBOOT:
+  REPS: 1000
+  THRESHOLD: 0.95
+SHALRT:
+  REPS: 1000
+  THRESHOLD: 0.80
 VC:
-  MAX_DEPTH: 0
-  MIN_QUALITY: 0
-  IVAR_QUALITY: 20
-  IVAR_FREQ: 0.05
-  IVAR_DEPTH: 30
-DEMIX:
   MIN_QUALITY: 20
+  MIN_FREQ: 0.05
+  MIN_DEPTH: 30
+  MAX_DEPTH: 1000000
+DEMIX:
+  PATHOGEN: "SARS-CoV-2"
+  MIN_QUALITY: 20
+  MAX_DEPTH: 1000000
   COV_CUTOFF: 30
   MIN_ABUNDANCE: 0.0001
+  CONFIRMED_ONLY: false
+  DEPTH_CUTOFF: 0
+  RELAXED_MRCA: false
+  RELAXED_MRCA_THRESH: 0.9
+  AUTO_ADAPT: false
+  SOLVER: "CLARABEL"
 WINDOW:
   WIDTH: 1000
   STEP: 50
+GB_FEATURES:
+  INCLUDE:        # any
+    product:
+      - "ORF1ab polyprotein"
+      - "surface glycoprotein"
+      - "ORF3a protein"
+      - "envelope protein"
+      - "membrane glycoprotein"
+      - "ORF6 protein"
+      - "ORF7a protein"
+      - "ORF7b"
+      - "ORF8 protein"
+      - "nucleocapsid phosphoprotein"
+      - "ORF10 protein"
+  # EXCLUDE: ...  # all
+ANNOTATION:
+  # see: https://pcingola.github.io/SnpEff/adds/VCFannotationformat_v1.0.pdf
+  SNPEFF_COLS:
+    CHROM: CHROM
+    POS: POS
+    REF: REF
+    ALT: ALT
+    EFFECT: "ANN[*].EFFECT"
+    IMPACT: "ANN[*].IMPACT"
+    BIOTYPE: "ANN[*].BIOTYPE"
+    GENE: "ANN[*].GENE"
+    GENEID: "ANN[*].GENEID"
+    FEATURE: "ANN[*].FEATURE"
+    FEATUREID: "ANN[*].FEATUREID"
+    HGVS_P: "ANN[*].HGVS_P"
+    HGVS_C: "ANN[*].HGVS_C"
+    ERRORS: "ANN[*].ERRORS"
+  FILTER_INCLUDE:
+  #  IMPACT: [HIGH, MODERATE, LOW]
+  FILTER_EXCLUDE:
+    EFFECT: [upstream_gene_variant, downstream_gene_variant]
+    ERRORS:
+      - ERROR_CHROMOSOME_NOT_FOUND
+      - ERROR_OUT_OF_CHROMOSOME_RANGE
+      - WARNING_REF_DOES_NOT_MATCH_GENOME
+      - WARNING_SEQUENCE_NOT_AVAILABLE
+      - WARNING_TRANSCRIPT_INCOMPLETE
+      - WARNING_TRANSCRIPT_MULTIPLE_STOP_CODONS
+      - WARNING_TRANSCRIPT_NO_START_CODON
+      - WARNING_TRANSCRIPT_NO_STOP_CODON
+  VARIANT_NAME_PATTERN: "{GENE}:{coalesce(HGVS_P, HGVS_C)}"
 GISAID:
   CREDENTIALS: "config/gisaid.yaml"
   DATE_COLUMN: "CollectionDate"
@@ -44,3 +97,5 @@ PLOT_GENOME_REGIONS:
   "config/nsp_annotation.csv"
 REPORT_QMD:
   "template.qmd"
+REPORT_CSS:
+  "config/report.styles.css"

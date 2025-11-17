@@ -12,16 +12,28 @@ For example, existing [profiles](https://snakemake.readthedocs.io/en/stable/gett
 are cross-compatible as well, but note that the `--use-conda` flag is deprecated starting with Snakemake 8.
 Instead, use `--software-deployment-method conda`.
 
+## tl;dr
+
+- **Needs**:
+  - Snakemake 7.19 or later.
+  - One FASTA per sample.
+  - One BAM per sample.
+  - One metadata CSV with columns `ID`, `CollectionDate` (YYYY-MM-DD), `ResidenceCity` and `GISAIDEPI` (can be empty).
+- **Setup**: edit [targets.yaml](/config/targets.yaml) (set `SAMPLES` and `METADATA`, at least) or build it using [`build_targets.py`](/build_targets.py). Leave `CONTEXT_FASTA: null` to auto-download from GISAID (needs `config/gisaid.yaml` with your username and password) or set a local FASTA path if download fails (see GISAID disclaimer).
+- **Run**: `snakemake (--use-conda | --sdm conda) -c4`.
+
 ## Inputs and outputs
 
 The workflow requires a set of FASTA files (one per target sample), a corresponding set of
 BAM files (also one per target sample), and a metadata table in CSV format with one row per
-sample. The metadata must include the following columns: unique sample identifier (default column `ID`,
-used to match sequencing files with metadata), the date the sample was collected (default `CollectionDate`),
-the location where the sample was collected (default `ResidenceCity`), and GISAID accession (default `GISAIDEPI`).
-The default column names but can be customized if needed via the workflow parameters.
+sample. The metadata must include at least the following columns:
 
-These parameters are set in two configuration files in YAML format:
+- `ID`: unique sample identifier, used to match sequencing files with metadata.
+- `CollectionDate`: the date the sample was collected (YYYY-MM-DD).
+- `ResidenceCity`: the location where the sample was collected.
+- `GISAIDEPI`: GISAID accession identifier (`EPI_ISL_...` or empty).
+
+The path to these input files is set in two configuration files in YAML format:
 [config.yaml](/config/config.yaml) (for general workflow settings) and
 [targets.yaml](/config/targets.yaml) (for specific dataset-related settings).
 The latter must be modified by the user to point the `SAMPLES` and `METADATA`
@@ -130,24 +142,50 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
 
 - `ALIGNMENT_REFERENCE`: NCBI accession number of the reference record for sequence alignment.
 - `PROBLEMATIC_VCF`: URL or path of a VCF file containing problematic genome positions for masking.
-- `FEATURES_JSON`: path of a JSON file containing name equivalences of genome features for data visualization.
 - `GENETIC_CODE_JSON`: path of a JSON file containing a genetic code for gene translation.
 - `TREE_MODEL`: substitution model used by IQTREE (see [docs](http://www.iqtree.org/doc/Substitution-Models)).
-- `UFBOOT_REPS`: ultrafast bootstrap replicates for IQTREE (see [UFBoot](https://doi.org/10.1093/molbev/msx281)).
-- `SHALRT_REPS`: Shimodaira–Hasegawa approximate likelihood ratio test bootstrap replicates for IQTREE (see [SH-aLRT](https://doi.org/10.1093/sysbio/syq010)).
+- `UFBOOT` & `SHALRT`: settings for ultrafast bootstrap (see [UFBoot](https://doi.org/10.1093/molbev/msx281))
+  and Shimodaira–Hasegawa approximate likelihood ratio test bootstrap
+  (see [SH-aLRT](https://doi.org/10.1093/sysbio/syq010)) in IQTREE runs:
+  - `REPS`: number of replicates.
+  - `THRESHOLD`: value cutoff for visualization.
 - `VC`: variant calling configuration:
-  - `MAX_DEPTH`: maximum depth at a position for `samtools mpileup` (option `-d`).
-  - `MIN_QUALITY`: minimum base quality for `samtools mpileup` (option `-Q`).
-  - `IVAR_QUALITY`: minimum base quality for `ivar variants` (option `-q`).
-  - `IVAR_FREQ`: minimum frequency threshold for `ivar variants` (option `-t`).
-  - `IVAR_DEPTH`: minimum read depth for `ivar variants` (option `-m`).
-- `DEMIX`: demixing configuration:
+  - `MIN_QUALITY`: minimum base quality for `ivar variants` (option `-q`).
+  - `MIN_FREQ`: minimum frequency threshold for `ivar variants` (option `-t`).
+  - `MIN_DEPTH`: minimum read depth for `ivar variants` (option `-m`).
+  - `MAX_DEPTH`: maximum read depth for `samtools mpileup` (option `-d`).
+- `DEMIX`: demixing configuration (uses [Freyja](https://github.com/andersen-lab/Freyja), see also [its docs](https://andersen-lab.github.io/Freyja/index.html)):
+  - `PATHOGEN`: pathogen of interest for `freyja update` (option `--pathogen`); must be 'SARS-CoV-2'.
   - `MIN_QUALITY`: minimum quality for `freyja variants` (option `--minq`).
-  - `COV_CUTOFF`: minimum depth for `freyja demix` (option `--covcut`).
+  - `MAX_DEPTH`: maximum read depth for `samtools mpileup` (option `-d`).
+  - `COV_CUTOFF`: minimum depth to calculate the reported "coverage" (percent of sites with that depth) for `freyja demix` (option `--covcut`).
   - `MIN_ABUNDANCE`: minimum lineage estimated abundance for `freyja demix` (option `--eps`).
+  - `CONFIRMED_ONLY`: exclude unconfirmed lineages in `freyja demix` (option `--confirmedonly`).
+  - `DEPTH_CUTOFF`: minimum depth on each site for `freyja demix` (option `--depthcutoff`).
+  - `RELAXED_MRCA`: assign clusters using relaxed (as opposed to strict) MRCA, used with `DEPTH_CUTOFF`, for `freyja demix` (option `--relaxedmrca`).
+  - `RELAXED_MRCA_THRESH`: `RELAXED_MRCA` threshold for `freyja demix` (option `--relaxedthresh`).
+  - `AUTO_ADAPT`: use error profile to set adaptive lasso penalty parameter for `freyja demix` (option `--autoadapt`).
 - `WINDOW`: sliding window of nucleotide variants per site configuration:
   - `WIDTH`: number of sites within windows.
   - `STEP`: number of sites between windows.
+- `GB_FEATURES`: optional mapping to filter which features from the GenBank file are used
+  by some analyses (e.g. rules `window` and `n_s_sites`).
+  If `GB_FEATURES` is empty or unset, all features are used.
+  Filtering is applied in order:
+  - `INCLUDE`: mapping of qualifier names to sequences of values.
+    If present, only features that match at least one key/value pair in `INCLUDE`
+    are included in the analyses. For example, having `INCLUDE: {gene: [S, N]}` keeps features whose `gene`
+    qualifier equals `S` or `N`.
+  - `EXCLUDE`: mapping of qualifier names to sequences of values.
+    After `INCLUDE` is applied, any feature that matches any key/value pair in `EXCLUDE`
+    is omitted. For example, having `EXCLUDE: {gene: [S, N]}` removes features whose
+    `gene` qualifier equals `S` or `N`.
+- `ANNOTATION`: settings for variant annotation and functional effect prediction using [SnpEff](https://pcingola.github.io/SnpEff/), which uses `ALIGNMENT_REFERENCE` for selecting the database to annotate.
+  - `SNPEFF_COLS`: mapping of column names (which appear in result tables) to VCF fields (extracted after annotation with [SnpSift](https://pcingola.github.io/SnpEff/#snpsift)). Some columns are hard-coded in the code, so removing them is not advised. Additional columns can be added as needed.
+  - `FILTER_INCLUDE` & `FILTER_EXCLUDE`: mapping of column names (from `SNPEFF_COLS`) to lists of values used for filtering the annotated variants table. `FILTER_INCLUDE` is applied first, then `FILTER_EXCLUDE`.
+    - `FILTER_INCLUDE`: keeps variants that match at least one listed value.
+    - `FILTER_EXCLUDE`: removes variant that matches any listed value.
+  - `VARIANT_NAME_PATTERN`: string template used to build the variant name shown in the results table (column `VARIANT_NAME`). The template is interpreted with [glue](https://glue.tidyverse.org/) and can use any column name from `SNPEFF_COLS` and some R functions. For example, `"{GENE}:{coalesce(HGVS_P, HGVS_C)}"` creates names like `S:p.D614G` (using `HGVS_P` when available, otherwise `HGVS_C`).
 - `GISAID`: automatic context download configuration.
   - `CREDENTIALS`: path of the GISAID credentials in YAML format.
   - `DATE_COLUMN`: name of the column that contains sampling dates (YYYY-MM-DD) in the input target metadata.
@@ -160,27 +198,35 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
   - `EXACT`: boolean flag indicating whether to compute an exact p-value when possible. This option applies only to certain methods and may be set to `null` (default) to let R decide automatically.
 - `LOG_PY_FMT`: logging format string for Python scripts.
 - `PLOTS`: path of the R script that sets the design and style of data visualizations.
-- `PLOT_GENOME_REGIONS`: path of a CSV file containing genome regions, e.g. SARS-CoV-2 non-structural protein (NSP) coordinates, for data visualization.
+- `PLOT_GENOME_REGIONS`: path of a CSV file containing genome regions, e.g. SARS-CoV-2 non-structural protein (NSP) coordinates, for data visualization (columns: `region`, `start`, `end`).
 - `REPORT_QMD`: path of the report template in Quarto markdown (QMD) format.
+- `REPORT_CSS`: path of the report stylesheet definition in CSS format.
 
-## Workflow graphs
+## Workflow visualization
 
-To generate a simplified rule graph, run:
+Snakemake enables easy visualization of workflows and rule relationships. The `--rulegraph` option outputs a DOT file that describes dependencies between rules. The example below produces an image using Graphviz:
 
 ```shell
-snakemake --rulegraph | dot -Tpng > .rulegraph.png
+snakemake --forceall --rulegraph | dot -Tpng >.rulegraph.png
 ```
 
 ![Snakemake rule graph](/.rulegraph.png)
 
-To generate the directed acyclic graph (DAG) of all rules
-to be executed, run:
+The same graph can also be rendered with other tools such as [snakevision](https://github.com/OpenOmics/snakevision) (v0.1.0).
 
 ```shell
-snakemake --forceall --dag | dot -Tpng > .dag.png
+snakemake --forceall --rulegraph | snakevision -s all -o .rulegraph_sv.svg
 ```
 
-![Snakemake rule graph](/.dag.png)
+![Snakemake rule graph using snakevision](/.rulegraph_sv.svg)
+
+The `--dag` option emits an directed acyclic graph (DAG) that corresponds to the rule instances that would be executed for the current dataset. The example below produces an image using Graphviz:
+
+```shell
+snakemake --forceall --dag | dot -Tpng >.dag.png
+```
+
+![Snakemake DAG](/.dag.png)
 
 ## Run modes
 

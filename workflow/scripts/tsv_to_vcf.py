@@ -17,7 +17,7 @@ def tsv_to_vcf(tsv_file, vcf_file):
         # Process each row in the TSV file
         for index, row in tsv_df.iterrows():
             # Extract fields from the TSV row
-            chrom = 'NC_045512.2'
+            chrom = snakemake.params.ref_name
             pos = row['POS']
             ref = row['REF']
             alt = row['ALT']

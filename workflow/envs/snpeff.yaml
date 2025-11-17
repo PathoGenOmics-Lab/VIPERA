@@ -2,3 +2,4 @@ channels:
   - bioconda
 dependencies:
   - snpeff==5.1d
+  - snpsift==5.1d

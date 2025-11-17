@@ -1,160 +1,395 @@
-rule heatmap:
+rule demix_plot_data:
     conda: "../envs/renv.yaml"
     input:
-        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
+        summary_demixing = OUTDIR/"demixing"/"summary.csv",
         metadata = config["METADATA"]
     output:
-        table = report(REPORT_DIR_TABLES/"figure_10.csv")
+        data = REPORT_DIR_TABLES/"demix.csv"
     log:
-        LOGDIR / "heatmap" / "log.txt"
+        LOGDIR / "demix_plot_data" / "log.txt"
     script:
-        "../scripts/report/heatmap.R"
+        "../scripts/report/demix_plot_data.R"
 
 
-rule window:
-    conda: "../envs/biopython.yaml"
-    params:
-        window = config["WINDOW"]["WIDTH"],
-        step = config["WINDOW"]["STEP"]
-    input:
-        vcf = OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
-        gb = OUTDIR/"reference.gb",
-        features = config["FEATURES_JSON"]
-    output:
-        window_df = temp(OUTDIR/f"{OUTPUT_NAME}.window.csv"),
-    log:
-        LOGDIR / "window" / "log.txt"
-    script:
-        "../scripts/window.py"
-
-
-rule diversity:
-    threads: 4
+rule demix_plot:
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"],
+        plot_width_mm = 159.2,
+        plot_height_mm = 119.4,
+    input:
+        data = REPORT_DIR_TABLES/"demix.csv"
+    output:
+        plot = report(REPORT_DIR_PLOTS/"demix.png")
+    log:
+        LOGDIR / "demix_plot" / "log.txt"
+    script:
+        "../scripts/report/demix_plot.R"
+
+
+rule diversity_data:
+    threads: 4
+    conda: "../envs/renv.yaml"
+    params:
         bootstrap_reps = config["DIVERSITY_REPS"],
-        plot_width = 159.2,
-        plot_height = 119.4
+        aln_reference = config["ALIGNMENT_REFERENCE"],
+        seed = 7291,
     input:
         study_fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
-        context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
+        context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta",
     output:
-        fig = report(REPORT_DIR_PLOTS/"figure_3.png"),
-        json = temp(OUTDIR/"diversity.json"),
-        table = REPORT_DIR_TABLES/"figure_3.csv"
+        divs = REPORT_DIR_TABLES/"diversity.txt",
+        json = REPORT_DIR_TABLES/"diversity.json",
     log:
-        LOGDIR / "diversity" / "log.txt"
+        LOGDIR / "diversity_data" / "log.txt"
+    script:
+        "../scripts/report/diversity_data.R"
+
+
+rule diversity_plot:
+    threads: 1
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+        plot_width_mm = 159.2,
+        plot_height_mm = 119.4,
+    input:
+        divs = REPORT_DIR_TABLES/"diversity.txt",
+        json = REPORT_DIR_TABLES/"diversity.json",
+    output:
+        plot = report(REPORT_DIR_PLOTS/"diversity.png"),
+    log:
+        LOGDIR / "diversity_plot" / "log.txt"
     script:
         "../scripts/report/diversity_plot.R"
 
 
-rule freyja_plot:
-    conda: "../envs/renv.yaml"
+rule extract_genbank_regions:
+    conda: "../envs/biopython.yaml"
     params:
-        design = config["PLOTS"]
+        gb_qualifier = "gene",
     input:
-        summary_demixing =  OUTDIR/"summary_freyja_demixing.csv",
-        metadata = config["METADATA"]
+        gb = OUTDIR/"reference.cds.gb",
     output:
-        fig = report(REPORT_DIR_PLOTS/"figure_1.png"),
-        table = report(REPORT_DIR_TABLES/"figure_1.csv")
+        regions = temp(REPORT_DIR_TABLES/"genbank_regions.json"),
     log:
-        LOGDIR / "freyja_plot" / "log.txt"
+        LOGDIR / "extract_genbank_regions" / "log.txt"
     script:
-        "../scripts/report/freyja_plot.R"
+        "../scripts/report/extract_genbank_regions.py"
 
 
-rule general_NV_description:
+rule polymorphic_sites_over_time_data:
     conda: "../envs/renv.yaml"
     params:
-        samples = expand("{sample}", sample = iter_samples()),
+        max_alt_freq = 1.0 - config["VC"]["MIN_FREQ"],
+    input:
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        metadata = config["METADATA"],
+    output:
+        table = REPORT_DIR_PLOTS/"polymorphic_sites_over_time.csv",
+        json = temp(REPORT_DIR_TABLES/"polymorphic_sites_over_time.json"),
+    log:
+        LOGDIR / "polymorphic_sites_over_time_data" / "log.txt"
+    script:
+        "../scripts/report/polymorphic_sites_over_time_data.R"
+
+
+rule polymorphic_sites_over_time_plot:
+    conda: "../envs/renv.yaml"
+    params:
         design = config["PLOTS"],
-        regions = config["PLOT_GENOME_REGIONS"],
+        plot_width_mm = 159.2,
+        plot_height_mm = 119.4,
+    input:
+        table = REPORT_DIR_PLOTS/"polymorphic_sites_over_time.csv",
+    output:
+        plot = report(REPORT_DIR_PLOTS/"polymorphic_sites_over_time.png"),
+    log:
+        LOGDIR / "polymorphic_sites_over_time_plot" / "log.txt"
+    script:
+        "../scripts/report/polymorphic_sites_over_time_plot.R"
+
+
+rule window_data:
+    conda: "../envs/biopython.yaml"
+    params:
         window = config["WINDOW"]["WIDTH"],
         step = config["WINDOW"]["STEP"],
-        max_alt_freq = 1.0 - config["VC"]["IVAR_FREQ"]
+        features = config.get("GB_FEATURES", {}),
+        gb_qualifier_display = "gene"
     input:
-        window = OUTDIR/f"{OUTPUT_NAME}.window.csv",
-        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
-        metadata = config["METADATA"]
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        gb = OUTDIR/"reference.gb",
     output:
-        fig = report(REPORT_DIR_PLOTS/"figure_5a.png"),
-        fig_s = report(REPORT_DIR_PLOTS/"figure_5b.png"),
-        fig_cor = report(REPORT_DIR_PLOTS/"figure_4.png"),
-        json = temp(OUTDIR/"summary_nv.json"),
-        table_1 = report(REPORT_DIR_TABLES/"figure_5a.csv"),
-        table_2 = report(REPORT_DIR_TABLES/"figure_5b.csv"),
-        table_3 = report(REPORT_DIR_TABLES/"figure_4.csv")
+        window_df = REPORT_DIR_TABLES/"window.csv",
+        json = temp(REPORT_DIR_TABLES/"window.json"),
     log:
-        LOGDIR / "general_NV_description" / "log.txt"
+        LOGDIR / "window_data" / "log.txt"
     script:
-        "../scripts/report/NV_description.R"
+        "../scripts/report/window_data.py"
 
 
-rule phylo_plots:
+rule nv_panel_data:
+    conda: "../envs/renv.yaml"
+    input:
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        metadata = config["METADATA"],
+    output:
+        table = REPORT_DIR_TABLES/"nv_panel.csv",
+        json = temp(REPORT_DIR_TABLES/"nv_panel.json"),
+    log:
+        LOGDIR / "nv_panel_data" / "log.txt"
+    script:
+        "../scripts/report/nv_panel_data.R"
+
+
+rule nv_panel_zoom_on_feature_data:
+    input:
+        table = REPORT_DIR_TABLES/"nv_panel.csv",
+        regions = REPORT_DIR_TABLES/"genbank_regions.json",
+    output:
+        table = temp(REPORT_DIR_TABLES/"nv_panel.{region_name}.csv"),
+    log:
+        LOGDIR / "nv_panel_zoom_on_feature_data" / "{region_name}.log.txt"
+    script:
+        "../scripts/report/nv_panel_zoom_on_feature_data.py"
+
+
+rule window_zoom_on_feature_data:
+    input:
+        table = REPORT_DIR_TABLES/"window.csv",
+        regions = REPORT_DIR_TABLES/"genbank_regions.json",
+    output:
+        table = temp(REPORT_DIR_TABLES/"window.{region_name}.csv"),
+    log:
+        LOGDIR / "window_zoom_on_feature_data" / "{region_name}.log.txt"
+    script:
+        "../scripts/report/window_zoom_on_feature_data.py"
+
+
+rule nv_panel_plot:
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+        window_step = config["WINDOW"]["STEP"],
+        plot_height_mm = 250.0,
+        plot_width_mm = 240.0,
+    input:
+        panel = REPORT_DIR_TABLES/"nv_panel.csv",
+        window = REPORT_DIR_TABLES/"window.csv",
+        regions = REPORT_DIR_TABLES/"genbank_regions.json",
+        highlight_window_regions = config["PLOT_GENOME_REGIONS"],
+    output:
+        plot = report(REPORT_DIR_PLOTS/"nv_panel.png"),
+    log:
+        LOGDIR / "nv_panel_plot" / "log.txt"
+    script:
+        "../scripts/report/nv_panel_plot.R"
+
+
+use rule nv_panel_plot as nv_panel_plot_S with:
+    input:
+        panel = REPORT_DIR_TABLES/"nv_panel.S.csv",
+        window = REPORT_DIR_TABLES/"window.S.csv",
+        regions = REPORT_DIR_TABLES/"genbank_regions.json",
+        highlight_window_regions = OUTDIR/"empty.txt",
+    output:
+        plot = report(REPORT_DIR_PLOTS/"nv_panel.S.png"),
+    log:
+        LOGDIR / "nv_panel_plot_S" / "log.txt"
+
+
+rule merge_json_files:
+    input:
+        REPORT_DIR_TABLES/"nv_panel.json",
+        REPORT_DIR_TABLES/"polymorphic_sites_over_time.json",
+        REPORT_DIR_TABLES/"window.json",
+    output:
+        json = REPORT_DIR_TABLES/"nv_panel_summary.json",
+    run:
+        import json
+        result = {}
+        for path in input:
+            with open(path) as f:
+                d = json.load(f)
+            result |= d  # will replace existing keys
+        with open(output.json, "w") as fw:
+            json.dump(result, fw, indent=2)
+
+
+rule context_phylogeny_data:
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"],
         ref_name = config["ALIGNMENT_REFERENCE"],
-        boot_th = 95,
-        alrt_th = 80,
-        plot_height_mm = 119.4,
-        plot_width_mm = 159.2,
-        use_bionj = config["USE_BIONJ"]
+        boot_th = config["UFBOOT"]["THRESHOLD"],
+        alrt_th = config["SHALRT"]["THRESHOLD"],
     input:
-        dist = REPORT_DIR_TABLES/f"figure_8.csv",
-        study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
-        ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
-        metadata = config["METADATA"]
+        target_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
+        tree = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
     output:
-        temest = report(REPORT_DIR_PLOTS/"figure_9.png"),
-        tree = report(REPORT_DIR_PLOTS/"figure_8.png"),
-        tree_ml = report(REPORT_DIR_PLOTS/"figure_2.png"),
-        table = report(REPORT_DIR_TABLES/"figure_9.csv"),
-        json = temp(OUTDIR/"stats.lm.json")
+        json = REPORT_DIR_TABLES/"context_phylogeny.json",
+        annotation = REPORT_DIR_TABLES/"context_phylogeny.csv",
     log:
-        LOGDIR / "phylo_plots" / "log.txt"
+        LOGDIR / "context_phylogeny_data" / "log.txt"
     script:
-        "../scripts/report/phylo_plots.R"
+        "../scripts/report/context_phylogeny_data.R"
 
 
-rule evo_plots:
-    conda: "../envs/renv.yaml"
-    params: 
-        design = config["PLOTS"]
-    input: 
-        N_S = OUTDIR/f"{OUTPUT_NAME}.ancestor.N_S.sites.csv",
-        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
-        metadata = config["METADATA"]
-    output:
-        plot = report(REPORT_DIR_PLOTS/"figure_11.png"),
-        plot_omega = report(REPORT_DIR_PLOTS/"figure_12.png"),
-        table = report(REPORT_DIR_TABLES/"figure_11.csv")
-    log:
-        LOGDIR / "evo_plots" / "log.txt"
-    script:
-        "../scripts/report/evo_plots.R"
-
-
-rule snp_plots:
+rule context_phylogeny_plot:
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"],
-        cor_method = config["COR"]["METHOD"],
-        cor_exact = config["COR"]["EXACT"]
+        plot_height_mm = 119.4,
+        plot_width_mm = 159.2,
+        boot_th = config["UFBOOT"]["THRESHOLD"],
+        alrt_th = config["SHALRT"]["THRESHOLD"],
     input:
-        vcf =  OUTDIR/f"{OUTPUT_NAME}.masked.filtered.tsv",
-        metadata = config["METADATA"]
+        tree = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
+        json = REPORT_DIR_TABLES/"context_phylogeny.json",
+        annotation = REPORT_DIR_TABLES/"context_phylogeny.csv"
     output:
-        pseudovolcano = report(REPORT_DIR_PLOTS/"figure_6.png"),
-        snp_panel = report(REPORT_DIR_PLOTS/"figure_7.png"),
-        table_1 = report(REPORT_DIR_TABLES/"figure_6.csv"),
-        table_2 = report(REPORT_DIR_TABLES/"figure_7.csv")
+        plot = report(REPORT_DIR_PLOTS/"context_phylogeny.png"),
     log:
-        LOGDIR / "snp_plots" / "log.txt"
+        LOGDIR / "context_phylogeny_plot" / "log.txt"
     script:
-        "../scripts/report/snp_plots.R"
+        "../scripts/report/context_phylogeny_plot.R"
+
+
+rule allele_freq_tree_data:
+    conda: "../envs/renv.yaml"
+    params:
+        use_bionj = config["USE_BIONJ"],
+        outgroup_id = config["ALIGNMENT_REFERENCE"],
+    input:
+        dist = OUTDIR/f"{OUTPUT_NAME}.distances.csv",
+    output:
+        tree = REPORT_DIR_TABLES/"allele_freq_tree.nwk",
+    log:
+        LOGDIR / "allele_freq_tree_data" / "log.txt"
+    script:
+        "../scripts/report/allele_freq_tree_data.R"
+
+
+rule allele_freq_tree_plot:
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+        outgroup_id = config["ALIGNMENT_REFERENCE"],
+        plot_height_mm = 119.4,
+        plot_width_mm = 159.2,
+    input:
+        tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
+        study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
+        metadata = config["METADATA"],
+    output:
+        plot = report(REPORT_DIR_PLOTS/"allele_freq_tree.png"),
+    log:
+        LOGDIR / "allele_freq_tree_plot" / "log.txt"
+    script:
+        "../scripts/report/allele_freq_tree_plot.R"
+
+
+rule time_signal_data:
+    conda: "../envs/renv.yaml"
+    params:
+        outgroup_id = config["ALIGNMENT_REFERENCE"],
+    input:
+        tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
+        metadata = config["METADATA"],
+    output:
+        table = report(REPORT_DIR_TABLES/"time_signal.csv"),
+        json = REPORT_DIR_TABLES/"time_signal.json",
+    log:
+        LOGDIR / "time_signal_data" / "log.txt"
+    script:
+        "../scripts/report/time_signal_data.R"
+
+
+rule time_signal_plot:
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+        plot_height_mm = 119.4,
+        plot_width_mm = 159.2,
+    input:
+        table = report(REPORT_DIR_TABLES/"time_signal.csv"),
+    output:
+        plot = report(REPORT_DIR_PLOTS/"time_signal.png"),
+    log:
+        LOGDIR / "time_signal_plot" / "log.txt"
+    script:
+        "../scripts/report/time_signal_plot.R"
+
+
+rule dnds_plots:
+    conda: "../envs/renv.yaml"
+    params: 
+        design = config["PLOTS"],
+        plot_height_mm = 119.4,
+        plot_width_mm = 159.2,
+    input: 
+        table = OUTDIR/f"{OUTPUT_NAME}.dnds.csv",
+    output:
+        plot_dn_ds = report(REPORT_DIR_PLOTS/"dn_and_ds.png"),
+        plot_omega = report(REPORT_DIR_PLOTS/"dnds.png"),
+    log:
+        LOGDIR / "evo_plots" / "log.txt"
+    script:
+        "../scripts/report/dnds_plots.R"
+
+
+rule af_time_correlation_data:
+    conda: "../envs/renv.yaml"
+    params:
+        cor_method = config["COR"]["METHOD"],
+        cor_exact = config["COR"]["EXACT"],
+    input:
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        metadata = config["METADATA"],
+    output:
+        fmt_variants = temp(REPORT_DIR_TABLES/"variants.filled.dated.tsv"),
+        correlations = report(REPORT_DIR_TABLES/"af_time_correlation.csv"),
+        subset = REPORT_DIR_TABLES/"af_time_correlation.subset.txt",
+    log:
+        LOGDIR / "af_time_correlation_data" / "log.txt"
+    script:
+        "../scripts/report/af_time_correlation_data.R"
+
+
+rule af_time_correlation_plot:
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+        plot_height_mm = 119.4,
+        plot_width_mm = 159.2,
+    input:
+        correlations = REPORT_DIR_TABLES/"af_time_correlation.csv",
+    output:
+        plot = report(REPORT_DIR_PLOTS/"af_time_correlation.png"),
+    log:
+        LOGDIR / "af_time_correlation_plot" / "log.txt"
+    script:
+        "../scripts/report/af_time_correlation_plot.R"
+
+
+rule af_trajectory_panel_plot:
+    conda: "../envs/renv.yaml"
+    params:
+        design = config["PLOTS"],
+        n_plot_columns = 3,
+        plot_row_height_mm = 35,
+        plot_width_mm = 159.2,
+        random_color_seed = 7291,
+    input:
+        fmt_variants = REPORT_DIR_TABLES/"variants.filled.dated.tsv",
+        subset = REPORT_DIR_TABLES/"af_time_correlation.subset.txt"
+    output:
+        plot = report(REPORT_DIR_PLOTS/"af_trajectory_panel.png"),
+    log:
+        LOGDIR / "af_trajectory_panel_plot" / "log.txt"
+    script:
+        "../scripts/report/af_trajectory_panel_plot.R"
 
 
 rule summary_table:
@@ -163,7 +398,7 @@ rule summary_table:
         report = report(OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv"),
         metadata = config["METADATA"]
     output:
-        table = temp(OUTDIR/"summary_table.csv")
+        table = REPORT_DIR_TABLES/"summary_table.csv"
     log:
         LOGDIR / "summary_table" / "log.txt"
     script:
@@ -172,67 +407,77 @@ rule summary_table:
 
 rule report:
     conda: "../envs/quarto_render.yaml"
-    shadow: "shallow"
+    shadow: "minimal"
     input:
         qmd        = Path(config["REPORT_QMD"]).resolve(),
-        freyja     = report(REPORT_DIR_PLOTS/"figure_1.png"),
-        tree_ml    = report(REPORT_DIR_PLOTS/"figure_2.png"),
-        diversity  = report(REPORT_DIR_PLOTS/"figure_3.png"),
-        fig_cor    = report(REPORT_DIR_PLOTS/"figure_4.png"),
-        SNV        = report(REPORT_DIR_PLOTS/"figure_5a.png"),
-        SNV_spike  = report(REPORT_DIR_PLOTS/"figure_5b.png"),
-        volcano    = report(REPORT_DIR_PLOTS/"figure_6.png"),
-        panel      = report(REPORT_DIR_PLOTS/"figure_7.png"),
-        tree       = report(REPORT_DIR_PLOTS/"figure_8.png"),
-        temest     = report(REPORT_DIR_PLOTS/"figure_9.png"),
-        heat_table = report(REPORT_DIR_TABLES/"figure_10.csv"),
-        evo        = report(REPORT_DIR_PLOTS/"figure_11.png"),
-        omega_plot = report(REPORT_DIR_PLOTS/"figure_12.png"),
-        value      = OUTDIR/"diversity.json",
-        stats_lm   = OUTDIR/"stats.lm.json",
-        table      = OUTDIR/"summary_table.csv",
-        sum_nv     = OUTDIR/"summary_nv.json"
+        css        = Path(config["REPORT_CSS"]).resolve(),
+        demix      = report(REPORT_DIR_PLOTS/"demix.png"),
+        tree_ml    = report(REPORT_DIR_PLOTS/"context_phylogeny.png"),
+        diversity  = report(REPORT_DIR_PLOTS/"diversity.png"),
+        fig_cor    = report(REPORT_DIR_PLOTS/"polymorphic_sites_over_time.png"),
+        SNV        = report(REPORT_DIR_PLOTS/"nv_panel.png"),
+        SNV_spike  = report(REPORT_DIR_PLOTS/"nv_panel.S.png"),
+        volcano    = report(REPORT_DIR_PLOTS/"af_time_correlation.png"),
+        panel      = report(REPORT_DIR_PLOTS/"af_trajectory_panel.png"),
+        tree       = report(REPORT_DIR_PLOTS/"allele_freq_tree.png"),
+        temest     = report(REPORT_DIR_PLOTS/"time_signal.png"),
+        evo        = report(REPORT_DIR_PLOTS/"dn_and_ds.png"),
+        omega_plot = report(REPORT_DIR_PLOTS/"dnds.png"),
+        heat_table = report(OUTDIR/"vaf"/"pairwise_trajectory_correlation.csv"),
+        freyja_ts  = OUTDIR/"demixing"/"freyja_data"/"last_barcode_update.txt",
+        value      = REPORT_DIR_TABLES/"diversity.json",
+        stats_lm   = REPORT_DIR_TABLES/"time_signal.json",
+        stats_ml   = REPORT_DIR_TABLES/"context_phylogeny.json",
+        table      = REPORT_DIR_TABLES/"summary_table.csv",
+        sum_nv     = REPORT_DIR_TABLES/"nv_panel_summary.json",
     params:
         workflow_version = get_repo_version(BASE_PATH.as_posix(), __version__),
-        min_ivar_freq = config["VC"]["IVAR_FREQ"],
-        ufboot_reps = config["UFBOOT_REPS"],
-        shalrt_reps = config["SHALRT_REPS"],
+        min_ivar_freq = config["VC"]["MIN_FREQ"],
+        ufboot_reps = config["UFBOOT"]["REPS"],
+        shalrt_reps = config["SHALRT"]["REPS"],
         name = config["OUTPUT_NAME"],
         use_bionj = config["USE_BIONJ"],
-        cor_method = config["COR"]["METHOD"]
+        cor_method = config["COR"]["METHOD"],
     output:
         html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
     log:
         LOGDIR / "report" / "log.txt"
     shell:
-        "set +o pipefail; "
-        "Rscript -e 'library(quarto)' "
-        "-e \"quarto_render("
-            "input = '{input.qmd}', "
-            "execute_params=list("
-                "ufboot_reps='{params.ufboot_reps}', "
-                "shalrt_reps='{params.shalrt_reps}', "
-                "min_ivar_freq='{params.min_ivar_freq}', "
-                "workflow_version='{params.workflow_version}', "
-                "use_bionj='{params.use_bionj}', "
-                "cor_method='{params.cor_method}', "
-                "div='{input.diversity}', "
-                "freyja ='{input.freyja}', "
-                "tree = '{input.tree}', "
-                "tempest = '{input.temest}', "
-                "SNV = '{input.SNV}', "
-                "SNV_s = '{input.SNV_spike}', "
-                "evo = '{input.evo}', "
-                "div_value = '{input.value}', "
-                "panel = '{input.panel}', "
-                "volcano = '{input.volcano}', "
-                "tree_ml = '{input.tree_ml}', "
-                "fig_cor_snp = '{input.fig_cor}', "
-                "stats_lm = '{input.stats_lm}', "
-                "table = '{input.table}', "
-                "sum_nv = '{input.sum_nv}', "
-                "heat_tab = '{input.heat_table}', "
-                "omega_plot = '{input.omega_plot}', "
-                "name = '{params.name}'))\" "
-        ">{log} 2>&1 && "
-        'mv "$(dirname {input.qmd:q})/report.html" {output.html:q}'
+        """
+        set +o pipefail
+        exec >{log} && exec 2>&1
+
+        printf "%s\n" \
+            "ufboot_reps: '{params.ufboot_reps}'" \
+            "shalrt_reps: '{params.shalrt_reps}'" \
+            "min_ivar_freq: '{params.min_ivar_freq}'" \
+            "workflow_version: '{params.workflow_version}'" \
+            "use_bionj: '{params.use_bionj}'" \
+            "cor_method: '{params.cor_method}'" \
+            "div: '{input.diversity}'" \
+            "demix: '{input.demix}'" \
+            "tree: '{input.tree}'" \
+            "tempest: '{input.temest}'" \
+            "SNV: '{input.SNV}'" \
+            "SNV_s: '{input.SNV_spike}'" \
+            "evo: '{input.evo}'" \
+            "div_value: '{input.value}'" \
+            "panel: '{input.panel}'" \
+            "volcano: '{input.volcano}'" \
+            "tree_ml: '{input.tree_ml}'" \
+            "fig_cor_snp: '{input.fig_cor}'" \
+            "stats_lm: '{input.stats_lm}'" \
+            "stats_ml: '{input.stats_ml}'" \
+            "table: '{input.table}'" \
+            "sum_nv: '{input.sum_nv}'" \
+            "heat_tab: '{input.heat_table}'" \
+            "omega_plot: '{input.omega_plot}'" \
+            "freyja_ts: '{input.freyja_ts}'" \
+            "name: '{params.name}'" \
+            >params.yaml
+
+        sed "s|__CSSPLACEHOLDER__|{input.css}|g" {input.qmd:q} >report.qmd
+
+        quarto render report.qmd --execute-params params.yaml
+        mv report.html {output.html:q}
+        """
