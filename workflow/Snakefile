@@ -6,7 +6,8 @@ import subprocess
 
 min_version("7.19")
 
-__version__ = "1.3.0"
+with open(Path(workflow.basedir).parent / "version.txt") as f:
+    __version__ = f.read()
 
 containerized: "docker://ahmig/vipera:v" + __version__
 
