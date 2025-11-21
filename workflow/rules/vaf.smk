@@ -14,7 +14,8 @@ rule snps_to_ancestor:
         bam = get_input_bam,
         gff = OUTDIR/"reference.gff3"
     output:
-        tsv = temp(OUTDIR/"vaf"/"{sample}.tsv")
+        tsv = temp(OUTDIR/"vaf"/"{sample}.tsv"),
+        reference_fasta_renamed = temp(OUTDIR/"vaf"/"{sample}.reference.fasta"),
     log:
         LOGDIR / "snps_to_ancestor" / "{sample}.log.txt"
     shell:
@@ -27,9 +28,9 @@ rule snps_to_ancestor:
         echo Reference: $ref
         echo FASTA before:
         grep ">" {input.reference_fasta}
-        sed 's/>.*/>'$ref'/g' {input.reference_fasta} > renamed_reference.fasta
+        sed 's/>.*/>'$ref'/g' {input.reference_fasta} >{output.reference_fasta_renamed:q}
         echo FASTA after:
-        grep ">" renamed_reference.fasta
+        grep ">" {output.reference_fasta_renamed:q}
         
         echo Starting VC
         samtools mpileup \
@@ -39,7 +40,7 @@ rule snps_to_ancestor:
             --count-orphans \
             --no-BAQ \
             -Q {params.mpileup_quality} \
-            -f renamed_reference.fasta \
+            -f {output.reference_fasta_renamed:q} \
             {input.bam} \
             | ivar variants \
                 -p variants \
@@ -47,7 +48,7 @@ rule snps_to_ancestor:
                 -t {params.ivar_freq} \
                 -m {params.ivar_depth} \
                 -g {input.gff} \
-                -r renamed_reference.fasta
+                -r {output.reference_fasta_renamed:q}
         mv variants.tsv {output.tsv:q}
         """
 
@@ -203,6 +204,43 @@ use rule concat_vcf_fields as concat_variants with:
         expand(OUTDIR/"vaf"/"{sample}.variants.tsv", sample=iter_samples()),
     output:
         OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+
+
+rule samtools_depth_all_sites:
+    threads: 1
+    conda: "../envs/var_calling.yaml"
+    params:
+        min_mq = 0,
+        min_bq = config["VC"]["MIN_QUALITY"],
+    input:
+        bam = get_input_bam,
+    output:
+        OUTDIR / "samtools_depth_all_sites" / "{sample}.depth.tsv"
+    log:
+        LOGDIR / "samtools_depth_all_sites" / "{sample}.txt",
+    shell:
+        "samtools depth --threads {threads} -a -H -J -Q {params.min_mq} -q {params.min_bq} -o {output:q} {input:q} >{log:q} 2>&1"
+
+
+rule bcftools_mpileup_all_sites:
+    threads: 1
+    conda: "../envs/var_calling.yaml"
+    params:
+        min_mq = 0,
+        min_bq = config["VC"]["MIN_QUALITY"],
+    input:
+        bam = get_input_bam,
+        reference = OUTDIR/"vaf"/"{sample}.reference.fasta",
+    output:
+        mpileup = OUTDIR / "bcftools_mpileup_all_sites" / "{sample}.mpileup.vcf",
+        query = OUTDIR / "bcftools_mpileup_all_sites" / "{sample}.query.tsv",
+    log:
+        mpileup = LOGDIR / "bcftools_mpileup_all_sites" / "{sample}.mpileup.txt",
+        query = LOGDIR / "bcftools_mpileup_all_sites" / "{sample}.query.txt",
+    shell:
+        "bcftools mpileup --ignore-RG -a AD,ADF,ADR --fasta-ref {input.reference:q} --threads {threads} -Q {params.min_mq} -q {params.min_bq} -Ov -o {output.mpileup:q} {input.bam:q} >{log.mpileup:q} 2>&1 && "
+        "echo 'CHROM\tPOS\tREF\tALT\tDP\tAD\tADF\tADR' >{output.query:q} && "
+        "bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t%DP\t[ %AD]\t[ %ADF]\t[ %ADR]\n' {output.mpileup:q} >>{output.query:q} 2>{log.query:q}"
 
 
 rule pairwise_trajectory_correlation:
