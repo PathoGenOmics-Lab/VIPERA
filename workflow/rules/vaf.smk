@@ -243,6 +243,32 @@ rule bcftools_mpileup_all_sites:
         "bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t%DP\t[ %AD]\t[ %ADF]\t[ %ADR]\n' {output.mpileup:q} >>{output.query:q} 2>{log.query:q}"
 
 
+rule filter_mpileup_all_sites:
+    threads: 1
+    params:
+        min_total_AD = config["VC"]["MIN_DEPTH"],
+        min_total_ADF = 0,
+        min_total_ADR = 0,
+    input:
+        OUTDIR / "bcftools_mpileup_all_sites" / "{sample}.query.tsv",
+    output:
+        OUTDIR / "bcftools_mpileup_all_sites" / "{sample}.filtered.tsv",
+    log:
+        LOGDIR / "filter_mpileup_all_sites" / "{sample}.txt"
+    run:
+        import pandas as pd
+        df = pd.read_csv(input[0], sep="\t")
+        df["ref_AD"] = df.AD.str.split(",").apply(lambda values: int(values[0]))
+        df["total_AD"] = df.AD.str.split(",").apply(lambda values: sum(int(n) for n in values))
+        df["total_ADF"] = df.ADF.str.split(",").apply(lambda values: sum(int(n) for n in values))
+        df["total_ADR"] = df.ADR.str.split(",").apply(lambda values: sum(int(n) for n in values))
+        df[
+            (df.total_AD >= params.min_total_AD) &
+            (df.total_ADF >= params.min_total_ADF) &
+            (df.total_ADR >= params.min_total_ADR)
+        ].to_csv(output[0], sep="\t", index=False)
+
+
 rule pairwise_trajectory_correlation:
     conda: "../envs/renv.yaml"
     input:
