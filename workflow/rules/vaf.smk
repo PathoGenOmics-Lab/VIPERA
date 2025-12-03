@@ -252,21 +252,29 @@ rule filter_mpileup_all_sites:
     input:
         OUTDIR / "bcftools_mpileup_all_sites" / "{sample}.query.tsv",
     output:
-        OUTDIR / "bcftools_mpileup_all_sites" / "{sample}.filtered.tsv",
+        temp(OUTDIR / "bcftools_mpileup_all_sites" / "{sample}.filtered_sites.tsv"),
     log:
         LOGDIR / "filter_mpileup_all_sites" / "{sample}.txt"
     run:
         import pandas as pd
         df = pd.read_csv(input[0], sep="\t")
-        df["ref_AD"] = df.AD.str.split(",").apply(lambda values: int(values[0]))
-        df["total_AD"] = df.AD.str.split(",").apply(lambda values: sum(int(n) for n in values))
-        df["total_ADF"] = df.ADF.str.split(",").apply(lambda values: sum(int(n) for n in values))
-        df["total_ADR"] = df.ADR.str.split(",").apply(lambda values: sum(int(n) for n in values))
+        df["SAMPLE"] = wildcards.sample
+        df["REF_AD"] = df.AD.str.split(",").apply(lambda values: int(values[0]))
+        df["TOTAL_AD"] = df.AD.str.split(",").apply(lambda values: sum(int(n) for n in values))
+        df["TOTAL_ADF"] = df.ADF.str.split(",").apply(lambda values: sum(int(n) for n in values))
+        df["TOTAL_ADR"] = df.ADR.str.split(",").apply(lambda values: sum(int(n) for n in values))
         df[
-            (df.total_AD >= params.min_total_AD) &
-            (df.total_ADF >= params.min_total_ADF) &
-            (df.total_ADR >= params.min_total_ADR)
+            (df.TOTAL_AD >= params.min_total_AD) &
+            (df.TOTAL_ADF >= params.min_total_ADF) &
+            (df.TOTAL_ADR >= params.min_total_ADR)
         ].to_csv(output[0], sep="\t", index=False)
+
+
+use rule concat_vcf_fields as merge_filtered_mpileup_all_sites with:
+    input:
+        expand(OUTDIR / "bcftools_mpileup_all_sites" / "{sample}.filtered_sites.tsv", sample=iter_samples()),
+    output:
+        OUTDIR / f"{OUTPUT_NAME}.filtered_sites.tsv",
 
 
 rule pairwise_trajectory_correlation:

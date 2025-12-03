@@ -13,6 +13,13 @@ library(logger)
 log_threshold(INFO)
 
 # Read data
+log_info("Reading filtered sites")
+sites <- read_tsv(
+  snakemake@input[["sites"]],
+  col_select = c("SAMPLE", "POS")
+) %>%
+  mutate(SELECTED_SITE = TRUE)
+
 log_info("Reading variants table")
 variants <- read_delim(
   snakemake@input[["variants"]],
@@ -24,11 +31,20 @@ variants <- read_delim(
     "POS"
   )
 ) %>%
+  # Annotate sites selected after filter
+  left_join(sites, by = c("SAMPLE", "POS")) %>%
+  replace_na(list(SELECTED_SITE = FALSE)) %>%
   # Fill positions without alt frequency with 0
+  # TODO: add a flag to choose behavior
   complete(
     nesting(REGION, VARIANT_NAME, POS),
     SAMPLE,
-    fill = list(ALT_FREQ = 0)
+    fill = list(ALT_FREQ = NA)
+  ) %>%
+  mutate(
+    ALT_FREQ = case_when(
+      is.na(ALT_FREQ) & SELECTED_POS ~ 0
+    )
   )
 
 log_info("Reading metadata")

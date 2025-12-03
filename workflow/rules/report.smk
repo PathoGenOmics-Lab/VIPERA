@@ -347,6 +347,7 @@ rule af_time_correlation_data:
     input:
         variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         metadata = config["METADATA"],
+        sites = OUTDIR / f"{OUTPUT_NAME}.filtered_sites.tsv",
     output:
         fmt_variants = temp(REPORT_DIR_TABLES/"variants.filled.dated.tsv"),
         correlations = report(REPORT_DIR_TABLES/"af_time_correlation.csv"),
