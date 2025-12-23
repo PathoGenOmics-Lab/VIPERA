@@ -228,6 +228,7 @@ rule bcftools_mpileup_all_sites:
     params:
         min_mq = 0,
         min_bq = config["VC"]["MIN_QUALITY"],
+        mpileup_extra = "--no-BAQ"
     input:
         bam = get_input_bam,
         reference = OUTDIR/"vaf"/"{sample}.reference.fasta",
@@ -238,7 +239,7 @@ rule bcftools_mpileup_all_sites:
         mpileup = LOGDIR / "bcftools_mpileup_all_sites" / "{sample}.mpileup.txt",
         query = LOGDIR / "bcftools_mpileup_all_sites" / "{sample}.query.txt",
     shell:
-        "bcftools mpileup --no-BAQ -a AD,ADF,ADR --fasta-ref {input.reference:q} --threads {threads} -Q {params.min_bq} -q {params.min_mq} -Ov -o {output.mpileup:q} {input.bam:q} >{log.mpileup:q} 2>&1 && "
+        "bcftools mpileup {params.mpileup_extra} -a AD,ADF,ADR --fasta-ref {input.reference:q} --threads {threads} -Q {params.min_bq} -q {params.min_mq} -Ov -o {output.mpileup:q} {input.bam:q} >{log.mpileup:q} 2>&1 && "
         "echo 'CHROM\tPOS\tREF\tALT\tDP\tAD\tADF\tADR' >{output.query:q} && "
         "bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t%DP\t[ %AD]\t[ %ADF]\t[ %ADR]\n' {output.mpileup:q} >>{output.query:q} 2>{log.query:q}"
 
