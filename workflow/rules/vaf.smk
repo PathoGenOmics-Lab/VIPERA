@@ -233,8 +233,8 @@ rule bcftools_mpileup_all_sites:
         bam = get_input_bam,
         reference = OUTDIR/"vaf"/"{sample}.reference.fasta",
     output:
-        mpileup = OUTDIR / "bcftools_mpileup_all_sites" / "{sample}.mpileup.vcf",
-        query = OUTDIR / "bcftools_mpileup_all_sites" / "{sample}.query.tsv",
+        mpileup = temp(OUTDIR / "all_sites" / "{sample}.mpileup.vcf"),
+        query = temp(OUTDIR / "all_sites" / "{sample}.query.tsv"),
     log:
         mpileup = LOGDIR / "bcftools_mpileup_all_sites" / "{sample}.mpileup.txt",
         query = LOGDIR / "bcftools_mpileup_all_sites" / "{sample}.query.txt",
@@ -251,33 +251,41 @@ rule filter_mpileup_all_sites:
         min_total_ADF = 0,
         min_total_ADR = 0,
     input:
-        OUTDIR / "bcftools_mpileup_all_sites" / "{sample}.query.tsv",
+        OUTDIR / "all_sites" / "{sample}.query.tsv",
     output:
-        OUTDIR / "bcftools_mpileup_all_sites" / "{sample}.filtered.tsv",
+        temp(OUTDIR / "all_sites" / "{sample}.filtered_sites.tsv"),
     log:
         LOGDIR / "filter_mpileup_all_sites" / "{sample}.txt"
     run:
         import pandas as pd
         df = pd.read_csv(input[0], sep="\t")
-        df["ref_AD"] = df.AD.str.split(",").apply(lambda values: int(values[0]))
-        df["total_AD"] = df.AD.str.split(",").apply(lambda values: sum(int(n) for n in values))
-        df["total_ADF"] = df.ADF.str.split(",").apply(lambda values: sum(int(n) for n in values))
-        df["total_ADR"] = df.ADR.str.split(",").apply(lambda values: sum(int(n) for n in values))
+        df["SAMPLE"] = wildcards.sample
+        df["REF_AD"] = df.AD.str.split(",").apply(lambda values: int(values[0]))
+        df["TOTAL_AD"] = df.AD.str.split(",").apply(lambda values: sum(int(n) for n in values))
+        df["TOTAL_ADF"] = df.ADF.str.split(",").apply(lambda values: sum(int(n) for n in values))
+        df["TOTAL_ADR"] = df.ADR.str.split(",").apply(lambda values: sum(int(n) for n in values))
         df[
-            (df.total_AD >= params.min_total_AD) &
-            (df.total_ADF >= params.min_total_ADF) &
-            (df.total_ADR >= params.min_total_ADR)
+            (df.TOTAL_AD >= params.min_total_AD) &
+            (df.TOTAL_ADF >= params.min_total_ADF) &
+            (df.TOTAL_ADR >= params.min_total_ADR)
         ].to_csv(output[0], sep="\t", index=False)
 
 
-rule pairwise_trajectory_correlation:
+use rule concat_vcf_fields as merge_filtered_mpileup_all_sites with:
+    input:
+        expand(OUTDIR / "all_sites" / "{sample}.filtered_sites.tsv", sample=iter_samples()),
+    output:
+        OUTDIR / f"{OUTPUT_NAME}.filtered_sites.tsv",
+
+
+rule fill_all_sites:
     conda: "../envs/renv.yaml"
     input:
-        variants =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        metadata = config["METADATA"],
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        sites = OUTDIR / f"{OUTPUT_NAME}.filtered_sites.tsv",
     output:
-        table = report(OUTDIR/"vaf"/"pairwise_trajectory_correlation.csv"),
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.all_sites.tsv",
     log:
-        LOGDIR / "pairwise_trajectory_correlation" / "log.txt"
+        LOGDIR / "fill_all_sites" / "log.txt"
     script:
-        "../scripts/pairwise_trajectory_correlation.R"
+        "../scripts/fill_all_sites.R"
