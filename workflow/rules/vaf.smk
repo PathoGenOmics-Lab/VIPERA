@@ -14,7 +14,8 @@ rule snps_to_ancestor:
         bam = get_input_bam,
         gff = OUTDIR/"reference.gff3"
     output:
-        tsv = temp(OUTDIR/"vaf"/"{sample}.tsv")
+        tsv = temp(OUTDIR/"vaf"/"{sample}.tsv"),
+        reference_fasta_renamed = temp(OUTDIR/"vaf"/"{sample}.reference.fasta"),
     log:
         LOGDIR / "snps_to_ancestor" / "{sample}.log.txt"
     shell:
@@ -27,9 +28,9 @@ rule snps_to_ancestor:
         echo Reference: $ref
         echo FASTA before:
         grep ">" {input.reference_fasta}
-        sed 's/>.*/>'$ref'/g' {input.reference_fasta} > renamed_reference.fasta
+        sed 's/>.*/>'$ref'/g' {input.reference_fasta} >{output.reference_fasta_renamed:q}
         echo FASTA after:
-        grep ">" renamed_reference.fasta
+        grep ">" {output.reference_fasta_renamed:q}
         
         echo Starting VC
         samtools mpileup \
@@ -39,7 +40,7 @@ rule snps_to_ancestor:
             --count-orphans \
             --no-BAQ \
             -Q {params.mpileup_quality} \
-            -f renamed_reference.fasta \
+            -f {output.reference_fasta_renamed:q} \
             {input.bam} \
             | ivar variants \
                 -p variants \
@@ -47,7 +48,7 @@ rule snps_to_ancestor:
                 -t {params.ivar_freq} \
                 -m {params.ivar_depth} \
                 -g {input.gff} \
-                -r renamed_reference.fasta
+                -r {output.reference_fasta_renamed:q}
         mv variants.tsv {output.tsv:q}
         """
 
@@ -205,14 +206,70 @@ use rule concat_vcf_fields as concat_variants with:
         OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
 
 
-rule pairwise_trajectory_correlation:
+rule bcftools_mpileup_all_sites:
+    threads: 1
+    conda: "../envs/var_calling.yaml"
+    params:
+        min_mq = 0,
+        min_bq = config["VC"]["MIN_QUALITY"],
+        mpileup_extra = "--no-BAQ"
+    input:
+        bam = get_input_bam,
+        reference = OUTDIR/"vaf"/"{sample}.reference.fasta",
+    output:
+        mpileup = temp(OUTDIR / "all_sites" / "{sample}.mpileup.vcf"),
+        query = temp(OUTDIR / "all_sites" / "{sample}.query.tsv"),
+    log:
+        mpileup = LOGDIR / "bcftools_mpileup_all_sites" / "{sample}.mpileup.txt",
+        query = LOGDIR / "bcftools_mpileup_all_sites" / "{sample}.query.txt",
+    shell:
+        "bcftools mpileup {params.mpileup_extra} -a AD,ADF,ADR --fasta-ref {input.reference:q} --threads {threads} -Q {params.min_bq} -q {params.min_mq} -Ov -o {output.mpileup:q} {input.bam:q} >{log.mpileup:q} 2>&1 && "
+        "echo 'CHROM\tPOS\tREF\tALT\tDP\tAD\tADF\tADR' >{output.query:q} && "
+        "bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t%DP\t[ %AD]\t[ %ADF]\t[ %ADR]\n' {output.mpileup:q} >>{output.query:q} 2>{log.query:q}"
+
+
+rule filter_mpileup_all_sites:
+    threads: 1
+    params:
+        min_total_AD = config["VC"]["MIN_DEPTH"],
+        min_total_ADF = 0,
+        min_total_ADR = 0,
+    input:
+        OUTDIR / "all_sites" / "{sample}.query.tsv",
+    output:
+        temp(OUTDIR / "all_sites" / "{sample}.filtered_sites.tsv"),
+    log:
+        LOGDIR / "filter_mpileup_all_sites" / "{sample}.txt"
+    run:
+        import pandas as pd
+        df = pd.read_csv(input[0], sep="\t")
+        df["SAMPLE"] = wildcards.sample
+        df["REF_AD"] = df.AD.str.split(",").apply(lambda values: int(values[0]))
+        df["TOTAL_AD"] = df.AD.str.split(",").apply(lambda values: sum(int(n) for n in values))
+        df["TOTAL_ADF"] = df.ADF.str.split(",").apply(lambda values: sum(int(n) for n in values))
+        df["TOTAL_ADR"] = df.ADR.str.split(",").apply(lambda values: sum(int(n) for n in values))
+        df[
+            (df.TOTAL_AD >= params.min_total_AD) &
+            (df.TOTAL_ADF >= params.min_total_ADF) &
+            (df.TOTAL_ADR >= params.min_total_ADR)
+        ].to_csv(output[0], sep="\t", index=False)
+
+
+use rule concat_vcf_fields as merge_filtered_mpileup_all_sites with:
+    input:
+        expand(OUTDIR / "all_sites" / "{sample}.filtered_sites.tsv", sample=iter_samples()),
+    output:
+        OUTDIR / f"{OUTPUT_NAME}.filtered_sites.tsv",
+
+
+rule fill_all_sites:
     conda: "../envs/renv.yaml"
     input:
-        variants =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        metadata = config["METADATA"],
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        sites = OUTDIR / f"{OUTPUT_NAME}.filtered_sites.tsv",
     output:
-        table = report(OUTDIR/"vaf"/"pairwise_trajectory_correlation.csv"),
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.all_sites.tsv",
     log:
-        LOGDIR / "pairwise_trajectory_correlation" / "log.txt"
+        LOGDIR / "fill_all_sites" / "log.txt"
     script:
-        "../scripts/pairwise_trajectory_correlation.R"
+        "../scripts/fill_all_sites.R"

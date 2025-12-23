@@ -1,6 +1,6 @@
 FROM condaforge/miniforge3:latest
 LABEL io.github.snakemake.containerized="true"
-LABEL io.github.snakemake.conda_env_hash="7071b22b1161190c06be3ac061ab0019a1a8d3038532c9134e070a3875414ef5"
+LABEL io.github.snakemake.conda_env_hash="a74592ad8bd4ec05cb4d3f2bde91dd12ba674df1828dc48cc7e2c39b95aed05c"
 
 # Step 2: Retrieve conda environments
 
@@ -149,15 +149,16 @@ COPY workflow/envs/snpeff.yaml /conda-envs/0adafb79cb1bec58ef4c77bf4cca4f95/envi
 
 # Conda environment:
 #   source: workflow/envs/var_calling.yaml
-#   prefix: /conda-envs/5150d0f0a91d7f7a789a06f453d63479
+#   prefix: /conda-envs/81e46c677a6cc0618c93963d57d17d3f
 #   channels:
 #     - conda-forge
 #     - bioconda
 #   dependencies:
 #     - ivar==1.4.2
 #     - samtools==1.17
-RUN mkdir -p /conda-envs/5150d0f0a91d7f7a789a06f453d63479
-COPY workflow/envs/var_calling.yaml /conda-envs/5150d0f0a91d7f7a789a06f453d63479/environment.yaml
+#     - bcftools==1.17
+RUN mkdir -p /conda-envs/81e46c677a6cc0618c93963d57d17d3f
+COPY workflow/envs/var_calling.yaml /conda-envs/81e46c677a6cc0618c93963d57d17d3f/environment.yaml
 
 # Step 3: Generate conda environments
 
@@ -172,7 +173,7 @@ RUN conda env create --prefix /conda-envs/9c24a867826615972cc288081976e7fc --fil
     conda env create --prefix /conda-envs/96f3c1cec4b3ce5d72f708992272e9c1 --file /conda-envs/96f3c1cec4b3ce5d72f708992272e9c1/environment.yaml && \
     conda env create --prefix /conda-envs/8ad6cdcf265d30289788da99d5bf9fff --file /conda-envs/8ad6cdcf265d30289788da99d5bf9fff/environment.yaml && \
     conda env create --prefix /conda-envs/0adafb79cb1bec58ef4c77bf4cca4f95 --file /conda-envs/0adafb79cb1bec58ef4c77bf4cca4f95/environment.yaml && \
-    conda env create --prefix /conda-envs/5150d0f0a91d7f7a789a06f453d63479 --file /conda-envs/5150d0f0a91d7f7a789a06f453d63479/environment.yaml && \
+    conda env create --prefix /conda-envs/81e46c677a6cc0618c93963d57d17d3f --file /conda-envs/81e46c677a6cc0618c93963d57d17d3f/environment.yaml && \
     conda clean --all -y
 
 # Step 4: Run post-deploy scripts

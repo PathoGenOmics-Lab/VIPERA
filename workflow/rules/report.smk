@@ -345,7 +345,7 @@ rule af_time_correlation_data:
         cor_method = config["COR"]["METHOD"],
         cor_exact = config["COR"]["EXACT"],
     input:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.all_sites.tsv",
         metadata = config["METADATA"],
     output:
         fmt_variants = temp(REPORT_DIR_TABLES/"variants.filled.dated.tsv"),
@@ -392,6 +392,23 @@ rule af_trajectory_panel_plot:
         "../scripts/report/af_trajectory_panel_plot.R"
 
 
+rule pairwise_trajectory_correlation_data:
+    conda: "../envs/renv.yaml"
+    params:
+        cor_method = config["COR"]["METHOD"],
+        cor_use = "pairwise.complete.obs",
+    input:
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.all_sites.tsv",
+        metadata = config["METADATA"],
+    output:
+        table = REPORT_DIR_TABLES/"pairwise_trajectory_frequency_data.csv",
+        matrix = report(REPORT_DIR_TABLES/"pairwise_trajectory_correlation_matrix.csv"),
+    log:
+        LOGDIR / "pairwise_trajectory_correlation_data" / "log.txt"
+    script:
+        "../scripts/report/pairwise_trajectory_correlation_data.R"
+
+
 rule summary_table:
     conda: "../envs/renv.yaml"
     input:
@@ -423,7 +440,7 @@ rule report:
         temest     = report(REPORT_DIR_PLOTS/"time_signal.png"),
         evo        = report(REPORT_DIR_PLOTS/"dn_and_ds.png"),
         omega_plot = report(REPORT_DIR_PLOTS/"dnds.png"),
-        heat_table = report(OUTDIR/"vaf"/"pairwise_trajectory_correlation.csv"),
+        heat_table = report(REPORT_DIR_TABLES/"pairwise_trajectory_correlation_matrix.csv"),
         freyja_ts  = OUTDIR/"demixing"/"freyja_data"/"last_barcode_update.txt",
         value      = REPORT_DIR_TABLES/"diversity.json",
         stats_lm   = REPORT_DIR_TABLES/"time_signal.json",
