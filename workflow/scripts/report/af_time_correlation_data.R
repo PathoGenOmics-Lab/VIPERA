@@ -24,11 +24,11 @@ variants <- read_delim(
     "POS"
   )
 ) %>%
-  # Fill positions without alt frequency with 0
+  # Fill positions without alt frequency with NA
   complete(
     nesting(REGION, VARIANT_NAME, POS),
     SAMPLE,
-    fill = list(ALT_FREQ = 0)
+    fill = list(ALT_FREQ = NA)
   )
 
 log_info("Reading metadata")
