@@ -206,22 +206,6 @@ use rule concat_vcf_fields as concat_variants with:
         OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
 
 
-rule samtools_depth_all_sites:
-    threads: 1
-    conda: "../envs/var_calling.yaml"
-    params:
-        min_mq = 0,
-        min_bq = config["VC"]["MIN_QUALITY"],
-    input:
-        bam = get_input_bam,
-    output:
-        OUTDIR / "samtools_depth_all_sites" / "{sample}.depth.tsv"
-    log:
-        LOGDIR / "samtools_depth_all_sites" / "{sample}.txt",
-    shell:
-        "samtools depth --threads {threads} -a -H -J -Q {params.min_bq} -q {params.min_mq} -o {output:q} {input:q} >{log:q} 2>&1"
-
-
 rule bcftools_mpileup_all_sites:
     threads: 1
     conda: "../envs/var_calling.yaml"
