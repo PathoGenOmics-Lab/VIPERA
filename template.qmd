@@ -65,6 +65,7 @@ library(tidyr)
 library(dplyr)
 library(heatmaply)
 library(readr)
+library(tibble)
 
 # Diversity
 div_values <- fromJSON(params$div_value)
@@ -89,10 +90,9 @@ table <- read.csv(params$table)
 n.samples <- table %>% pull(Sample) %>% unique() %>% length()
 
 # Heatmap
-heatmap.df <- read.csv(params$heat_tab)
-row.names(heatmap.df) <- heatmap.df$`...1`
-heatmap.df[1] <- NULL
-cor.mat <- cor(heatmap.df, method = params$cor_method, use = "pairwise.complete.obs")
+cor.mat <- read_csv(params$heat_tab) %>%
+  column_to_rownames("...1") %>%
+  as.matrix()
 if (params$cor_method == "pearson") {
   cor.method.name <- "Pearson's"
 } else if (params$cor_method == "spearman") {

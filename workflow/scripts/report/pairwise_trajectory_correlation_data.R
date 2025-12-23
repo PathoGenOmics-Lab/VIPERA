@@ -23,6 +23,7 @@ date_order <- read_csv(snakemake@input[["metadata"]]) %>%
   pull(ID) %>%
   unique()
 
+log_info("Formatting variants")
 all_variants_wider <- variants %>%
   select(SAMPLE, VARIANT_NAME, ALT_FREQ) %>%
   pivot_wider(
@@ -35,5 +36,15 @@ all_variants_wider <- variants %>%
   rename_with(~ str_replace(., "^([^|]+)\\|.*$", "\\1(...)"), -SAMPLE) %>%
   column_to_rownames(var = "SAMPLE")
 
-log_info("Saving table")
+log_info("Saving table of frequencies")
 write.csv(all_variants_wider, snakemake@output[["table"]])
+
+log_info("Calculating correlations")
+cor.mat <- cor(
+  all_variants_wider,
+  method = snakemake@params$cor_method,
+  use = snakemake@params$cor_use
+)
+
+log_info("Saving correlation matrix")
+write.csv(cor.mat, snakemake@output[["matrix"]])
