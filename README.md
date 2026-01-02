@@ -5,8 +5,9 @@
 </p>
 
 [![PGO badge](https://img.shields.io/badge/PathoGenOmics-Lab-yellow.svg)](https://pathogenomics.github.io/)
-[![DOI](https://img.shields.io/badge/Virus_Evolution-10.1093/ve/veae018-387088.svg)](https://doi.org/10.1093/ve/veae018)
 [![Latest release](https://img.shields.io/github/v/release/PathoGenOmics-Lab/VIPERA)](https://github.com/PathoGenOmics-Lab/VIPERA/releases)
+[![Article DOI](https://img.shields.io/badge/Virus_Evolution-10.1093/ve/veae018-387088.svg)](https://doi.org/10.1093/ve/veae018)
+[![Zenodo DOI](https://zenodo.org/badge/627797162.svg)](https://doi.org/10.5281/zenodo.15771867)
 
 ![Install workflow](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/install.yml/badge.svg)
 ![Test workflow with Snakemake v7](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/test_v7.yml/badge.svg)
