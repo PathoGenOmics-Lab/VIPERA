@@ -16,8 +16,6 @@ REPORT_DIR_TABLES = Path(OUTDIR/"report/tables")
 include: "rules/fetch.smk"
 include: "rules/fasta.smk"
 include: "rules/asr.smk"
-include: "rules/demix.smk"
 include: "rules/vaf.smk"
-include: "rules/pangolin.smk"
 include: "rules/distances.smk"
 include: "rules/evolution.smk"

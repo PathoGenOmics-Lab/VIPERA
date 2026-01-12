@@ -16,6 +16,8 @@ configfile: "config/targets.yaml"
 
 include: "core.smk"
 include: "rules/context.smk"
+include: "rules/demix.smk"
+include: "rules/pangolin.smk"
 include: "rules/report.smk"
 
 rule all:
