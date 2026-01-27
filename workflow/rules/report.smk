@@ -110,25 +110,6 @@ rule polymorphic_sites_over_time_plot:
         "../scripts/report/polymorphic_sites_over_time_plot.R"
 
 
-rule window_data:
-    conda: "../envs/biopython.yaml"
-    params:
-        window = config["WINDOW"]["WIDTH"],
-        step = config["WINDOW"]["STEP"],
-        features = config.get("GB_FEATURES", {}),
-        gb_qualifier_display = "gene"
-    input:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        gb = OUTDIR/"reference.gb",
-    output:
-        window_df = REPORT_DIR_TABLES/"window.csv",
-        json = temp(REPORT_DIR_TABLES/"window.json"),
-    log:
-        LOGDIR / "window_data" / "log.txt"
-    script:
-        "../scripts/report/window_data.py"
-
-
 rule nv_panel_data:
     conda: "../envs/renv.yaml"
     input:
