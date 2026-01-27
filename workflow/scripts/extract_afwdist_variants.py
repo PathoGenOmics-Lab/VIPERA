@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
-from typing import List
+from typing import List, Set
 
 import pandas as pd
 from Bio import SeqIO
@@ -17,7 +17,7 @@ def read_monofasta(path: str) -> SeqRecord:
     return record
 
 
-def read_masked_sites(vcf_path: str, mask_classes: List[str]) -> List[int]:
+def read_masked_sites(vcf_path: str, mask_classes: List[str]) -> Set[int]:
     """
     Parse a VCF containing positions for masking. Assumes the VCF file is
     formatted as in:
@@ -31,10 +31,10 @@ def read_masked_sites(vcf_path: str, mask_classes: List[str]) -> List[int]:
         comment="#",
         names=("CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO")
     )
-    return vcf.loc[vcf.FILTER.isin(mask_classes), "POS"].tolist()
+    return set(vcf.loc[vcf.FILTER.isin(mask_classes), "POS"].unique())
 
 
-def build_ancestor_variant_table(ancestor: Seq, reference: Seq, reference_name: str, masked_positions: List[int]) -> pd.DataFrame:
+def build_ancestor_variant_table(ancestor: Seq, reference: Seq, reference_name: str, masked_positions: Set[int]) -> pd.DataFrame:
     pos = []
     alt = []
     for i in range(1, len(ancestor) + 1):
@@ -77,10 +77,11 @@ if __name__ == "__main__":
     logging.info("Reading input FASTA files")
     # Case ancestor
     ancestor = read_monofasta(snakemake.input.ancestor)
-    logging.info(f"Ancestor: '{ancestor.description}', length={len(ancestor.seq)}")
+    logging.info(f"Ancestor: '{ancestor.description}', length={len(ancestor)}")
     # Alignment reference
     reference = read_monofasta(snakemake.input.reference)
-    logging.info(f"Reference: '{reference.description}', length={len(reference.seq)}")
+    logging.info(f"Reference: '{reference.description}', length={len(reference)}")
+    assert len(ancestor) == len(reference)
 
     logging.info("Processing ancestor variants")
     ancestor_table = build_ancestor_variant_table(ancestor.seq, reference.seq, reference.id, masked_sites)
