@@ -273,3 +273,22 @@ rule fill_all_sites:
         LOGDIR / "fill_all_sites" / "log.txt"
     script:
         "../scripts/fill_all_sites.R"
+
+
+rule window_data:
+    conda: "../envs/biopython.yaml"
+    params:
+        window = config["WINDOW"]["WIDTH"],
+        step = config["WINDOW"]["STEP"],
+        features = config.get("GB_FEATURES", {}),
+        gb_qualifier_display = "gene"
+    input:
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        gb = OUTDIR/"reference.gb",
+    output:
+        window_df = REPORT_DIR_TABLES/"window.csv",
+        json = temp(REPORT_DIR_TABLES/"window.json"),
+    log:
+        LOGDIR / "window_data" / "log.txt"
+    script:
+        "../scripts/report/window_data.py"
