@@ -110,44 +110,6 @@ rule polymorphic_sites_over_time_plot:
         "../scripts/report/polymorphic_sites_over_time_plot.R"
 
 
-rule nv_panel_data:
-    conda: "../envs/renv.yaml"
-    input:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        metadata = config["METADATA"],
-    output:
-        table = REPORT_DIR_TABLES/"nv_panel.csv",
-        json = temp(REPORT_DIR_TABLES/"nv_panel.json"),
-    log:
-        LOGDIR / "nv_panel_data" / "log.txt"
-    script:
-        "../scripts/report/nv_panel_data.R"
-
-
-rule nv_panel_zoom_on_feature_data:
-    input:
-        table = REPORT_DIR_TABLES/"nv_panel.csv",
-        regions = REPORT_DIR_TABLES/"genbank_regions.json",
-    output:
-        table = temp(REPORT_DIR_TABLES/"nv_panel.{region_name}.csv"),
-    log:
-        LOGDIR / "nv_panel_zoom_on_feature_data" / "{region_name}.log.txt"
-    script:
-        "../scripts/report/nv_panel_zoom_on_feature_data.py"
-
-
-rule window_zoom_on_feature_data:
-    input:
-        table = REPORT_DIR_TABLES/"window.csv",
-        regions = REPORT_DIR_TABLES/"genbank_regions.json",
-    output:
-        table = temp(REPORT_DIR_TABLES/"window.{region_name}.csv"),
-    log:
-        LOGDIR / "window_zoom_on_feature_data" / "{region_name}.log.txt"
-    script:
-        "../scripts/report/window_zoom_on_feature_data.py"
-
-
 rule nv_panel_plot:
     conda: "../envs/renv.yaml"
     params:
