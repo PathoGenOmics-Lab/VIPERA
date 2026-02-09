@@ -1,5 +1,7 @@
 channels:
   - conda-forge
   - bioconda
+  - nodefaults
 dependencies:
-  - pangolin==4.3.1
+  - pangolin==4.3.4
+  - setuptools<81
