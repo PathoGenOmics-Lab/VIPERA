@@ -1,3 +1,50 @@
+rule compile_fail_sites_vcf:
+    params:
+        header = ("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO"),
+        filter_text = "mask",
+        sub_text = "NA",
+        exc_text = "site_qual"
+    input:
+        sites = OUTDIR / f"{OUTPUT_NAME}.fail_sites.tsv",
+    output:
+        sites = temp(OUTDIR / f"{OUTPUT_NAME}.fail_sites.vcf"),
+    run:
+        import pandas as pd
+        sites = (
+            pd.read_table(input.sites, sep="\t")
+                .drop_duplicates(subset=("CHROM", "POS", "REF"))
+                .rename(columns={"CHROM": "#CHROM"})
+        )
+        sites["ID"] = "."
+        sites["ALT"] = "."
+        sites["QUAL"] = "."
+        sites["FILTER"] = params.filter_text
+        sites["INFO"] = f"SUB={params.sub_text};EXC={params.exc_text}"
+        sites[list(params.header)].to_csv(output.sites, sep="\t", index=False)
+
+
+rule merge_sites:
+    params:
+        header = ("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO")
+    input:
+        lambda wildcards: select_problematic_vcf(),
+        OUTDIR / f"{OUTPUT_NAME}.fail_sites.vcf",
+    output:
+        sites = temp(OUTDIR / "all_mask_sites.vcf"),
+    run:
+        import pandas as pd
+        (
+            pd.concat(
+                [pd.read_table(path, sep="\t", comment="#", names=params.header) for path in input],
+                axis="rows",
+                ignore_index=True
+            )
+                .drop_duplicates(subset=("#CHROM", "POS", "FILTER"), keep="first")
+                .sort_values(list(params.header))
+                .to_csv(output.sites, sep="\t", index=False)
+        )
+
+
 rule extract_afwdist_variants:
     conda: "../envs/biopython.yaml"
     params:
@@ -8,7 +55,7 @@ rule extract_afwdist_variants:
         mask_class = ["mask"],
     input:
         variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        mask_vcf = lambda wildcards: select_problematic_vcf(),
+        mask_vcf = OUTDIR / "all_mask_sites.vcf",
         ancestor = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
         reference = OUTDIR/"reference.fasta",
     output:

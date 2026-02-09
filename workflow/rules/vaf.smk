@@ -237,7 +237,8 @@ rule filter_mpileup_all_sites:
     input:
         OUTDIR / "all_sites" / "{sample}.query.tsv",
     output:
-        temp(OUTDIR / "all_sites" / "{sample}.filtered_sites.tsv"),
+        sites_pass = temp(OUTDIR / "all_sites" / "{sample}.filtered_sites.tsv"),
+        sites_fail = temp(OUTDIR / "all_sites" / "{sample}.fail_sites.tsv"),
     log:
         LOGDIR / "filter_mpileup_all_sites" / "{sample}.txt"
     run:
@@ -248,11 +249,13 @@ rule filter_mpileup_all_sites:
         df["TOTAL_AD"] = df.AD.str.split(",").apply(lambda values: sum(int(n) for n in values))
         df["TOTAL_ADF"] = df.ADF.str.split(",").apply(lambda values: sum(int(n) for n in values))
         df["TOTAL_ADR"] = df.ADR.str.split(",").apply(lambda values: sum(int(n) for n in values))
-        df[
+        mask = (
             (df.TOTAL_AD >= params.min_total_AD) &
             (df.TOTAL_ADF >= params.min_total_ADF) &
             (df.TOTAL_ADR >= params.min_total_ADR)
-        ].to_csv(output[0], sep="\t", index=False)
+        )
+        df[mask].to_csv(output.sites_pass, sep="\t", index=False)
+        df[~mask].to_csv(output.sites_fail, sep="\t", index=False)
 
 
 use rule concat_vcf_fields as merge_filtered_mpileup_all_sites with:
@@ -260,6 +263,13 @@ use rule concat_vcf_fields as merge_filtered_mpileup_all_sites with:
         expand(OUTDIR / "all_sites" / "{sample}.filtered_sites.tsv", sample=iter_samples()),
     output:
         OUTDIR / f"{OUTPUT_NAME}.filtered_sites.tsv",
+
+
+use rule concat_vcf_fields as merge_fail_mpileup_all_sites with:
+    input:
+        expand(OUTDIR / "all_sites" / "{sample}.fail_sites.tsv", sample=iter_samples()),
+    output:
+        OUTDIR / f"{OUTPUT_NAME}.fail_sites.tsv",
 
 
 rule fill_all_sites:
