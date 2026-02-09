@@ -282,24 +282,6 @@ rule dnds_plots:
         "../scripts/report/dnds_plots.R"
 
 
-rule af_time_correlation_data:
-    conda: "../envs/renv.yaml"
-    params:
-        cor_method = config["COR"]["METHOD"],
-        cor_exact = config["COR"]["EXACT"],
-    input:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.all_sites.tsv",
-        metadata = config["METADATA"],
-    output:
-        fmt_variants = temp(REPORT_DIR_TABLES/"variants.filled.dated.tsv"),
-        correlations = report(REPORT_DIR_TABLES/"af_time_correlation.csv"),
-        subset = REPORT_DIR_TABLES/"af_time_correlation.subset.txt",
-    log:
-        LOGDIR / "af_time_correlation_data" / "log.txt"
-    script:
-        "../scripts/report/af_time_correlation_data.R"
-
-
 rule af_time_correlation_plot:
     conda: "../envs/renv.yaml"
     params:
@@ -333,23 +315,6 @@ rule af_trajectory_panel_plot:
         LOGDIR / "af_trajectory_panel_plot" / "log.txt"
     script:
         "../scripts/report/af_trajectory_panel_plot.R"
-
-
-rule pairwise_trajectory_correlation_data:
-    conda: "../envs/renv.yaml"
-    params:
-        cor_method = config["COR"]["METHOD"],
-        cor_use = "pairwise.complete.obs",
-    input:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.all_sites.tsv",
-        metadata = config["METADATA"],
-    output:
-        table = REPORT_DIR_TABLES/"pairwise_trajectory_frequency_data.csv",
-        matrix = report(REPORT_DIR_TABLES/"pairwise_trajectory_correlation_matrix.csv"),
-    log:
-        LOGDIR / "pairwise_trajectory_correlation_data" / "log.txt"
-    script:
-        "../scripts/report/pairwise_trajectory_correlation_data.R"
 
 
 rule summary_table:
