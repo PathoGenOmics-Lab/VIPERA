@@ -14,7 +14,6 @@ jobs:
         with:
           channel-priority: strict
           activate-environment: snakemake
-          auto-activate-base: false
           environment-file: .test/environment_v7.yaml
       - name: Create environments
         shell: bash -el {0}
@@ -30,7 +29,6 @@ jobs:
         with:
           channel-priority: strict
           activate-environment: snakemake
-          auto-activate-base: false
           environment-file: .test/environment_v7.yaml
       - name: Dry run
         shell: bash -el {0}
