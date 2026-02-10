@@ -8,7 +8,7 @@ rule extract_afwdist_variants:
         mask_class = ["mask"],
     input:
         variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        mask_vcf = lambda wildcards: select_problematic_vcf(),
+        mask_vcf = OUTDIR / "all_mask_sites.vcf",
         ancestor = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
         reference = OUTDIR/"reference.fasta",
     output:

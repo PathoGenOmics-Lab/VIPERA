@@ -77,7 +77,6 @@ stats <- append(
 )
 correlation <- stats[["r2"]]
 sub_rate <- stats[["sub_rate"]]
-sub_rate <- display.num(sub_rate, 2)
 p_value_lm <- stats[["pvalue"]]
 
 # NV counts
@@ -262,7 +261,7 @@ frequency-weighted distances.](`r params$tree`){#fig-tree}
 To estimate the evolutionary rate, root-to-tip distances measured on the previous
 tree (@fig-tree) have been correlated with time, obtaining a $R^2$ of
 $`r display.num(correlation, 4)`$ and a p-value of $`r p_value_lm`$. The estimated evolutionary
-rate is $`r sub_rate`$ number of changes per year (@fig-tempest).
+rate is $`r display.num(sub_rate, 2)`$ changes per year (@fig-tempest).
 
 ![Scatterplot depicting the relationship between root-to-tip
 distances and the number of days passed since the first sample. The solid
