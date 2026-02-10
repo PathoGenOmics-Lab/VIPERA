@@ -25,7 +25,7 @@ date_order <- read_csv(snakemake@input[["metadata"]]) %>%
 
 log_info("Formatting variants")
 all_variants_wider <- variants %>%
-  select(SAMPLE, VARIANT_NAME, ALT_FREQ) %>%
+  distinct(SAMPLE, VARIANT_NAME, ALT_FREQ) %>%
   pivot_wider(
     names_from = VARIANT_NAME,
     values_from = ALT_FREQ
