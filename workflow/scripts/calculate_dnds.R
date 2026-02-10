@@ -29,9 +29,11 @@ variants <- read_delim(
 log_info("Reading metadata table")
 metadata <- read_delim(snakemake@input[["metadata"]]) %>%
   mutate(
-    interval = as.numeric(
-      as.Date(CollectionDate) - min(as.Date(CollectionDate))
-    )
+    interval = difftime(
+      as.Date(CollectionDate),
+      min(as.Date(CollectionDate)),
+      units = "days"
+    ) |> as.numeric()
   ) %>%
   select(ID, interval) %>%
   rename(SAMPLE = ID)

@@ -44,9 +44,11 @@ time.signal <- distRoot(
     by = "ID"
   ) %>%
   mutate(
-    date_interval = as.numeric(
-      as.Date(CollectionDate) - min(as.Date(CollectionDate))
-    )
+    date_interval = difftime(
+      as.Date(CollectionDate),
+      min(as.Date(CollectionDate)),
+      units = "days"
+    ) |> as.numeric()
   )
 
 # Save table
