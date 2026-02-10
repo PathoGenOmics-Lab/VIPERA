@@ -45,6 +45,9 @@ read_tsv(
   # Rename "...[*]..." columns using the provided lookup via Snakemake config
   rename(all_of(unlist(snakemake@params$colnames_mapping))) %>%
 
+  # Ensure missing values are properly encoded
+  mutate(across(where(is.character), ~ na_if(.x, "NA"))) %>%
+
   # Separate &-delimited error column (more than one error/warning/info message per row is possible)
   mutate(split_errors = strsplit(ERRORS, "&")) %>%
   # Keep rows with none of the excluded ERRORS terms, if any
