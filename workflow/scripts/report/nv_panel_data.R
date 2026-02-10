@@ -19,7 +19,7 @@ variants <- read_delim(
   snakemake@input$variants,
   col_select = c(
     "SAMPLE",
-    "REGION",
+    "CHROM",
     "POS",
     "ALT",
     "VARIANT_NAME",
@@ -77,7 +77,7 @@ if (nrow(variants) == 0) {
   log_warning("No variants found, using an empty table")
   variants <- tibble(
     SAMPLE = date_order,
-    REGION = as.character(NA),
+    CHROM = as.character(NA),
     VARIANT_NAME = as.character(NA),
     ALT_FREQ = as.numeric(NA),
     EFFECT = as.character(NA),

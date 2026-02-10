@@ -17,26 +17,25 @@ variants <- read_tsv(snakemake@input[["variants"]])
 
 # Create a mapping of variant names to their genomic position
 variant_coords <- variants %>%
-  select(VARIANT_NAME, REGION, POS) %>%
+  select(VARIANT_NAME, CHROM, POS) %>%
   distinct()
 
 log_info("Reading filtered sites")
 sites <- read_tsv(snakemake@input[["sites"]]) %>%
-  select(SAMPLE, POS) %>%  # TODO: consider region/chrom
-  distinct() %>%
+  distinct(SAMPLE, POS) %>%  # TODO: consider region/chrom
   mutate(FILTER_PASS = TRUE)
 
 log_info("Processing variants")
 all_variants <- variants %>%
   # Select minimal columns
-  select(VARIANT_NAME, REGION, SAMPLE, ALT_FREQ) %>%
+  distinct(VARIANT_NAME, CHROM, SAMPLE, ALT_FREQ) %>%
   # Handle duplicates
-  group_by(SAMPLE, VARIANT_NAME, REGION) %>%
+  group_by(SAMPLE, VARIANT_NAME, CHROM) %>%
   summarise(ALT_FREQ = sum(ALT_FREQ, na.rm = TRUE), .groups = "drop") %>%
   # Complete with NA
-  complete(SAMPLE, VARIANT_NAME, REGION) %>%
+  complete(SAMPLE, VARIANT_NAME, CHROM) %>%
   # Assign genomic positions for all combinations
-  left_join(variant_coords, by = c("REGION", "VARIANT_NAME")) %>%
+  left_join(variant_coords, by = c("CHROM", "VARIANT_NAME")) %>%
   # Merge filtered sites
   # TODO: consider region/chrom
   left_join(sites, by = c("SAMPLE", "POS")) %>%
