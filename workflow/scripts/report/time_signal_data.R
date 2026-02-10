@@ -60,12 +60,15 @@ write_csv(time.signal, snakemake@output$table)
 log_debug("Building linear model")
 model <- lm(distance ~ date_interval, data = time.signal)
 p.value <- summary(model)$coefficients[2, 4]
+ci_models <- confint(model, level = snakemake@params$confidence_interval)
 
 # TREE STATS
 log_debug("Saving linear model")
 list(
   "sub_rate" = model$coefficients[[2]] * 365,
   "r2" = summary(model)$r.squared[[1]],
+  "ci_low" = ci_models[2, 1] * 365,
+  "ci_high" = ci_models[2, 2] * 365,
   "pvalue" = ifelse(p.value < 0.001, "< 0.001", p.value)
 ) %>%
   toJSON() %>%

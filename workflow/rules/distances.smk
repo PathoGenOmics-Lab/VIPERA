@@ -71,6 +71,7 @@ rule time_signal_data:
     conda: "../envs/renv.yaml"
     params:
         outgroup_id = config["ALIGNMENT_REFERENCE"],
+        confidence_interval = 0.95,
     input:
         tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
         metadata = config["METADATA"],
