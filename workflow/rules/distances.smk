@@ -50,3 +50,34 @@ rule format_afwdist_results:
         LOGDIR/"format_afwdist_results"/"log.txt"
     script:
         "../scripts/format_afwdist_results.py"
+
+
+rule allele_freq_tree_data:
+    conda: "../envs/renv.yaml"
+    params:
+        use_bionj = config["USE_BIONJ"],
+        outgroup_id = config["ALIGNMENT_REFERENCE"],
+    input:
+        dist = OUTDIR/f"{OUTPUT_NAME}.distances.csv",
+    output:
+        tree = REPORT_DIR_TABLES/"allele_freq_tree.nwk",
+    log:
+        LOGDIR / "allele_freq_tree_data" / "log.txt"
+    script:
+        "../scripts/report/allele_freq_tree_data.R"
+
+
+rule time_signal_data:
+    conda: "../envs/renv.yaml"
+    params:
+        outgroup_id = config["ALIGNMENT_REFERENCE"],
+    input:
+        tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
+        metadata = config["METADATA"],
+    output:
+        table = report(REPORT_DIR_TABLES/"time_signal.csv"),
+        json = REPORT_DIR_TABLES/"time_signal.json",
+    log:
+        LOGDIR / "time_signal_data" / "log.txt"
+    script:
+        "../scripts/report/time_signal_data.R"

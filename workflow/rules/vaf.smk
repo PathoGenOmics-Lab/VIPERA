@@ -296,3 +296,19 @@ rule pairwise_trajectory_correlation_data:
         LOGDIR / "pairwise_trajectory_correlation_data" / "log.txt"
     script:
         "../scripts/report/pairwise_trajectory_correlation_data.R"
+
+
+rule polymorphic_sites_over_time_data:
+    conda: "../envs/renv.yaml"
+    params:
+        max_alt_freq = 1.0 - config["VC"]["MIN_FREQ"],
+    input:
+        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        metadata = config["METADATA"],
+    output:
+        table = REPORT_DIR_PLOTS/"polymorphic_sites_over_time.csv",
+        json = temp(REPORT_DIR_TABLES/"polymorphic_sites_over_time.json"),
+    log:
+        LOGDIR / "polymorphic_sites_over_time_data" / "log.txt"
+    script:
+        "../scripts/report/polymorphic_sites_over_time_data.R"

@@ -78,22 +78,6 @@ rule extract_genbank_regions:
         "../scripts/report/extract_genbank_regions.py"
 
 
-rule polymorphic_sites_over_time_data:
-    conda: "../envs/renv.yaml"
-    params:
-        max_alt_freq = 1.0 - config["VC"]["MIN_FREQ"],
-    input:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        metadata = config["METADATA"],
-    output:
-        table = REPORT_DIR_PLOTS/"polymorphic_sites_over_time.csv",
-        json = temp(REPORT_DIR_TABLES/"polymorphic_sites_over_time.json"),
-    log:
-        LOGDIR / "polymorphic_sites_over_time_data" / "log.txt"
-    script:
-        "../scripts/report/polymorphic_sites_over_time_data.R"
-
-
 rule polymorphic_sites_over_time_plot:
     conda: "../envs/renv.yaml"
     params:
@@ -199,21 +183,6 @@ rule context_phylogeny_plot:
         "../scripts/report/context_phylogeny_plot.R"
 
 
-rule allele_freq_tree_data:
-    conda: "../envs/renv.yaml"
-    params:
-        use_bionj = config["USE_BIONJ"],
-        outgroup_id = config["ALIGNMENT_REFERENCE"],
-    input:
-        dist = OUTDIR/f"{OUTPUT_NAME}.distances.csv",
-    output:
-        tree = REPORT_DIR_TABLES/"allele_freq_tree.nwk",
-    log:
-        LOGDIR / "allele_freq_tree_data" / "log.txt"
-    script:
-        "../scripts/report/allele_freq_tree_data.R"
-
-
 rule allele_freq_tree_plot:
     conda: "../envs/renv.yaml"
     params:
@@ -231,22 +200,6 @@ rule allele_freq_tree_plot:
         LOGDIR / "allele_freq_tree_plot" / "log.txt"
     script:
         "../scripts/report/allele_freq_tree_plot.R"
-
-
-rule time_signal_data:
-    conda: "../envs/renv.yaml"
-    params:
-        outgroup_id = config["ALIGNMENT_REFERENCE"],
-    input:
-        tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
-        metadata = config["METADATA"],
-    output:
-        table = report(REPORT_DIR_TABLES/"time_signal.csv"),
-        json = REPORT_DIR_TABLES/"time_signal.json",
-    log:
-        LOGDIR / "time_signal_data" / "log.txt"
-    script:
-        "../scripts/report/time_signal_data.R"
 
 
 rule time_signal_plot:
