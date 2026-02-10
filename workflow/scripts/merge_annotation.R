@@ -11,18 +11,18 @@ library(logger)
 
 log_threshold(INFO)
 
-log_info("Reading variants table, replacing CHROM with the reference name")
+log_info("Reading variants table, replacing REGION with the reference name")
 variants <- read_tsv(
   snakemake@input$tsv,
   col_types = list(
-    CHROM = col_character(),
+    REGION = col_character(),
     POS = col_integer(),
     REF = col_character(),
     ALT = col_character()
   )
 ) %>%
   mutate(
-    CHROM = snakemake@params$ref_name,
+    REGION = snakemake@params$ref_name,
     is_insertion = startsWith(ALT, "+"),
     is_deletion = startsWith(ALT, "-"),
     REF_VCF = case_when(
@@ -35,8 +35,7 @@ variants <- read_tsv(
       TRUE ~ ALT
     )
   ) %>%
-  select(-is_insertion, -is_deletion) %>%
-  rename(CHROM = REGION)
+  select(-is_insertion, -is_deletion)
 
 log_info("Reading annotation table")
 annotation <- read_tsv(
@@ -68,7 +67,7 @@ merged <- left_join(
   variants,
   annotation,
   by = c(
-    "CHROM" = "CHROM",
+    "REGION" = "CHROM",
     "POS" = "POS",
     "REF_VCF" = "REF",
     "ALT_VCF" = "ALT"
@@ -76,7 +75,8 @@ merged <- left_join(
 ) %>%
   mutate(
     SAMPLE = snakemake@params$sample
-  )
+  ) %>%
+  rename(CHROM = REGION)
 
 log_info("Saving results")
 write_tsv(
