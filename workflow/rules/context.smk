@@ -28,6 +28,7 @@ rule download_context:
         duplicate_accids = OUTDIR/"context"/"duplicate_accession_ids.txt"
     log:
         LOGDIR / "download_context" / "log.txt"
+    retries: 2
     script:
         "../scripts/download_context.R"
 
