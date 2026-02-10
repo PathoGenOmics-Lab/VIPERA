@@ -1,49 +1,3 @@
-rule compile_fail_sites_vcf:
-    params:
-        filter_text = "fail_site",
-        sub_text = "NA",
-        exc_text = "site_qual",
-    input:
-        sites = OUTDIR / f"{OUTPUT_NAME}.fail_sites.tsv",
-    output:
-        sites = temp(OUTDIR / f"{OUTPUT_NAME}.fail_sites.vcf"),
-    run:
-        import pandas as pd
-        HEADER = ["#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO"]
-        sites = (
-            pd.read_table(input.sites, sep="\t")
-                .drop_duplicates(subset=("CHROM", "POS", "REF"))
-                .rename(columns={"CHROM": "#CHROM"})
-        )
-        sites["ID"] = "."
-        sites["ALT"] = "."
-        sites["QUAL"] = "."
-        sites["FILTER"] = params.filter_text
-        sites["INFO"] = f"SUB={params.sub_text};EXC={params.exc_text}"
-        sites[HEADER].to_csv(output.sites, sep="\t", index=False)
-
-
-rule merge_mask_sites_vcf:
-    input:
-        lambda wildcards: select_problematic_vcf(),
-        OUTDIR / f"{OUTPUT_NAME}.fail_sites.vcf",
-    output:
-        sites = temp(OUTDIR / "all_mask_sites.vcf"),
-    run:
-        import pandas as pd
-        HEADER = ["#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO"]
-        (
-            pd.concat(
-                [pd.read_table(path, sep="\t", comment="#", names=HEADER, dtype={"POS": "int64"}) for path in input],
-                axis="rows",
-                ignore_index=True
-            )
-            .drop_duplicates(subset=("#CHROM", "POS", "FILTER"), keep="first")
-            .sort_values(by=["#CHROM", "POS"])
-            .to_csv(output.sites, sep="\t", index=False)
-        )
-
-
 rule extract_afwdist_variants:
     conda: "../envs/biopython.yaml"
     params:
@@ -51,7 +5,7 @@ rule extract_afwdist_variants:
         position_col = "POS",
         sequence_col = "ALT",
         frequency_col = "ALT_FREQ",
-        mask_class = ["mask", "fail_site"],
+        mask_class = ["mask"],
     input:
         variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         mask_vcf = OUTDIR / "all_mask_sites.vcf",
