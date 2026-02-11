@@ -78,22 +78,6 @@ rule extract_genbank_regions:
         "../scripts/report/extract_genbank_regions.py"
 
 
-rule polymorphic_sites_over_time_data:
-    conda: "../envs/renv.yaml"
-    params:
-        max_alt_freq = 1.0 - config["VC"]["MIN_FREQ"],
-    input:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        metadata = config["METADATA"],
-    output:
-        table = REPORT_DIR_PLOTS/"polymorphic_sites_over_time.csv",
-        json = temp(REPORT_DIR_TABLES/"polymorphic_sites_over_time.json"),
-    log:
-        LOGDIR / "polymorphic_sites_over_time_data" / "log.txt"
-    script:
-        "../scripts/report/polymorphic_sites_over_time_data.R"
-
-
 rule polymorphic_sites_over_time_plot:
     conda: "../envs/renv.yaml"
     params:
@@ -108,63 +92,6 @@ rule polymorphic_sites_over_time_plot:
         LOGDIR / "polymorphic_sites_over_time_plot" / "log.txt"
     script:
         "../scripts/report/polymorphic_sites_over_time_plot.R"
-
-
-rule window_data:
-    conda: "../envs/biopython.yaml"
-    params:
-        window = config["WINDOW"]["WIDTH"],
-        step = config["WINDOW"]["STEP"],
-        features = config.get("GB_FEATURES", {}),
-        gb_qualifier_display = "gene"
-    input:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        gb = OUTDIR/"reference.gb",
-    output:
-        window_df = REPORT_DIR_TABLES/"window.csv",
-        json = temp(REPORT_DIR_TABLES/"window.json"),
-    log:
-        LOGDIR / "window_data" / "log.txt"
-    script:
-        "../scripts/report/window_data.py"
-
-
-rule nv_panel_data:
-    conda: "../envs/renv.yaml"
-    input:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        metadata = config["METADATA"],
-    output:
-        table = REPORT_DIR_TABLES/"nv_panel.csv",
-        json = temp(REPORT_DIR_TABLES/"nv_panel.json"),
-    log:
-        LOGDIR / "nv_panel_data" / "log.txt"
-    script:
-        "../scripts/report/nv_panel_data.R"
-
-
-rule nv_panel_zoom_on_feature_data:
-    input:
-        table = REPORT_DIR_TABLES/"nv_panel.csv",
-        regions = REPORT_DIR_TABLES/"genbank_regions.json",
-    output:
-        table = temp(REPORT_DIR_TABLES/"nv_panel.{region_name}.csv"),
-    log:
-        LOGDIR / "nv_panel_zoom_on_feature_data" / "{region_name}.log.txt"
-    script:
-        "../scripts/report/nv_panel_zoom_on_feature_data.py"
-
-
-rule window_zoom_on_feature_data:
-    input:
-        table = REPORT_DIR_TABLES/"window.csv",
-        regions = REPORT_DIR_TABLES/"genbank_regions.json",
-    output:
-        table = temp(REPORT_DIR_TABLES/"window.{region_name}.csv"),
-    log:
-        LOGDIR / "window_zoom_on_feature_data" / "{region_name}.log.txt"
-    script:
-        "../scripts/report/window_zoom_on_feature_data.py"
 
 
 rule nv_panel_plot:
@@ -256,21 +183,6 @@ rule context_phylogeny_plot:
         "../scripts/report/context_phylogeny_plot.R"
 
 
-rule allele_freq_tree_data:
-    conda: "../envs/renv.yaml"
-    params:
-        use_bionj = config["USE_BIONJ"],
-        outgroup_id = config["ALIGNMENT_REFERENCE"],
-    input:
-        dist = OUTDIR/f"{OUTPUT_NAME}.distances.csv",
-    output:
-        tree = REPORT_DIR_TABLES/"allele_freq_tree.nwk",
-    log:
-        LOGDIR / "allele_freq_tree_data" / "log.txt"
-    script:
-        "../scripts/report/allele_freq_tree_data.R"
-
-
 rule allele_freq_tree_plot:
     conda: "../envs/renv.yaml"
     params:
@@ -288,22 +200,6 @@ rule allele_freq_tree_plot:
         LOGDIR / "allele_freq_tree_plot" / "log.txt"
     script:
         "../scripts/report/allele_freq_tree_plot.R"
-
-
-rule time_signal_data:
-    conda: "../envs/renv.yaml"
-    params:
-        outgroup_id = config["ALIGNMENT_REFERENCE"],
-    input:
-        tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
-        metadata = config["METADATA"],
-    output:
-        table = report(REPORT_DIR_TABLES/"time_signal.csv"),
-        json = REPORT_DIR_TABLES/"time_signal.json",
-    log:
-        LOGDIR / "time_signal_data" / "log.txt"
-    script:
-        "../scripts/report/time_signal_data.R"
 
 
 rule time_signal_plot:
@@ -339,24 +235,6 @@ rule dnds_plots:
         "../scripts/report/dnds_plots.R"
 
 
-rule af_time_correlation_data:
-    conda: "../envs/renv.yaml"
-    params:
-        cor_method = config["COR"]["METHOD"],
-        cor_exact = config["COR"]["EXACT"],
-    input:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.all_sites.tsv",
-        metadata = config["METADATA"],
-    output:
-        fmt_variants = temp(REPORT_DIR_TABLES/"variants.filled.dated.tsv"),
-        correlations = report(REPORT_DIR_TABLES/"af_time_correlation.csv"),
-        subset = REPORT_DIR_TABLES/"af_time_correlation.subset.txt",
-    log:
-        LOGDIR / "af_time_correlation_data" / "log.txt"
-    script:
-        "../scripts/report/af_time_correlation_data.R"
-
-
 rule af_time_correlation_plot:
     conda: "../envs/renv.yaml"
     params:
@@ -390,23 +268,6 @@ rule af_trajectory_panel_plot:
         LOGDIR / "af_trajectory_panel_plot" / "log.txt"
     script:
         "../scripts/report/af_trajectory_panel_plot.R"
-
-
-rule pairwise_trajectory_correlation_data:
-    conda: "../envs/renv.yaml"
-    params:
-        cor_method = config["COR"]["METHOD"],
-        cor_use = "pairwise.complete.obs",
-    input:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.all_sites.tsv",
-        metadata = config["METADATA"],
-    output:
-        table = REPORT_DIR_TABLES/"pairwise_trajectory_frequency_data.csv",
-        matrix = report(REPORT_DIR_TABLES/"pairwise_trajectory_correlation_matrix.csv"),
-    log:
-        LOGDIR / "pairwise_trajectory_correlation_data" / "log.txt"
-    script:
-        "../scripts/report/pairwise_trajectory_correlation_data.R"
 
 
 rule summary_table:

@@ -167,7 +167,8 @@ rule format_vcf_fields_longer:
         filter_exclude=config["ANNOTATION"]["FILTER_EXCLUDE"],
         variant_name_pattern=lambda wildcards: config["ANNOTATION"][
             "VARIANT_NAME_PATTERN"
-        ],  # lambda to deactivate automatic wildcard expansion in pattern
+        ],
+        # lambda to deactivate automatic wildcard expansion in pattern
         sep=",",
     input:
         tsv=OUTDIR / "vaf" / "fields" / "{sample}.tsv",
@@ -189,7 +190,6 @@ rule concat_vcf_fields:
     run:
         import pandas as pd
         from functools import reduce
-
         reduce(
             lambda a, b: pd.concat((a, b), axis="rows", ignore_index=True),
             (pd.read_csv(path, sep=params.sep) for path in input),
@@ -219,3 +219,116 @@ use rule concat_vcf_fields as concat_variants with:
         expand(OUTDIR / "vaf" / "variants" / "{sample}.tsv", sample=iter_samples()),
     output:
         OUTDIR / f"{OUTPUT_NAME}.variants.tsv",
+
+
+rule window_data:
+    conda:
+        "../envs/biopython.yaml"
+    params:
+        window=config["WINDOW"]["WIDTH"],
+        step=config["WINDOW"]["STEP"],
+        features=config.get("GB_FEATURES", {}),
+        gb_qualifier_display="gene",
+    input:
+        variants=OUTDIR / f"{OUTPUT_NAME}.variants.tsv",
+        gb=OUTDIR / "reference.gb",
+    output:
+        window_df=REPORT_DIR_TABLES / "window.csv",
+        json=temp(REPORT_DIR_TABLES / "window.json"),
+    log:
+        LOGDIR / "window_data" / "log.txt",
+    script:
+        "../scripts/report/window_data.py"
+
+
+rule nv_panel_data:
+    conda:
+        "../envs/renv.yaml"
+    input:
+        variants=OUTDIR / f"{OUTPUT_NAME}.variants.tsv",
+        metadata=config["METADATA"],
+    output:
+        table=REPORT_DIR_TABLES / "nv_panel.csv",
+        json=temp(REPORT_DIR_TABLES / "nv_panel.json"),
+    log:
+        LOGDIR / "nv_panel_data" / "log.txt",
+    script:
+        "../scripts/report/nv_panel_data.R"
+
+
+rule nv_panel_zoom_on_feature_data:
+    input:
+        table=REPORT_DIR_TABLES / "nv_panel.csv",
+        regions=REPORT_DIR_TABLES / "genbank_regions.json",
+    output:
+        table=temp(REPORT_DIR_TABLES / "nv_panel.{region_name}.csv"),
+    log:
+        LOGDIR / "nv_panel_zoom_on_feature_data" / "{region_name}.log.txt",
+    script:
+        "../scripts/report/nv_panel_zoom_on_feature_data.py"
+
+
+rule window_zoom_on_feature_data:
+    input:
+        table=REPORT_DIR_TABLES / "window.csv",
+        regions=REPORT_DIR_TABLES / "genbank_regions.json",
+    output:
+        table=temp(REPORT_DIR_TABLES / "window.{region_name}.csv"),
+    log:
+        LOGDIR / "window_zoom_on_feature_data" / "{region_name}.log.txt",
+    script:
+        "../scripts/report/window_zoom_on_feature_data.py"
+
+
+rule af_time_correlation_data:
+    conda:
+        "../envs/renv.yaml"
+    params:
+        cor_method=config["COR"]["METHOD"],
+        cor_exact=config["COR"]["EXACT"],
+    input:
+        variants=OUTDIR / f"{OUTPUT_NAME}.variants.all_sites.tsv",
+        metadata=config["METADATA"],
+    output:
+        fmt_variants=temp(REPORT_DIR_TABLES / "variants.filled.dated.tsv"),
+        correlations=report(REPORT_DIR_TABLES / "af_time_correlation.csv"),
+        subset=REPORT_DIR_TABLES / "af_time_correlation.subset.txt",
+    log:
+        LOGDIR / "af_time_correlation_data" / "log.txt",
+    script:
+        "../scripts/report/af_time_correlation_data.R"
+
+
+rule pairwise_trajectory_correlation_data:
+    conda:
+        "../envs/renv.yaml"
+    params:
+        cor_method=config["COR"]["METHOD"],
+        cor_use="pairwise.complete.obs",
+    input:
+        variants=OUTDIR / f"{OUTPUT_NAME}.variants.all_sites.tsv",
+        metadata=config["METADATA"],
+    output:
+        table=REPORT_DIR_TABLES / "pairwise_trajectory_frequency_data.csv",
+        matrix=report(REPORT_DIR_TABLES / "pairwise_trajectory_correlation_matrix.csv"),
+    log:
+        LOGDIR / "pairwise_trajectory_correlation_data" / "log.txt",
+    script:
+        "../scripts/report/pairwise_trajectory_correlation_data.R"
+
+
+rule polymorphic_sites_over_time_data:
+    conda:
+        "../envs/renv.yaml"
+    params:
+        max_alt_freq=1.0 - config["VC"]["MIN_FREQ"],
+    input:
+        variants=OUTDIR / f"{OUTPUT_NAME}.variants.tsv",
+        metadata=config["METADATA"],
+    output:
+        table=REPORT_DIR_PLOTS / "polymorphic_sites_over_time.csv",
+        json=temp(REPORT_DIR_TABLES / "polymorphic_sites_over_time.json"),
+    log:
+        LOGDIR / "polymorphic_sites_over_time_data" / "log.txt",
+    script:
+        "../scripts/report/polymorphic_sites_over_time_data.R"

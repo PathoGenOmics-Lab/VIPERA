@@ -19,7 +19,6 @@ variants <- read_delim(
   col_select = c(
     "SAMPLE",
     "VARIANT_NAME",
-    "CHROM",
     "ALT_FREQ",
     "SYNONYMOUS",
     "POS"
