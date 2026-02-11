@@ -19,14 +19,14 @@ variants <- read_delim(
   col_select = c(
     "VARIANT_NAME",
     "SAMPLE",
-    "REGION",
+    "CHROM",
     "ALT_FREQ",
     "POS"
   )
 ) %>%
   # Fill positions without alt frequency with NA
   complete(
-    nesting(REGION, VARIANT_NAME, POS),
+    nesting(CHROM, VARIANT_NAME, POS),
     SAMPLE,
     fill = list(ALT_FREQ = NA)
   )

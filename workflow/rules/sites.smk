@@ -31,8 +31,6 @@ rule filter_mpileup_all_sites:
     output:
         sites_pass = temp(OUTDIR / "all_sites" / "{sample}.filtered_sites.tsv"),
         sites_fail = temp(OUTDIR / "all_sites" / "{sample}.fail_sites.tsv"),
-    log:
-        LOGDIR / "filter_mpileup_all_sites" / "{sample}.txt"
     run:
         import pandas as pd
         df = pd.read_csv(input[0], sep="\t")

@@ -42,7 +42,7 @@ if (nrow(sites) == 0) {
   log_warn("There are none, using an empty table and no linear regression")
   sites <- tibble(
     SAMPLE = date_order,
-    REGION = as.character(NA),
+    CHROM = as.character(NA),
     VARIANT_NAME = as.character(NA),
     ALT_FREQ = as.numeric(NA),
     EFFECT = as.character(NA),

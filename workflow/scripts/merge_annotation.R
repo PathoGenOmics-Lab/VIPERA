@@ -75,7 +75,8 @@ merged <- left_join(
 ) %>%
   mutate(
     SAMPLE = snakemake@params$sample
-  )
+  ) %>%
+  rename(CHROM = REGION)
 
 log_info("Saving results")
 write_tsv(
