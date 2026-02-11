@@ -63,6 +63,8 @@ unique.snps <- unique(variants$VARIANT_NAME)
 # Create an empty dataframe to be filled
 cor.df <- data.frame(
   variant = "",
+  min_af = 0,
+  max_af = 0,
   coefficient = 0,
   p.value = 0,
   p.value.adj = 0
