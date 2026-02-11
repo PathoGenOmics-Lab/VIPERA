@@ -95,6 +95,8 @@ correlations <- lapply(
     add_row(
       cor.df,
       variant = snp,
+      min_af = min(df$ALT_FREQ, na.rm = TRUE),
+      max_af = max(df$ALT_FREQ, na.rm = TRUE),
       coefficient = test$estimate,
       p.value = test$p.value,
       p.value.adj = p.value.adj
@@ -113,7 +115,8 @@ log_info("Selecting variants whose allele frequency is significantly correlated 
 significant.variants <- correlations %>%
   filter(
     p.value.adj <= snakemake@params$max_p_adj_threshold,
-    abs(coefficient) >= snakemake@params$min_abs_cor_threshold
+    abs(coefficient) >= snakemake@params$min_abs_cor_threshold,
+    (max_af - min_af) >= snakemake@params$min_diff_af_threshold
   ) %>%
   pull(variant) %>%
   unique()
