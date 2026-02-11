@@ -111,7 +111,10 @@ write_csv(
 
 log_info("Selecting variants whose allele frequency is significantly correlated with time")
 significant.variants <- correlations %>%
-  filter(p.value.adj < 0.05) %>%
+  filter(
+    p.value.adj <= snakemake@params$max_p_adj_threshold,
+    abs(coefficient) >= snakemake@params$min_abs_cor_threshold
+  ) %>%
   pull(variant) %>%
   unique()
 

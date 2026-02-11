@@ -286,6 +286,8 @@ rule af_time_correlation_data:
     params:
         cor_method=config["COR"]["METHOD"],
         cor_exact=config["COR"]["EXACT"],
+        max_p_adj_threshold = 0.05,
+        min_abs_cor_threshold = 0.0,
     input:
         variants=OUTDIR / f"{OUTPUT_NAME}.variants.all_sites.tsv",
         metadata=config["METADATA"],
