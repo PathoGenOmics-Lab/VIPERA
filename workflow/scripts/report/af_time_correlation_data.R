@@ -53,7 +53,7 @@ variants <- left_join(variants, metadata, by = c("SAMPLE" = "ID")) %>%
 
 # Save processed input
 log_info("Writing dated and frequency-filled variants")
-write_csv(variants, snakemake@output$fmt_variants)
+write_tsv(variants, snakemake@output$fmt_variants)
 
 log_info("Calculating correlations")
 log_debug("Calculating unique SNPs")
