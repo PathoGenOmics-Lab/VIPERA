@@ -90,8 +90,8 @@ correlations <- lapply(
         cor.test(
           df$ALT_FREQ,
           df$interval,
-          method = "spearman",
-          exact = TRUE
+          method = snakemake@params$cor_method,
+          exact = snakemake@params$cor_exact
         )
       },
       error = function(e) {
