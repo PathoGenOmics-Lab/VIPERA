@@ -48,7 +48,11 @@ variants <- left_join(variants, metadata, by = c("SAMPLE" = "ID")) %>%
     CollectionDate
   ) %>%
   mutate(
-    interval = as.numeric(difftime(CollectionDate, min(CollectionDate), units = "days"))
+    interval = as.numeric(difftime(
+      CollectionDate,
+      min(CollectionDate),
+      units = "days"
+    ))
   )
 
 # Save processed input
@@ -81,12 +85,21 @@ correlations <- lapply(
       VARIANT_NAME == snp
     )
     # Perform calculation
-    test <- cor.test(
-      df$ALT_FREQ,
-      df$interval,
-      method = snakemake@params$cor_method,
-      exact = snakemake@params$cor_exact
+    test <- tryCatch(
+      {
+        cor.test(
+          df$ALT_FREQ,
+          df$interval,
+          method = "spearman",
+          exact = TRUE
+        )
+      },
+      error = function(e) {
+        log_warn("Cannot run cor.test for {snp}: {e}")
+        list(p.value = NA, estimate = NA)
+      }
     )
+
     # Adjust p-value
     p.value.adj <- p.adjust(
       test$p.value,
