@@ -65,6 +65,7 @@ log_debug("Calculating unique SNPs")
 unique.snps <- unique(variants$VARIANT_NAME)
 
 # Create an empty dataframe to be filled
+log_debug("Initializing empty results")
 cor.df <- data.frame(
   variant = "",
   min_af = 0,
@@ -75,10 +76,11 @@ cor.df <- data.frame(
 ) %>%
   filter(p.value != 0)
 
-log_debug("Calculating correlation using method = {snakemake@params$cor_method} and exact p-value = {snakemake@params$cor_exact}")
+log_info("Calculating correlation with method={snakemake@params$cor_method} and exact={snakemake@params$cor_exact}")
 correlations <- lapply(
   unique.snps,
   function(snp) {
+    log_debug("Processing {snp}")
     # Select SNP
     df <- filter(
       variants,
@@ -99,7 +101,6 @@ correlations <- lapply(
         list(p.value = NA, estimate = NA)
       }
     )
-
     # Adjust p-value
     p.value.adj <- p.adjust(
       test$p.value,
@@ -150,13 +151,11 @@ mult.alt.variants <- variants %>%
   ungroup() %>%
   pull(VARIANT_NAME) %>%
   unique()
-
-log_info("Mult all: {mult.alt.variants}")
+log_debug("Mult all: {mult.alt.variants}")
 
 # Build selected subset to represent
 variant.selection <- unique(c(significant.variants, mult.alt.variants))
-
-log_info("Selection: {variant.selection}")
+log_debug("Selection: {variant.selection}")
 
 log_info("Writing selected variants subset")
 write_lines(variant.selection, snakemake@output$subset)
