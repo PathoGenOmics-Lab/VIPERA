@@ -136,8 +136,7 @@ significant.variants <- correlations %>%
   ) %>%
   pull(variant) %>%
   unique()
-
-log_info("Significant: {significant.variants}")
+log_debug("Significant: {significant.variants}")
 
 log_info("Selecting variants in positions with more than one alternative allele")
 mult.alt.variants <- variants %>%
