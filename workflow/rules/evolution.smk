@@ -14,6 +14,19 @@ rule filter_genbank_features:
         "../scripts/filter_genbank_features.py"
 
 
+rule build_problematic_bed:
+    conda:
+        "../envs/bedtools.yaml"
+    input:
+        vcf = lambda wildcards: select_problematic_vcf(),
+    output:
+        bed = temp(OUTDIR / "sites_masked.bed"),
+    log:
+        LOGDIR / "build_problematic_bed" / "log.txt",
+    shell:
+        "bedtools merge -i {input.vcf} >{output.bed} 2>{log}"
+
+
 rule n_s_sites:
     threads: 1
     conda: "../envs/biopython.yaml"
@@ -21,6 +34,7 @@ rule n_s_sites:
         gb_qualifier_display = "gene",
     input:
         fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
+        masked = OUTDIR / "sites_masked.bed",
         gb = OUTDIR/"reference.cds.gb",
         genetic_code = Path(config["GENETIC_CODE_JSON"]).resolve(),
     output:
@@ -35,6 +49,7 @@ rule calculate_dnds:
     conda: "../envs/renv.yaml"
     input: 
         n_s_sites = OUTDIR/f"{OUTPUT_NAME}.ancestor.n_s.sites.csv",
+        masked = OUTDIR / "sites_masked.bed",
         variants =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         metadata = config["METADATA"]
     output:

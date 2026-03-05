@@ -7,19 +7,50 @@ from typing import Dict
 
 import pandas as pd
 from Bio import SeqIO
-from Bio.SeqRecord import SeqRecord
+from Bio.SeqRecord import SeqRecord, SeqFeature
 from Bio.Seq import Seq
 
 
 NTS = ("A", "C", "G", "T")
+MASK_CHR = "N"
 
 
 def read_monofasta(path: str) -> SeqRecord:
     return SeqIO.read(path, format="fasta")
 
 
+def read_masked_positions(bed_path: str) -> set:
+    masked = set()
+    with open(bed_path) as fh:
+        for line in fh:
+            if line.startswith("#") or not line.strip():
+                continue
+            parts = line.strip().split("\t")
+            start, end = int(parts[1]), int(parts[2])
+            masked.update(range(start, end))
+    return masked
+
+
+def mask_feature(feature: SeqFeature, record: SeqRecord, masked_positions: set) -> SeqRecord:
+    extracted = feature.extract(record)
+    seq_chars = list(str(extracted.seq).upper())
+    # Handle reverse strand and compound locations
+    genomic_positions = []
+    for part in feature.location.parts:
+        positions = list(range(int(part.start), int(part.end)))
+        if part.strand == -1:
+            positions.reverse()
+        genomic_positions.extend(positions)
+    # Mask sites on sequence
+    for i, pos in enumerate(genomic_positions):
+        if seq_chars[i] not in NTS or pos in masked_positions:
+            seq_chars[i] = MASK_CHR
+    extracted.seq = Seq("".join(seq_chars))
+    return extracted
+
+
 def split_into_codons(seq: Seq) -> list:
-    """Split the complete CDS feature in to a list of codons"""
+    """Split the complete CDS feature in to a list of codons (if ACGT only)"""
     return [
         seq[i:i + 3] for i in range(0, len(seq)-2, 3) if all(char in NTS for char in seq[i:i + 3])
     ]
@@ -79,6 +110,9 @@ def main():
     with open(snakemake.input.genetic_code) as f:
         genetic_code = json.load(f)
 
+    logging.info("Reading masked sites BED")
+    masked = read_masked_positions(snakemake.input.masked)
+
     logging.info("Reading GenBank file")
     gb = SeqIO.read(snakemake.input.gb, format="gb")
 
@@ -95,7 +129,7 @@ def main():
             logging.warning(f"Identifier '{identifier}' is already among coding records and will not be replaced by feature at {feature.location}")
         else:
             logging.debug(f"Adding feature")
-            coding_records[identifier] = feature.extract(record)
+            coding_records[identifier] = mask_feature(feature, record, masked)
 
     logging.info(f"Splitting {len(coding_records)} records into codons")
     codons = get_feature_codons(coding_records)
