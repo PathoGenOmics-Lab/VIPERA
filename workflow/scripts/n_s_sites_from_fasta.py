@@ -7,7 +7,8 @@ from typing import Dict
 
 import pandas as pd
 from Bio import SeqIO
-from Bio.SeqRecord import SeqRecord, SeqFeature
+from Bio.SeqRecord import SeqRecord
+from Bio.SeqFeature import SeqFeature
 from Bio.Seq import Seq
 
 
