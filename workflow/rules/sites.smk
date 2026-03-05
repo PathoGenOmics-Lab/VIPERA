@@ -1,3 +1,16 @@
+rule problematic_vcf_to_bed:
+    conda:
+        "../envs/bedtools.yaml"
+    input:
+        vcf = lambda wildcards: select_problematic_vcf(),
+    output:
+        bed = temp(OUTDIR / "sites_masked.bed"),
+    log:
+        LOGDIR / "build_problematic_bed" / "log.txt",
+    shell:
+        "bedtools merge -i {input.vcf} >{output.bed} 2>{log}"
+
+
 rule bcftools_mpileup_all_sites:
     threads: 1
     conda: "../envs/var_calling.yaml"
