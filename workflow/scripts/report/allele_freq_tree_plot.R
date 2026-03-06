@@ -77,7 +77,8 @@ max.tip.length <- max(
 p <- ggtree(tree) %<+% tree_tiplab +
   geom_tiplab(aes(label = tip_label)) +
   geom_treescale(1.1 * max.tip.length) +
-  geom_rootedge(0.05 * max.tip.length)
+  geom_rootedge(0.05 * max.tip.length) +
+  hexpand(0.2)
 
 ggsave(
   filename = snakemake@output$plot,

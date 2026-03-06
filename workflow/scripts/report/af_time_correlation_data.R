@@ -48,12 +48,16 @@ variants <- left_join(variants, metadata, by = c("SAMPLE" = "ID")) %>%
     CollectionDate
   ) %>%
   mutate(
-    interval = as.numeric(difftime(CollectionDate, min(CollectionDate), units = "days"))
+    interval = as.numeric(difftime(
+      CollectionDate,
+      min(CollectionDate),
+      units = "days"
+    ))
   )
 
 # Save processed input
 log_info("Writing dated and frequency-filled variants")
-write_csv(variants, snakemake@output$fmt_variants)
+write_tsv(variants, snakemake@output$fmt_variants)
 
 log_info("Calculating correlations")
 log_debug("Calculating unique SNPs")
@@ -61,6 +65,7 @@ log_debug("Calculating unique SNPs")
 unique.snps <- unique(variants$VARIANT_NAME)
 
 # Create an empty dataframe to be filled
+log_debug("Initializing empty results")
 cor.df <- data.frame(
   variant = "",
   min_af = 0,
@@ -71,21 +76,30 @@ cor.df <- data.frame(
 ) %>%
   filter(p.value != 0)
 
-log_debug("Calculating correlation using method = {snakemake@params$cor_method} and exact p-value = {snakemake@params$cor_exact}")
+log_info("Calculating correlation with method={snakemake@params$cor_method} and exact={snakemake@params$cor_exact}")
 correlations <- lapply(
   unique.snps,
   function(snp) {
+    log_debug("Processing {snp}")
     # Select SNP
     df <- filter(
       variants,
       VARIANT_NAME == snp
     )
     # Perform calculation
-    test <- cor.test(
-      df$ALT_FREQ,
-      df$interval,
-      method = snakemake@params$cor_method,
-      exact = snakemake@params$cor_exact
+    test <- tryCatch(
+      {
+        cor.test(
+          df$ALT_FREQ,
+          df$interval,
+          method = snakemake@params$cor_method,
+          exact = snakemake@params$cor_exact
+        )
+      },
+      error = function(e) {
+        log_warn("Cannot run cor.test for {snp}: {e}")
+        list(p.value = NA, estimate = NA)
+      }
     )
     # Adjust p-value
     p.value.adj <- p.adjust(
@@ -122,8 +136,7 @@ significant.variants <- correlations %>%
   ) %>%
   pull(variant) %>%
   unique()
-
-log_info("Significant: {significant.variants}")
+log_debug("Significant: {significant.variants}")
 
 log_info("Selecting variants in positions with more than one alternative allele")
 mult.alt.variants <- variants %>%
@@ -137,13 +150,11 @@ mult.alt.variants <- variants %>%
   ungroup() %>%
   pull(VARIANT_NAME) %>%
   unique()
-
-log_info("Mult all: {mult.alt.variants}")
+log_debug("Mult all: {mult.alt.variants}")
 
 # Build selected subset to represent
 variant.selection <- unique(c(significant.variants, mult.alt.variants))
-
-log_info("Selection: {variant.selection}")
+log_debug("Selection: {variant.selection}")
 
 log_info("Writing selected variants subset")
 write_lines(variant.selection, snakemake@output$subset)

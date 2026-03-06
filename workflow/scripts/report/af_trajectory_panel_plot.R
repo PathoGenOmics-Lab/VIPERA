@@ -19,7 +19,7 @@ log_threshold(INFO)
 source(snakemake@params[["design"]])
 
 log_info("Reading formatted variants table")
-variants <- read_csv(snakemake@input$fmt_variants)
+variants <- read_tsv(snakemake@input$fmt_variants)
 
 log_info("Reading subset of variants to represent")
 selected.variants <- read_lines(snakemake@input$subset)
