@@ -1,30 +1,19 @@
-rule problematic_vcf_filter:
+rule problematic_vcf_to_bed:
     conda:
-        "../envs/bcftools.yaml"
+        "../envs/tools.yaml"
     params:
         filters = ["mask"],
     input:
         vcf = lambda wildcards: select_problematic_vcf(),
     output:
         vcf = temp(OUTDIR / "sites_masked.vcf"),
-    log:
-        LOGDIR / "problematic_vcf_filter" / "log.txt"
-    shell:
-        """FILTER_STR=$(echo "{params.filters}" | tr ' ' ',') && """
-        """bcftools view -f "$FILTER_STR" {input.vcf} >{output.vcf} 2>{log}"""
-
-
-rule problematic_vcf_to_bed:
-    conda:
-        "../envs/bedtools.yaml"
-    input:
-        vcf = OUTDIR / "sites_masked.vcf",
-    output:
         bed = temp(OUTDIR / "sites_masked.bed"),
     log:
-        LOGDIR / "build_problematic_bed" / "log.txt",
+        LOGDIR / "problematic_vcf_to_bed" / "log.txt",
     shell:
-        "bedtools merge -i {input.vcf} >{output.bed} 2>{log}"
+        "FILTER_STR=$(echo \"{params.filters}\" | tr ' ' ',') && "
+        "bcftools view -f \"$FILTER_STR\" {input.vcf} >{output.vcf} 2>{log} && "
+        "bedtools merge -i {output.vcf} >{output.bed} 2>{log}"
 
 
 rule bcftools_mpileup_all_sites:
