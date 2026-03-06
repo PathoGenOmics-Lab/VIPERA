@@ -1,26 +1,14 @@
-# Jordi Sevilla
-
 library(ggplot2)
-library(showtext)
 
-# Ajustes ####
-showtext_auto(enable = FALSE)
-showtext_opts(dpi = 250)
-
-# Tema
-font_add_google("Noto Sans", "Noto Sans")
-showtext_auto()
-
+# Theme
 theme_set(theme_minimal())
-
 theme_update(
-  text = element_text(size = 16, family = "Noto Sans"),
-  axis.title = element_text(size = 16),
+  text = element_text(size = 10, family = "Noto Sans"),
+  axis.title = element_text(size = 12),
   axis.line = element_line(
     linewidth = 0.5,
     colour = "grey40",
-    linetype = 1,
-    arrow = arrow(length = unit(3, "mm"))
+    linetype = 1
   ),
   panel.grid = element_line(linewidth = 0.17, color = "lightgray")
 )
