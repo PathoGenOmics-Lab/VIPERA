@@ -1,8 +1,24 @@
+rule problematic_vcf_filter:
+    conda:
+        "../envs/bcftools.yaml"
+    params:
+        filters = ["mask"],
+    input:
+        vcf = lambda wildcards: select_problematic_vcf(),
+    output:
+        vcf = temp(OUTDIR / "sites_masked.vcf"),
+    log:
+        LOGDIR / "problematic_vcf_filter" / "log.txt"
+    shell:
+        """FILTER_STR=$(echo "{params.filters}" | tr ' ' ',') && """
+        """bcftools view -f "$FILTER_STR" {input.vcf} >{output.vcf} 2>{log}"""
+
+
 rule problematic_vcf_to_bed:
     conda:
         "../envs/bedtools.yaml"
     input:
-        vcf = lambda wildcards: select_problematic_vcf(),
+        vcf = OUTDIR / "sites_masked.vcf",
     output:
         bed = temp(OUTDIR / "sites_masked.bed"),
     log:
