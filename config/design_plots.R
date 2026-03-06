@@ -5,7 +5,7 @@ library(showtext)
 
 # Ajustes ####
 showtext_auto(enable = FALSE)
-showtext_opts(dpi = 200)
+showtext_opts(dpi = 250)
 
 # Tema
 font_add_google("Noto Sans", "Noto Sans")
