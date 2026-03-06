@@ -8,6 +8,7 @@ sink(log, type = "output")
 library(dplyr)
 library(readr)
 library(tidyr)
+library(purrr)
 library(logger)
 
 log_threshold(INFO)
@@ -36,6 +37,21 @@ metadata <- read_delim(snakemake@input[["metadata"]]) %>%
   ) %>%
   select(ID, interval) %>%
   rename(SAMPLE = ID)
+
+log_info("Reading masked sites BED")
+masked <- read_tsv(
+  snakemake@input$masked,
+  col_names = c("chrom", "start", "end"),
+  col_types = "cii",
+  comment = "#"
+) %>%
+  mutate(POS = map2(start + 1, end, seq.int)) %>%
+  unnest(POS) %>%
+  pull(POS)
+
+log_info("Filtering variants on masked sites")
+variants <- variants %>%
+  filter(!POS %in% masked, !is.na(SYNONYMOUS))
 
 log_debug("Adding metadata to variants table")
 variants <- left_join(variants, metadata)

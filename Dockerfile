@@ -1,6 +1,6 @@
 FROM condaforge/miniforge3:latest
 LABEL io.github.snakemake.containerized="true"
-LABEL io.github.snakemake.conda_env_hash="ed26b44bdff1bc9f7a99d3830ae812bf262f78427b95a45fa1ac1ce255c5f054"
+LABEL io.github.snakemake.conda_env_hash="fb2a04b98efa75d8b830a16722a8717eb91a3c66659e3c78b90b0cee3a50db69"
 
 # Step 2: Retrieve conda environments
 
@@ -117,12 +117,12 @@ COPY workflow/envs/quarto_render.yaml /conda-envs/96f3c1cec4b3ce5d72f708992272e9
 
 # Conda environment:
 #   source: workflow/envs/renv.yaml
-#   prefix: /conda-envs/8ad6cdcf265d30289788da99d5bf9fff
+#   prefix: /conda-envs/fe892aca096e6b2883923c8755f9ac77
 #   channels:
 #     - conda-forge
 #     - bioconda
 #   dependencies:
-#     - r-base=4.3.2
+#     - r-base=4.3.3
 #     - r-tidyverse==2.0.0
 #     - r-ggrepel==0.9.3
 #     - r-ggpubr==0.6.0
@@ -133,10 +133,9 @@ COPY workflow/envs/quarto_render.yaml /conda-envs/96f3c1cec4b3ce5d72f708992272e9
 #     - r-data.table==1.14.8
 #     - r-future.apply==1.11.0
 #     - r-scales==1.3.0
-#     - r-showtext==0.9_6
 #     - r-logger==0.2.2
-RUN mkdir -p /conda-envs/8ad6cdcf265d30289788da99d5bf9fff
-COPY workflow/envs/renv.yaml /conda-envs/8ad6cdcf265d30289788da99d5bf9fff/environment.yaml
+RUN mkdir -p /conda-envs/fe892aca096e6b2883923c8755f9ac77
+COPY workflow/envs/renv.yaml /conda-envs/fe892aca096e6b2883923c8755f9ac77/environment.yaml
 
 # Conda environment:
 #   source: workflow/envs/snpeff.yaml
@@ -148,6 +147,18 @@ COPY workflow/envs/renv.yaml /conda-envs/8ad6cdcf265d30289788da99d5bf9fff/enviro
 #     - snpsift==5.1d
 RUN mkdir -p /conda-envs/0adafb79cb1bec58ef4c77bf4cca4f95
 COPY workflow/envs/snpeff.yaml /conda-envs/0adafb79cb1bec58ef4c77bf4cca4f95/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/tools.yaml
+#   prefix: /conda-envs/1f283441022c3c9d97669994a3c5e8bb
+#   channels:
+#     - conda-forge
+#     - bioconda
+#   dependencies:
+#     - bedtools==2.31.1
+#     - bcftools==1.23
+RUN mkdir -p /conda-envs/1f283441022c3c9d97669994a3c5e8bb
+COPY workflow/envs/tools.yaml /conda-envs/1f283441022c3c9d97669994a3c5e8bb/environment.yaml
 
 # Conda environment:
 #   source: workflow/envs/var_calling.yaml
@@ -173,8 +184,9 @@ RUN conda env create --prefix /conda-envs/9c24a867826615972cc288081976e7fc --fil
     conda env create --prefix /conda-envs/04a3347f94ddf7e21c34bc49e5246076 --file /conda-envs/04a3347f94ddf7e21c34bc49e5246076/environment.yaml && \
     conda env create --prefix /conda-envs/fb978640cd765c8a63bbcdc01f3a206b --file /conda-envs/fb978640cd765c8a63bbcdc01f3a206b/environment.yaml && \
     conda env create --prefix /conda-envs/96f3c1cec4b3ce5d72f708992272e9c1 --file /conda-envs/96f3c1cec4b3ce5d72f708992272e9c1/environment.yaml && \
-    conda env create --prefix /conda-envs/8ad6cdcf265d30289788da99d5bf9fff --file /conda-envs/8ad6cdcf265d30289788da99d5bf9fff/environment.yaml && \
+    conda env create --prefix /conda-envs/fe892aca096e6b2883923c8755f9ac77 --file /conda-envs/fe892aca096e6b2883923c8755f9ac77/environment.yaml && \
     conda env create --prefix /conda-envs/0adafb79cb1bec58ef4c77bf4cca4f95 --file /conda-envs/0adafb79cb1bec58ef4c77bf4cca4f95/environment.yaml && \
+    conda env create --prefix /conda-envs/1f283441022c3c9d97669994a3c5e8bb --file /conda-envs/1f283441022c3c9d97669994a3c5e8bb/environment.yaml && \
     conda env create --prefix /conda-envs/81e46c677a6cc0618c93963d57d17d3f --file /conda-envs/81e46c677a6cc0618c93963d57d17d3f/environment.yaml && \
     conda clean --all -y
 

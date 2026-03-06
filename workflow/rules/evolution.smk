@@ -21,6 +21,7 @@ rule n_s_sites:
         gb_qualifier_display = "gene",
     input:
         fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
+        masked = OUTDIR / "sites_masked.bed",
         gb = OUTDIR/"reference.cds.gb",
         genetic_code = Path(config["GENETIC_CODE_JSON"]).resolve(),
     output:
@@ -35,6 +36,7 @@ rule calculate_dnds:
     conda: "../envs/renv.yaml"
     input: 
         n_s_sites = OUTDIR/f"{OUTPUT_NAME}.ancestor.n_s.sites.csv",
+        masked = OUTDIR / "sites_masked.bed",
         variants =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         metadata = config["METADATA"]
     output:
