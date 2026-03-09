@@ -207,7 +207,7 @@ All of the following variables are pre-defined in [config.yaml](/config/config.y
 Snakemake enables easy visualization of workflows and rule relationships. The `--rulegraph` option outputs a DOT file that describes dependencies between rules. The example below produces an image using Graphviz:
 
 ```shell
-snakemake --forceall --rulegraph | dot -Tsvg >.rulegraph.svg
+snakemake --forceall --rulegraph | dot -Grankdir=LR -Tsvg >.rulegraph.svg
 ```
 
 ![Snakemake rule graph](/.rulegraph.svg)
@@ -220,10 +220,10 @@ snakemake --forceall --rulegraph | snakevision -s all -o .rulegraph_sv.svg
 
 ![Snakemake rule graph using snakevision](/.rulegraph_sv.svg)
 
-The `--dag` option emits an directed acyclic graph (DAG) that corresponds to the rule instances that would be executed for the current dataset. The example below produces an image using Graphviz:
+The `--dag` option emits an directed acyclic graph (DAG) that corresponds to the rule instances that would be executed for the target dataset. The example below produces an image using Graphviz (for [data](https://doi.org/10.20350/digitalCSIC/15648) from [our study](https://doi.org/10.1093/ve/veae018)):
 
 ```shell
-snakemake --forceall --dag | dot -Tsvg >.dag.svg
+snakemake --forceall --dag | dot -Grankdir=LR -Tsvg >.dag.svg
 ```
 
 ![Snakemake DAG](/.dag.svg)
