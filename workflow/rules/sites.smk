@@ -82,6 +82,8 @@ use rule concat_vcf_fields as merge_fail_mpileup_all_sites with:
 
 rule fill_all_sites:
     conda: "../envs/renv.yaml"
+    params:
+        annot_cols = ["EFFECT", "IMPACT"],
     input:
         variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
         sites = OUTDIR / f"{OUTPUT_NAME}.filtered_sites.tsv",

@@ -16,10 +16,9 @@ log_info("Reading variants")
 variants <- read_tsv(snakemake@input[["variants"]])
 
 # Select variables that should be constant across samples
+annot_cols <- unique(c("VARIANT_NAME", "CHROM", "POS", snakemake@params$annot_cols))
 variant_meta <- variants %>%
-  select(VARIANT_NAME, CHROM, POS, REF, ALT,
-    EFFECT, IMPACT, BIOTYPE, GENE, GENEID,
-    FEATURE, FEATUREID, HGVS_P, HGVS_C, ERRORS) %>%
+  select(all_of(annot_cols)) %>%
   distinct()
 
 log_info("Reading filtered sites")
