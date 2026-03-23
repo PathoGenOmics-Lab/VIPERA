@@ -15,9 +15,9 @@ log_threshold(INFO)
 log_info("Reading variants")
 variants <- read_tsv(snakemake@input[["variants"]])
 
-# Create a mapping of variant names to their genomic position
-variant_coords <- variants %>%
-  select(VARIANT_NAME, CHROM, POS) %>%
+# Select variables that should be constant across samples
+variant_meta <- variants %>%
+  select(-SAMPLE, -ALT_FREQ, -RAW_DEPTH, -STRAND_BIAS) %>%
   distinct()
 
 log_info("Reading filtered sites")
@@ -27,15 +27,20 @@ sites <- read_tsv(snakemake@input[["sites"]]) %>%
 
 log_info("Processing variants")
 all_variants <- variants %>%
-  # Select minimal columns
-  distinct(VARIANT_NAME, CHROM, SAMPLE, ALT_FREQ) %>%
+  # Keep sample-level measurement columns alongside keys
+  distinct(VARIANT_NAME, CHROM, SAMPLE, ALT_FREQ, RAW_DEPTH, STRAND_BIAS) %>%
   # Handle duplicates
   group_by(SAMPLE, VARIANT_NAME, CHROM) %>%
-  summarise(ALT_FREQ = sum(ALT_FREQ, na.rm = TRUE), .groups = "drop") %>%
+  summarise(
+    ALT_FREQ = sum(ALT_FREQ, na.rm = TRUE),
+    RAW_DEPTH = sum(RAW_DEPTH, na.rm = TRUE),
+    STRAND_BIAS = first(STRAND_BIAS),
+    .groups = "drop"
+  ) %>%
   # Complete with NA
-  complete(SAMPLE, VARIANT_NAME, CHROM) %>%
-  # Assign genomic positions for all combinations
-  left_join(variant_coords, by = c("CHROM", "VARIANT_NAME")) %>%
+  complete(SAMPLE, nesting(VARIANT_NAME, CHROM)) %>%
+  # Restore variant-level annotations (also brings POS back in)
+  left_join(variant_meta, by = c("VARIANT_NAME", "CHROM")) %>%
   # Merge filtered sites
   # TODO: consider region/chrom
   left_join(sites, by = c("SAMPLE", "POS")) %>%
