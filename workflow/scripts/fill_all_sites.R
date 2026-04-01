@@ -13,6 +13,19 @@ log_threshold(INFO)
 log_info("Reading variants")
 variants <- read_tsv(snakemake@input[["variants"]])
 
+# Check if each sample, variant and position have 1 frequency
+variants %>%
+  distinct(VARIANT_NAME, CHROM, POS, SAMPLE, ALT_FREQ) %>%
+  group_by(VARIANT_NAME, CHROM, POS, SAMPLE) %>%
+  filter(n() > 1) %>%
+  {
+    if (nrow(.) > 0) {
+      log_warn(
+        "Found {nrow(.)} ambiguous (SAMPLE, VARIANT_NAME, POS) combinations"
+      )
+    }
+  }
+
 log_info("Reading filtered sites")
 sites <- read_tsv(snakemake@input[["sites"]]) %>%
   distinct(SAMPLE, POS) %>%  # TODO: consider region/chrom
