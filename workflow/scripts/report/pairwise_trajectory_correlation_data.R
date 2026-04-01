@@ -1,6 +1,4 @@
 #!/usr/bin/env Rscript
-
-# Write stdout and stderr to log file
 log <- file(snakemake@log[[1]], open = "wt")
 sink(log, type = "message")
 sink(log, type = "output")
@@ -17,7 +15,7 @@ log_threshold(INFO)
 log_info("Reading variants")
 variants <- read_tsv(snakemake@input[["variants"]])
 
-# Obtain sample names ordered by CollectionDate
+log_info("Sorting dates")
 date_order <- read_csv(snakemake@input[["metadata"]]) %>%
   arrange(CollectionDate) %>%
   pull(ID) %>%
@@ -25,6 +23,14 @@ date_order <- read_csv(snakemake@input[["metadata"]]) %>%
 
 log_info("Formatting variants")
 all_variants_wider <- variants %>%
+  # Collapse positions (treat as uncertain if filter is inconsistent)
+  group_by(SAMPLE, VARIANT_NAME) %>%
+  summarise(
+    ALT_FREQ = ifelse(n_distinct(ALT_FREQ, na.rm = TRUE) > 1, NA, first(ALT_FREQ)),
+    FILTER_PASS = ifelse(n_distinct(FILTER_PASS) > 1, NA, first(FILTER_PASS)),
+    .groups = "drop"
+  ) %>%
+  mutate(ALT_FREQ = if_else(is.na(FILTER_PASS), NA, ALT_FREQ)) %>%
   distinct(SAMPLE, VARIANT_NAME, ALT_FREQ) %>%
   pivot_wider(
     names_from = VARIANT_NAME,
