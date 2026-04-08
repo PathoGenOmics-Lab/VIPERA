@@ -27,7 +27,7 @@ filter.exclude <- lapply(snakemake@params$filter_exclude, empty.to.na)
 
 # Process input table
 log_info("Applying filters and writing results")
-read_tsv(
+df <- read_tsv(
   snakemake@input$tsv,
   col_types = cols(
     POS = col_integer(),
@@ -43,42 +43,51 @@ read_tsv(
   ) %>%
 
   # Rename "...[*]..." columns using the provided lookup via Snakemake config
-  rename(all_of(unlist(snakemake@params$colnames_mapping))) %>%
+  rename(all_of(unlist(snakemake@params$colnames_mapping)))
 
-  # Ensure missing values are properly encoded
-  mutate(across(where(is.character), ~ na_if(.x, "NA"))) %>%
+if (nrow(df) == 0) {
+  log_info("Writing empty file")
+  write_tsv(df, snakemake@output$tsv)
+} else {
+  log_info("Processing variants")
+  df %>%
+    # Ensure missing values are properly encoded
+    mutate(across(where(is.character), ~ na_if(.x, "NA"))) %>%
 
-  # Separate &-delimited error column (more than one error/warning/info message per row is possible)
-  mutate(split_errors = strsplit(ERRORS, "&")) %>%
-  # Keep rows with none of the excluded ERRORS terms, if any
-  filter(map_lgl(split_errors, ~ !any(. %in% filter.exclude[["ERRORS"]]))) %>%
-  select(-split_errors) %>%
+    # Separate &-delimited error column (more than one error/warning/info message per row is possible)
+    mutate(split_errors = strsplit(ERRORS, "&")) %>%
+    # Keep rows with none of the excluded ERRORS terms, if any
+    filter(map_lgl(split_errors, ~ !any(. %in% filter.exclude[["ERRORS"]]))) %>%
+    select(-split_errors) %>%
 
-  # Apply filters
-  filter(
-    # Keep variants that include required values in each field
-    !!!map2(
-      names(filter.include),
-      filter.include,
-      ~ expr(.data[[!!.x]] %in% !!.y)
-    ),
-    # Keep variants that exclude required values in each field
-    !!!map2(
-      names(filter.exclude),
-      filter.exclude,
-      ~ expr(!(.data[[!!.x]] %in% !!.y))
-    )
-  ) %>%
+    # Apply filters
+    filter(
+      # Keep variants that include required values in each field
+      !!!map2(
+        names(filter.include),
+        filter.include,
+        ~ expr(.data[[!!.x]] %in% !!.y)
+      ),
+      # Keep variants that exclude required values in each field
+      !!!map2(
+        names(filter.exclude),
+        filter.exclude,
+        ~ expr(!(.data[[!!.x]] %in% !!.y))
+      )
+    ) %>%
 
-  # Keep unique rows
-  distinct() %>%
+    # Keep unique rows
+    distinct() %>%
 
-  mutate(
-    # Assign variant name using the pattern defined via Snakemake config
-    VARIANT_NAME = str_glue(snakemake@params$variant_name_pattern),
-    # Assign sample name
-    SAMPLE = snakemake@params$sample
-  ) %>%
+    mutate(
+      # Assign variant name using the pattern defined via Snakemake config
+      VARIANT_NAME = str_glue(snakemake@params$variant_name_pattern),
+      # Assign sample name
+      SAMPLE = snakemake@params$sample
+    ) %>%
 
-  # Write output file
-  write_tsv(snakemake@output$tsv)
+    # Write output file
+    write_tsv(snakemake@output$tsv)
+
+  log_info("Done")
+}
