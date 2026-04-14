@@ -11,7 +11,6 @@
 
 ![Install workflow](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/install.yml/badge.svg)
 ![Test workflow with Snakemake v7](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/test_v7.yml/badge.svg)
-![Test workflow with Snakemake v8](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/test_v8.yml/badge.svg)
 ![Test workflow with Snakemake v9](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/test_v9.yml/badge.svg)
 ![Test workflow with Snakemake v9 and Apptainer](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/test_apptainer.yml/badge.svg)
 
@@ -42,8 +41,8 @@ It supports dependency management through either conda or Apptainer/Singularity,
 
 We use continuous integration (CI) to automatically verify that all dependencies install correctly
 with Snakemake v7.32.4 (see GitHub Action `Install`), and to test that VIPERA runs
-successfully with Snakemake v7.32.4, v8.30.0, and v9.1.6 using conda (Actions `Test Sm v[7-9]`).
-We also test a containerized workflow with Snakemake v9.1.6 and Apptainer using a
+successfully with Snakemake v7.32.4 and v9.15.0 using conda (Actions `Test Sm v(7|9)`).
+We also test a containerized workflow with Snakemake v9.15.0 and Apptainer using a
 [remote image](https://hub.docker.com/r/ahmig/vipera) (Action `Test Sm v9 Apptainer`).
 This image is automatically updated in every version (Action `Deploy`).
 
