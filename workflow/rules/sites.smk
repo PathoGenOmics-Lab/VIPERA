@@ -18,7 +18,7 @@ rule problematic_vcf_to_bed:
 
 rule bcftools_mpileup_all_sites:
     threads: 1
-    conda: "../envs/var_calling.yaml"
+    conda: "../envs/tools.yaml"
     params:
         min_mq = 0,
         min_bq = config["VC"]["MIN_QUALITY"],
@@ -26,6 +26,7 @@ rule bcftools_mpileup_all_sites:
     input:
         bam = get_input_bam,
         reference = OUTDIR/"vaf"/"{sample}.reference.fasta",
+        reference_index = OUTDIR/"vaf"/"{sample}.reference.fasta.fai",
     output:
         mpileup = temp(OUTDIR / "all_sites" / "{sample}.mpileup.vcf"),
         query = temp(OUTDIR / "all_sites" / "{sample}.query.tsv"),

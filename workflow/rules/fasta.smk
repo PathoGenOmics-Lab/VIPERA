@@ -17,6 +17,18 @@ rule read_bam_refs:
         """
 
 
+rule index_fasta:
+    conda:
+        "../envs/tools.yaml"
+    input:
+        fasta="{name}.fasta",
+    output:
+        fai=temp("{name}.fasta.fai"),
+        sizes=temp("{name}.sizes.txt"),
+    shell:
+        "samtools faidx {input.fasta} -o {output.fai} && cut -f1,2 {output.fai} >{output.sizes}"
+
+
 rule rename_fastas:
     input:
         fasta = get_input_fasta
