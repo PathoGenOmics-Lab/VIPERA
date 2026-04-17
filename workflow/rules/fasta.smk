@@ -19,7 +19,7 @@ rule read_bam_refs:
 
 rule index_fasta:
     conda:
-        "../envs/tools.yaml"
+        "../envs/var_calling.yaml"
     input:
         fasta="{name}.fasta",
     output:
