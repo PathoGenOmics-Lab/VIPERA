@@ -1,9 +1,6 @@
 FROM condaforge/miniforge3:latest
 LABEL io.github.snakemake.containerized="true"
-LABEL io.github.snakemake.conda_env_hash="fb2a04b98efa75d8b830a16722a8717eb91a3c66659e3c78b90b0cee3a50db69"
-
-# Step 2: Retrieve conda environments
-
+LABEL io.github.snakemake.conda_env_hash="64c979b4b8dbf4bcef709ec73814498afe6df09db6fc3631d525802fb0556df1"
 # Conda environment:
 #   source: workflow/envs/afwdist.yaml
 #   prefix: /conda-envs/9c24a867826615972cc288081976e7fc
@@ -14,7 +11,6 @@ LABEL io.github.snakemake.conda_env_hash="fb2a04b98efa75d8b830a16722a8717eb91a3c
 #     - afwdist==1.0.0
 RUN mkdir -p /conda-envs/9c24a867826615972cc288081976e7fc
 COPY workflow/envs/afwdist.yaml /conda-envs/9c24a867826615972cc288081976e7fc/environment.yaml
-
 # Conda environment:
 #   source: workflow/envs/biopython.yaml
 #   prefix: /conda-envs/162796cecea22d99c8702138f0c48e2f
@@ -27,7 +23,6 @@ COPY workflow/envs/afwdist.yaml /conda-envs/9c24a867826615972cc288081976e7fc/env
 #     - pandas==2.0.3
 RUN mkdir -p /conda-envs/162796cecea22d99c8702138f0c48e2f
 COPY workflow/envs/biopython.yaml /conda-envs/162796cecea22d99c8702138f0c48e2f/environment.yaml
-
 # Conda environment:
 #   source: workflow/envs/fetch.yaml
 #   prefix: /conda-envs/9439457f932a4fbca3665c9ea1ac2f0a
@@ -39,7 +34,6 @@ COPY workflow/envs/biopython.yaml /conda-envs/162796cecea22d99c8702138f0c48e2f/e
 #     - curl
 RUN mkdir -p /conda-envs/9439457f932a4fbca3665c9ea1ac2f0a
 COPY workflow/envs/fetch.yaml /conda-envs/9439457f932a4fbca3665c9ea1ac2f0a/environment.yaml
-
 # Conda environment:
 #   source: workflow/envs/freyja.yaml
 #   prefix: /conda-envs/bb4c5f3a509433cc08861582fab4a705
@@ -50,7 +44,6 @@ COPY workflow/envs/fetch.yaml /conda-envs/9439457f932a4fbca3665c9ea1ac2f0a/envir
 #     - freyja==2.0.1
 RUN mkdir -p /conda-envs/bb4c5f3a509433cc08861582fab4a705
 COPY workflow/envs/freyja.yaml /conda-envs/bb4c5f3a509433cc08861582fab4a705/environment.yaml
-
 # Conda environment:
 #   source: workflow/envs/gisaidr.yaml
 #   prefix: /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f
@@ -64,7 +57,6 @@ COPY workflow/envs/freyja.yaml /conda-envs/bb4c5f3a509433cc08861582fab4a705/envi
 RUN mkdir -p /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f
 COPY workflow/envs/gisaidr.yaml /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f/environment.yaml
 COPY workflow/envs/gisaidr.post-deploy.sh /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f/post-deploy.sh
-
 # Conda environment:
 #   source: workflow/envs/iqtree.yaml
 #   prefix: /conda-envs/0a608afb24723cb6fa8aef748f5efbc8
@@ -75,7 +67,6 @@ COPY workflow/envs/gisaidr.post-deploy.sh /conda-envs/3fad3c9cdfa40bee9404f6a2e8
 #     - iqtree==2.2.2.3
 RUN mkdir -p /conda-envs/0a608afb24723cb6fa8aef748f5efbc8
 COPY workflow/envs/iqtree.yaml /conda-envs/0a608afb24723cb6fa8aef748f5efbc8/environment.yaml
-
 # Conda environment:
 #   source: workflow/envs/nextalign.yaml
 #   prefix: /conda-envs/04a3347f94ddf7e21c34bc49e5246076
@@ -86,7 +77,6 @@ COPY workflow/envs/iqtree.yaml /conda-envs/0a608afb24723cb6fa8aef748f5efbc8/envi
 #     - nextalign==2.13
 RUN mkdir -p /conda-envs/04a3347f94ddf7e21c34bc49e5246076
 COPY workflow/envs/nextalign.yaml /conda-envs/04a3347f94ddf7e21c34bc49e5246076/environment.yaml
-
 # Conda environment:
 #   source: workflow/envs/pangolin.yaml
 #   prefix: /conda-envs/fb978640cd765c8a63bbcdc01f3a206b
@@ -99,7 +89,6 @@ COPY workflow/envs/nextalign.yaml /conda-envs/04a3347f94ddf7e21c34bc49e5246076/e
 #     - setuptools<81
 RUN mkdir -p /conda-envs/fb978640cd765c8a63bbcdc01f3a206b
 COPY workflow/envs/pangolin.yaml /conda-envs/fb978640cd765c8a63bbcdc01f3a206b/environment.yaml
-
 # Conda environment:
 #   source: workflow/envs/quarto_render.yaml
 #   prefix: /conda-envs/96f3c1cec4b3ce5d72f708992272e9c1
@@ -114,7 +103,6 @@ COPY workflow/envs/pangolin.yaml /conda-envs/fb978640cd765c8a63bbcdc01f3a206b/en
 #     - r-heatmaply==1.6.0
 RUN mkdir -p /conda-envs/96f3c1cec4b3ce5d72f708992272e9c1
 COPY workflow/envs/quarto_render.yaml /conda-envs/96f3c1cec4b3ce5d72f708992272e9c1/environment.yaml
-
 # Conda environment:
 #   source: workflow/envs/renv.yaml
 #   prefix: /conda-envs/fe892aca096e6b2883923c8755f9ac77
@@ -136,7 +124,6 @@ COPY workflow/envs/quarto_render.yaml /conda-envs/96f3c1cec4b3ce5d72f708992272e9
 #     - r-logger==0.2.2
 RUN mkdir -p /conda-envs/fe892aca096e6b2883923c8755f9ac77
 COPY workflow/envs/renv.yaml /conda-envs/fe892aca096e6b2883923c8755f9ac77/environment.yaml
-
 # Conda environment:
 #   source: workflow/envs/snpeff.yaml
 #   prefix: /conda-envs/0adafb79cb1bec58ef4c77bf4cca4f95
@@ -147,7 +134,6 @@ COPY workflow/envs/renv.yaml /conda-envs/fe892aca096e6b2883923c8755f9ac77/enviro
 #     - snpsift==5.1d
 RUN mkdir -p /conda-envs/0adafb79cb1bec58ef4c77bf4cca4f95
 COPY workflow/envs/snpeff.yaml /conda-envs/0adafb79cb1bec58ef4c77bf4cca4f95/environment.yaml
-
 # Conda environment:
 #   source: workflow/envs/tools.yaml
 #   prefix: /conda-envs/1f283441022c3c9d97669994a3c5e8bb
@@ -159,21 +145,17 @@ COPY workflow/envs/snpeff.yaml /conda-envs/0adafb79cb1bec58ef4c77bf4cca4f95/envi
 #     - bcftools==1.23
 RUN mkdir -p /conda-envs/1f283441022c3c9d97669994a3c5e8bb
 COPY workflow/envs/tools.yaml /conda-envs/1f283441022c3c9d97669994a3c5e8bb/environment.yaml
-
 # Conda environment:
 #   source: workflow/envs/var_calling.yaml
-#   prefix: /conda-envs/81e46c677a6cc0618c93963d57d17d3f
+#   prefix: /conda-envs/5150d0f0a91d7f7a789a06f453d63479
 #   channels:
 #     - conda-forge
 #     - bioconda
 #   dependencies:
 #     - ivar==1.4.2
 #     - samtools==1.17
-#     - bcftools==1.17
-RUN mkdir -p /conda-envs/81e46c677a6cc0618c93963d57d17d3f
-COPY workflow/envs/var_calling.yaml /conda-envs/81e46c677a6cc0618c93963d57d17d3f/environment.yaml
-
-# Step 3: Generate conda environments
+RUN mkdir -p /conda-envs/5150d0f0a91d7f7a789a06f453d63479
+COPY workflow/envs/var_calling.yaml /conda-envs/5150d0f0a91d7f7a789a06f453d63479/environment.yaml
 
 RUN conda env create --prefix /conda-envs/9c24a867826615972cc288081976e7fc --file /conda-envs/9c24a867826615972cc288081976e7fc/environment.yaml && \
     conda env create --prefix /conda-envs/162796cecea22d99c8702138f0c48e2f --file /conda-envs/162796cecea22d99c8702138f0c48e2f/environment.yaml && \
@@ -187,10 +169,8 @@ RUN conda env create --prefix /conda-envs/9c24a867826615972cc288081976e7fc --fil
     conda env create --prefix /conda-envs/fe892aca096e6b2883923c8755f9ac77 --file /conda-envs/fe892aca096e6b2883923c8755f9ac77/environment.yaml && \
     conda env create --prefix /conda-envs/0adafb79cb1bec58ef4c77bf4cca4f95 --file /conda-envs/0adafb79cb1bec58ef4c77bf4cca4f95/environment.yaml && \
     conda env create --prefix /conda-envs/1f283441022c3c9d97669994a3c5e8bb --file /conda-envs/1f283441022c3c9d97669994a3c5e8bb/environment.yaml && \
-    conda env create --prefix /conda-envs/81e46c677a6cc0618c93963d57d17d3f --file /conda-envs/81e46c677a6cc0618c93963d57d17d3f/environment.yaml && \
+    conda env create --prefix /conda-envs/5150d0f0a91d7f7a789a06f453d63479 --file /conda-envs/5150d0f0a91d7f7a789a06f453d63479/environment.yaml && \
     conda clean --all -y
-
-# Step 4: Run post-deploy scripts
 
 RUN conda init && . /root/.bashrc && \
     conda activate /conda-envs/3fad3c9cdfa40bee9404f6a2e8fda69f && \
