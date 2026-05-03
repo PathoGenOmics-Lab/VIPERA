@@ -4,6 +4,7 @@
 # Analysis files
 /data/
 /results/
+/logs/
 
 # MAC
 .DS_Store
