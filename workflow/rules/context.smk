@@ -4,7 +4,7 @@ rule download_context:
     conda: "../envs/gisaidr.yaml"
     input:
         metadata = config["METADATA"],
-        pango_report = OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv"
+        pango_report = "<results>/<dataset>/lineage_report.csv"
     params:
         gisaid_creds = config["GISAID"]["CREDENTIALS"],
         date_window_span = 0.95,
@@ -23,9 +23,9 @@ rule download_context:
         chunk_length = 3000,
         min_theoretical_combinations = config["DIVERSITY_REPS"]
     output:
-        fasta = temp(OUTDIR/"context"/"sequences.fasta"),
-        metadata = temp(OUTDIR/"context"/"metadata.csv"),
-        duplicate_accids = OUTDIR/"context"/"duplicate_accession_ids.txt"
+        fasta = temp("<results>/<dataset>/context/sequences.fasta"),
+        metadata = temp("<results>/<dataset>/context/metadata.csv"),
+        duplicate_accids = "<results>/<dataset>/context/duplicate_accession_ids.txt",
     log:
         LOGDIR / "download_context" / "log.txt"
     retries: 2
@@ -40,11 +40,11 @@ rule align_context:
     params:
         name = "context_sequences"
     input:
-        ref_fasta = OUTDIR/"reference.fasta",
+        ref_fasta = "<results>/<dataset>/reference.fasta",
         fasta = lambda wildcards: select_context_fasta()
     output:
-        folder = directory(OUTDIR/"context"/"nextalign"),
-        fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.fasta"
+        folder = directory("<results>/<dataset>/context/nextalign"),
+        fasta = "<results>/<dataset>/context/nextalign/context_sequences.aligned.fasta"
     log:
         LOGDIR / "align_context" / "log.txt"
     shell:
@@ -59,11 +59,11 @@ rule mask_context:
         mask_character = "N",
         mask_class = ["mask"]
     input:
-        fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.fasta",
-        ref_fasta = OUTDIR/"reference.fasta",
+        fasta = "<results>/<dataset>/context/nextalign/context_sequences.aligned.fasta",
+        ref_fasta = "<results>/<dataset>/reference.fasta",
         vcf = lambda wildcards: select_problematic_vcf()
     output:
-        fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
+        fasta = "<results>/<dataset>/context/nextalign/context_sequences.aligned.masked.fasta"
     log:
         LOGDIR / "mask_context" / "log.txt"
     script:
@@ -77,18 +77,17 @@ rule ml_context_tree:
     params:
         seed = 7291,
         seqtype = "DNA",
-        name = OUTPUT_NAME,
         ufboot = config["UFBOOT"]["REPS"],
         alrt = config["SHALRT"]["REPS"],
         outgroup = config["ALIGNMENT_REFERENCE"],
         model = config["TREE_MODEL"],
         max_iterations_convergence = 1000,
     input:
-        fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
-        outgroup_aln = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta"
+        fasta = "<results>/<dataset>/aligned.masked.fasta",
+        outgroup_aln = "<results>/<dataset>/context/nextalign/context_sequences.aligned.masked.fasta"
     output:
-        folder = directory(OUTDIR/"tree_context"),
-        ml = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile"
+        folder = directory("<results>/<dataset>/tree_context"),
+        ml = "<results>/<dataset>/tree_context/context.treefile"
     log:
         LOGDIR / "ml_context_tree" / "log.txt"
     shell:
@@ -99,4 +98,4 @@ rule ml_context_tree:
             "-bb {params.ufboot} -alrt {params.alrt} "
             "-o {params.outgroup} -T AUTO --threads-max {threads} -s aln.fasta "
             "-nm {params.max_iterations_convergence} "
-            "--seqtype {params.seqtype} -m {params.model} --prefix {output.folder}/{params.name}"
+            "--seqtype {params.seqtype} -m {params.model} --prefix {output.folder}/context"

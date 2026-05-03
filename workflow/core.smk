@@ -2,16 +2,12 @@ BASE_PATH = Path(workflow.basedir).parent.resolve()
 
 include: "rules/common.smk"
 
-# Outputs
-OUTPUT_NAME = config["OUTPUT_NAME"]
-OUTDIR = Path(config["OUTPUT_DIRECTORY"])
-
 # Logging
-LOGDIR = OUTDIR / "logs"
+LOGDIR = Path("<results>/<logs>")
 
 # Report
-REPORT_DIR_PLOTS = Path(OUTDIR/"report/plots")
-REPORT_DIR_TABLES = Path(OUTDIR/"report/tables")
+REPORT_DIR_PLOTS = Path("<results>/<dataset>/report/plots")
+REPORT_DIR_TABLES = Path("<results>/<dataset>/report/tables")
 
 include: "rules/fetch.smk"
 include: "rules/fasta.smk"

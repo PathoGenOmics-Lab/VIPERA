@@ -37,8 +37,7 @@ The path to these input files is set in two configuration files in YAML format:
 [config.yaml](/config/config.yaml) (for general workflow settings) and
 [targets.yaml](/config/targets.yaml) (for specific dataset-related settings).
 The latter must be modified by the user to point the `SAMPLES` and `METADATA`
-parameters to your data. The `OUTPUT_DIRECTORY` parameter should point to your
-desired results directory.
+parameters to your data.
 
 The script [`build_targets.py`](/build_targets.py) simplifies the process of creating
 the targets configuration file. To run this script, you need to have PyYAML installed. It
@@ -62,8 +61,6 @@ SAMPLES:
   ...
 METADATA:
   "path/to/metadata.csv"
-OUTPUT_DIRECTORY:
-  "output"
 CONTEXT_FASTA:
   null
 MAPPING_REFERENCES_FASTA:

@@ -2,9 +2,9 @@ rule pangolin_report:
     threads: 8
     conda: "../envs/pangolin.yaml"
     input:
-        fastas = OUTDIR/f"{OUTPUT_NAME}.fasta"
+        fastas = "<results>/<dataset>/sequences.fasta"
     output:
-        report = report(OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv")
+        report = report("<results>/<dataset>/lineage_report.csv")
     log:
         LOGDIR / "pangolin_report" / "log.txt"
     shell:

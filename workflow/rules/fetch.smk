@@ -4,7 +4,7 @@ rule fetch_alignment_reference:
     params:
         ref = config["ALIGNMENT_REFERENCE"]
     output:
-        fasta = OUTDIR/"reference.fasta"
+        fasta = "<results>/<dataset>/reference.fasta"
     log:
         LOGDIR / "fetch_alignment_reference" / "log.txt"
     shell:
@@ -19,7 +19,7 @@ rule fetch_reference_gb:
         database = "nucleotide",
         format = "gb"
     output:
-        fasta = OUTDIR/"reference.gb"
+        fasta = "<results>/<dataset>/reference.gb"
     log:
         LOGDIR / "fetch_reference_gb" / "log.txt"
     shell:
@@ -31,7 +31,7 @@ rule fetch_mapping_references:
     threads: 1
     conda: "../envs/fetch.yaml"
     input:
-        OUTDIR / "bam_ids.txt"
+        "<results>/<dataset>/bam_ids.txt"
     output:
         fasta = select_mapping_references_fasta()
     log:
@@ -49,7 +49,7 @@ rule fetch_alignment_annotation:
     params:
         ref = config["ALIGNMENT_REFERENCE"]
     output:
-        temp(OUTDIR/"reference.gff3")
+        temp("<results>/<dataset>/reference.gff3")
     log:
         LOGDIR / "fetch_alignment_annotation" / "log.txt"
     shell:
@@ -70,4 +70,4 @@ rule fetch_problematic_vcf:
 
 rule create_empty_file:
     output:
-        temp(touch(OUTDIR/"empty.txt"))
+        temp(touch("<results>/<dataset>/empty.txt"))

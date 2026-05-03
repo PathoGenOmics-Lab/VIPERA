@@ -3,7 +3,7 @@
 
 # Analysis files
 /data/
-/output/
+/results/
 
 # MAC
 .DS_Store

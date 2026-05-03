@@ -14,6 +14,9 @@ containerized: "docker://ahmig/vipera:v" + __version__
 configfile: "config/config.yaml"
 configfile: "config/targets.yaml"
 
+pathvars:
+    dataset = config["OUTPUT_NAME"]
+
 include: "core.smk"
 include: "rules/context.smk"
 include: "rules/demix.smk"
@@ -22,4 +25,4 @@ include: "rules/report.smk"
 
 rule all:
     input:
-        OUTDIR/f"{OUTPUT_NAME}.report.html"
+        "<results>/<dataset>/report.html"

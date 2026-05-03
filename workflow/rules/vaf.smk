@@ -12,12 +12,12 @@ rule snps_to_ancestor:
         ivar_freq=config["VC"]["MIN_FREQ"],
         ivar_depth=config["VC"]["MIN_DEPTH"],
     input:
-        reference_fasta=OUTDIR / f"{OUTPUT_NAME}.ancestor.fasta",
+        reference_fasta="<results>/<dataset>/ancestor.fasta",
         bam=get_input_bam,
-        gff=OUTDIR / "reference.gff3",
+        gff="<results>/<dataset>/reference.gff3",
     output:
-        tsv=temp(OUTDIR / "vaf" / "vc" / "{sample}.tsv"),
-        reference_fasta_renamed=temp(OUTDIR / "vaf" / "{sample}.reference.fasta"),
+        tsv=temp("<results>/<dataset>/vaf/vc/{sample}.tsv"),
+        reference_fasta_renamed=temp("<results>/<dataset>/vaf/{sample}.reference.fasta"),
     log:
         LOGDIR / "snps_to_ancestor" / "{sample}.log.txt",
     shell:
@@ -62,10 +62,10 @@ rule mask_tsv:
     params:
         mask_class=["mask"],
     input:
-        tsv=OUTDIR / "vaf" / "vc" / "{sample}.tsv",
+        tsv="<results>/<dataset>/vaf/vc/{sample}.tsv",
         vcf=lambda wildcards: select_problematic_vcf(),
     output:
-        masked_tsv=temp(OUTDIR / "vaf" / "masked" / "{sample}.tsv"),
+        masked_tsv=temp("<results>/<dataset>/vaf/masked/{sample}.tsv"),
     log:
         LOGDIR / "mask_tsv" / "{sample}.log.txt",
     script:
@@ -81,9 +81,9 @@ rule filter_tsv:
         min_alt_rv=2,
         min_alt_dp=2,
     input:
-        tsv=OUTDIR / "vaf" / "masked" / "{sample}.tsv",
+        tsv="<results>/<dataset>/vaf/masked/{sample}.tsv",
     output:
-        filtered_tsv=temp(OUTDIR / "vaf" / "filtered" / "{sample}.tsv"),
+        filtered_tsv=temp("<results>/<dataset>/vaf/filtered/{sample}.tsv"),
     log:
         LOGDIR / "filter_tsv" / "{sample}.log.txt",
     script:
@@ -97,9 +97,9 @@ rule tsv_to_vcf:
     params:
         ref_name=config["ALIGNMENT_REFERENCE"],
     input:
-        tsv=OUTDIR / "vaf" / "filtered" / "{sample}.tsv",
+        tsv="<results>/<dataset>/vaf/filtered/{sample}.tsv",
     output:
-        vcf=temp(OUTDIR / "vaf" / "vcf" / "{sample}.vcf"),
+        vcf=temp("<results>/<dataset>/vaf/vcf/{sample}.vcf"),
     log:
         LOGDIR / "tsv_to_vcf" / "{sample}.log.txt",
     script:
@@ -116,9 +116,9 @@ rule variants_effect:
         ref_name=config["ALIGNMENT_REFERENCE"],
         snpeff_data_dir=(BASE_PATH / "config" / "snpeff").resolve(),
     input:
-        vcf=OUTDIR / "vaf" / "vcf" / "{sample}.vcf",
+        vcf="<results>/<dataset>/vaf/vcf/{sample}.vcf",
     output:
-        ann_vcf=OUTDIR / "vaf" / "annotated" / "{sample}.vcf",
+        ann_vcf="<results>/<dataset>/vaf/annotated/{sample}.vcf",
     log:
         LOGDIR / "variants_effect" / "{sample}.log.txt",
     retries: 2
@@ -148,9 +148,9 @@ rule extract_vcf_fields:
         ],
         sep=",",
     input:
-        vcf=OUTDIR / "vaf" / "annotated" / "{sample}.vcf",
+        vcf="<results>/<dataset>/vaf/annotated/{sample}.vcf",
     output:
-        tsv=OUTDIR / "vaf" / "fields" / "{sample}.tsv",
+        tsv="<results>/<dataset>/vaf/fields/{sample}.tsv",
     log:
         LOGDIR / "tsv_to_vcf" / "{sample}.log.txt",
     shell:
@@ -171,9 +171,9 @@ rule format_vcf_fields_longer:
         # lambda to deactivate automatic wildcard expansion in pattern
         sep=",",
     input:
-        tsv=OUTDIR / "vaf" / "fields" / "{sample}.tsv",
+        tsv="<results>/<dataset>/vaf/fields/{sample}.tsv",
     output:
-        tsv=OUTDIR / "vaf" / "fields_longer" / "{sample}.tsv",
+        tsv="<results>/<dataset>/vaf/fields_longer/{sample}.tsv",
     log:
         LOGDIR / "format_vcf_fields_longer" / "{sample}.log.txt",
     script:
@@ -184,9 +184,9 @@ rule concat_vcf_fields:
     params:
         sep="\t",
     input:
-        expand(OUTDIR / "vaf" / "fields_longer" / "{sample}.tsv", sample=iter_samples()),
+        expand("<results>/<dataset>/vaf/fields_longer/{sample}.tsv", sample=iter_samples()),
     output:
-        OUTDIR / f"{OUTPUT_NAME}.vcf_fields.longer.tsv",
+        "<results>/<dataset>/vcf_fields.longer.tsv",
     run:
         import pandas as pd
         from functools import reduce
@@ -204,10 +204,10 @@ rule merge_annotation:
         sample="{sample}",
         ref_name=config["ALIGNMENT_REFERENCE"],
     input:
-        tsv=OUTDIR / "vaf" / "filtered" / "{sample}.tsv",
-        annot=OUTDIR / "vaf" / "fields_longer" / "{sample}.tsv",
+        tsv="<results>/<dataset>/vaf/filtered/{sample}.tsv",
+        annot="<results>/<dataset>/vaf/fields_longer/{sample}.tsv",
     output:
-        tsv=OUTDIR / "vaf" / "variants" / "{sample}.tsv",
+        tsv="<results>/<dataset>/vaf/variants/{sample}.tsv",
     log:
         LOGDIR / "merge_annotation" / "{sample}.log.txt",
     script:
@@ -216,9 +216,9 @@ rule merge_annotation:
 
 use rule concat_vcf_fields as concat_variants with:
     input:
-        expand(OUTDIR / "vaf" / "variants" / "{sample}.tsv", sample=iter_samples()),
+        expand("<results>/<dataset>/vaf/variants/{sample}.tsv", sample=iter_samples()),
     output:
-        OUTDIR / f"{OUTPUT_NAME}.variants.tsv",
+        "<results>/<dataset>/variants.tsv",
 
 
 rule window_data:
@@ -230,8 +230,8 @@ rule window_data:
         features=config.get("GB_FEATURES", {}),
         gb_qualifier_display="gene",
     input:
-        variants=OUTDIR / f"{OUTPUT_NAME}.variants.tsv",
-        gb=OUTDIR / "reference.gb",
+        variants="<results>/<dataset>/variants.tsv",
+        gb="<results>/<dataset>/reference.gb",
     output:
         window_df=REPORT_DIR_TABLES / "window.csv",
         json=temp(REPORT_DIR_TABLES / "window.json"),
@@ -245,7 +245,7 @@ rule nv_panel_data:
     conda:
         "../envs/renv.yaml"
     input:
-        variants=OUTDIR / f"{OUTPUT_NAME}.variants.tsv",
+        variants="<results>/<dataset>/variants.tsv",
         metadata=config["METADATA"],
     output:
         table=REPORT_DIR_TABLES / "nv_panel.csv",
@@ -290,7 +290,7 @@ rule af_time_correlation_data:
         min_abs_cor_threshold = 0.0,
         min_diff_af_threshold = 0.0,
     input:
-        variants=OUTDIR / f"{OUTPUT_NAME}.variants.all_sites.tsv",
+        variants="<results>/<dataset>/variants.all_sites.tsv",
         metadata=config["METADATA"],
     output:
         fmt_variants=temp(REPORT_DIR_TABLES / "variants.filled.dated.tsv"),
@@ -309,7 +309,7 @@ rule pairwise_trajectory_correlation_data:
         cor_method=config["COR"]["METHOD"],
         cor_use="pairwise.complete.obs",
     input:
-        variants=OUTDIR / f"{OUTPUT_NAME}.variants.all_sites.tsv",
+        variants="<results>/<dataset>/variants.all_sites.tsv",
         metadata=config["METADATA"],
     output:
         table=REPORT_DIR_TABLES / "pairwise_trajectory_frequency_data.csv",
@@ -326,7 +326,7 @@ rule polymorphic_sites_over_time_data:
     params:
         max_alt_freq=1.0 - config["VC"]["MIN_FREQ"],
     input:
-        variants=OUTDIR / f"{OUTPUT_NAME}.variants.tsv",
+        variants="<results>/<dataset>/variants.tsv",
         metadata=config["METADATA"],
     output:
         table=REPORT_DIR_PLOTS / "polymorphic_sites_over_time.csv",

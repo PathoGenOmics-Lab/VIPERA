@@ -5,9 +5,9 @@ rule filter_genbank_features:
         included = config.get("GB_FEATURES", {}).get("INCLUDE", {}),
         excluded = config.get("GB_FEATURES", {}).get("EXCLUDE", {}),
     input:
-        gb = OUTDIR/"reference.gb",
+        gb = "<results>/<dataset>/reference.gb",
     output:
-        gb = OUTDIR/"reference.cds.gb",
+        gb = "<results>/<dataset>/reference.cds.gb",
     log:
         LOGDIR / "filter_genbank_features" / "log.txt"
     script:
@@ -20,12 +20,12 @@ rule n_s_sites:
     params:
         gb_qualifier_display = "gene",
     input:
-        fasta = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
-        masked = OUTDIR / "sites_masked.bed",
-        gb = OUTDIR/"reference.cds.gb",
+        fasta = "<results>/<dataset>/ancestor.fasta",
+        masked = "<results>/<dataset>/sites_masked.bed",
+        gb = "<results>/<dataset>/reference.cds.gb",
         genetic_code = Path(config["GENETIC_CODE_JSON"]).resolve(),
     output:
-        csv = temp(OUTDIR/f"{OUTPUT_NAME}.ancestor.n_s.sites.csv"),
+        csv = temp("<results>/<dataset>/ancestor.n_s.sites.csv"),
     log:
         LOGDIR / "n_s_sites" / "log.txt"
     script:
@@ -35,12 +35,12 @@ rule n_s_sites:
 rule calculate_dnds:
     conda: "../envs/renv.yaml"
     input: 
-        n_s_sites = OUTDIR/f"{OUTPUT_NAME}.ancestor.n_s.sites.csv",
-        masked = OUTDIR / "sites_masked.bed",
-        variants =  OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
+        n_s_sites = "<results>/<dataset>/ancestor.n_s.sites.csv",
+        masked = "<results>/<dataset>/sites_masked.bed",
+        variants =  "<results>/<dataset>/variants.tsv",
         metadata = config["METADATA"]
     output:
-        table = OUTDIR/f"{OUTPUT_NAME}.dnds.csv",
+        table = "<results>/<dataset>/dnds.csv",
     log:
         LOGDIR / "calculate_dnds" / "log.txt"
     script:

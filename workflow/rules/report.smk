@@ -1,7 +1,7 @@
 rule demix_plot_data:
     conda: "../envs/renv.yaml"
     input:
-        summary_demixing = OUTDIR/"demixing"/"summary.csv",
+        summary_demixing = "<results>/<dataset>/demixing/summary.csv",
         metadata = config["METADATA"]
     output:
         data = REPORT_DIR_TABLES/"demix.csv"
@@ -35,8 +35,8 @@ rule diversity_data:
         aln_reference = config["ALIGNMENT_REFERENCE"],
         seed = 7291,
     input:
-        study_fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
-        context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta",
+        study_fasta = "<results>/<dataset>/aligned.masked.fasta",
+        context_fasta = "<results>/<dataset>/context/nextalign/context_sequences.aligned.masked.fasta",
     output:
         divs = REPORT_DIR_TABLES/"diversity.txt",
         json = REPORT_DIR_TABLES/"diversity.json",
@@ -69,7 +69,7 @@ rule extract_genbank_regions:
     params:
         gb_qualifier = "gene",
     input:
-        gb = OUTDIR/"reference.cds.gb",
+        gb = "<results>/<dataset>/reference.cds.gb",
     output:
         regions = temp(REPORT_DIR_TABLES/"genbank_regions.json"),
     log:
@@ -119,7 +119,7 @@ use rule nv_panel_plot as nv_panel_plot_S with:
         panel = REPORT_DIR_TABLES/"nv_panel.S.csv",
         window = REPORT_DIR_TABLES/"window.S.csv",
         regions = REPORT_DIR_TABLES/"genbank_regions.json",
-        highlight_window_regions = OUTDIR/"empty.txt",
+        highlight_window_regions = "<results>/<dataset>/empty.txt",
     output:
         plot = report(REPORT_DIR_PLOTS/"nv_panel.S.png"),
     log:
@@ -152,8 +152,8 @@ rule context_phylogeny_data:
         boot_th = config["UFBOOT"]["THRESHOLD"],
         alrt_th = config["SHALRT"]["THRESHOLD"],
     input:
-        target_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
-        tree = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
+        target_fasta = "<results>/<dataset>/sequences.fasta",
+        tree = "<results>/<dataset>/tree_context/context.treefile",
     output:
         json = REPORT_DIR_TABLES/"context_phylogeny.json",
         annotation = REPORT_DIR_TABLES/"context_phylogeny.csv",
@@ -172,7 +172,7 @@ rule context_phylogeny_plot:
         boot_th = config["UFBOOT"]["THRESHOLD"],
         alrt_th = config["SHALRT"]["THRESHOLD"],
     input:
-        tree = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
+        tree = "<results>/<dataset>/tree_context/context.treefile",
         json = REPORT_DIR_TABLES/"context_phylogeny.json",
         annotation = REPORT_DIR_TABLES/"context_phylogeny.csv"
     output:
@@ -192,7 +192,7 @@ rule allele_freq_tree_plot:
         plot_width_mm = 159.2,
     input:
         tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
-        study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
+        study_fasta = "<results>/<dataset>/sequences.fasta",
         metadata = config["METADATA"],
     output:
         plot = report(REPORT_DIR_PLOTS/"allele_freq_tree.png"),
@@ -225,7 +225,7 @@ rule dnds_plots:
         plot_height_mm = 119.4,
         plot_width_mm = 159.2,
     input: 
-        table = OUTDIR/f"{OUTPUT_NAME}.dnds.csv",
+        table = "<results>/<dataset>/dnds.csv",
     output:
         plot_dn_ds = report(REPORT_DIR_PLOTS/"dn_and_ds.png"),
         plot_omega = report(REPORT_DIR_PLOTS/"dnds.png"),
@@ -273,7 +273,7 @@ rule af_trajectory_panel_plot:
 rule summary_table:
     conda: "../envs/renv.yaml"
     input:
-        report = report(OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv"),
+        report = report("<results>/<dataset>/lineage_report.csv"),
         metadata = config["METADATA"]
     output:
         table = REPORT_DIR_TABLES/"summary_table.csv"
@@ -302,7 +302,7 @@ rule report:
         evo        = report(REPORT_DIR_PLOTS/"dn_and_ds.png"),
         omega_plot = report(REPORT_DIR_PLOTS/"dnds.png"),
         heat_table = report(REPORT_DIR_TABLES/"pairwise_trajectory_correlation_matrix.csv"),
-        freyja_ts  = OUTDIR/"demixing"/"freyja_data"/"last_barcode_update.txt",
+        freyja_ts  = "<results>/<dataset>/demixing/freyja_data/last_barcode_update.txt",
         value      = REPORT_DIR_TABLES/"diversity.json",
         stats_lm   = REPORT_DIR_TABLES/"time_signal.json",
         stats_ml   = REPORT_DIR_TABLES/"context_phylogeny.json",
@@ -313,11 +313,11 @@ rule report:
         min_ivar_freq = config["VC"]["MIN_FREQ"],
         ufboot_reps = config["UFBOOT"]["REPS"],
         shalrt_reps = config["SHALRT"]["REPS"],
-        name = config["OUTPUT_NAME"],
+        name = "<dataset>",
         use_bionj = config["USE_BIONJ"],
         cor_method = config["COR"]["METHOD"],
     output:
-        html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
+        html = report("<results>/<dataset>/report.html")
     log:
         LOGDIR / "report" / "log.txt"
     shell:

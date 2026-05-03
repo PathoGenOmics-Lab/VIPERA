@@ -10,6 +10,9 @@ min_version("7.19")
 # Workflow version
 __version__ = "test"
 
+pathvars:
+    dataset = config["OUTPUT_NAME"]
+
 # Rules
 include: "../workflow/core.smk"
 include: "../workflow/rules/demix.smk"
@@ -19,4 +22,4 @@ include: "../workflow/rules/report.smk"
 
 rule all:
     input:
-        OUTDIR/f"{OUTPUT_NAME}.report.html"
+        "<results>/<dataset>/report.html"
