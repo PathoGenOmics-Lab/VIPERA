@@ -15,6 +15,12 @@ format:
     toc-location: left
     toc-title: Summary
     number-sections: true
+    include-after-body:
+      text: |
+        <footer style="position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; padding: 0.3rem 0; font-size: 0.85em; color: #aaa; background: #fff; border-top: 0px; z-index: 999;">
+          <style>footer a { text-decoration: none; color: #7a9eb5; } footer a:hover { color: #4a7a9b; }</style>
+          VIPERA is free software (GPL-3.0) · <a href="https://github.com/PathoGenOmics-Lab/VIPERA" >Source code</a> · Found a bug or have a suggestion? <a href="https://github.com/PathoGenOmics-Lab/VIPERA/issues">Report an issue</a> · <a href="mailto:pathogenomic@uv.es">Contact us</a>
+        </footer>
 css: __CSSPLACEHOLDER__
 editor: source
 params:
