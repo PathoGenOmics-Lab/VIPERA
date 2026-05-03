@@ -313,7 +313,7 @@ rule report:
         min_ivar_freq = config["VC"]["MIN_FREQ"],
         ufboot_reps = config["UFBOOT"]["REPS"],
         shalrt_reps = config["SHALRT"]["REPS"],
-        name = "<dataset>",
+        name = config["OUTPUT_NAME"],
         use_bionj = config["USE_BIONJ"],
         cor_method = config["COR"]["METHOD"],
     output:
