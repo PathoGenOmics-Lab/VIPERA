@@ -14,7 +14,7 @@ rule extract_afwdist_variants:
     output:
         variants = temp("<results>/<dataset>/variants.afwdist.csv"),
     log:
-        LOGDIR/"extract_afwdist_variants"/"log.txt"
+        "<logs>/<dataset>/extract_afwdist_variants/log.txt"
     script:
         "../scripts/extract_afwdist_variants.py"
 
@@ -29,7 +29,7 @@ rule afwdist_weighted_distances:
     output:
         distances = temp("<results>/<dataset>/distances.raw.csv"),
     log:
-        LOGDIR/"afwdist_weighted_distances"/"log.txt"
+        "<logs>/<dataset>/afwdist_weighted_distances/log.txt"
     shell:
         "afwdist "
         "-i {input.variants:q} "
@@ -47,7 +47,7 @@ rule format_afwdist_results:
     output:
         distances = "<results>/<dataset>/distances.csv",
     log:
-        LOGDIR/"format_afwdist_results"/"log.txt"
+        "<logs>/<dataset>/format_afwdist_results/log.txt"
     script:
         "../scripts/format_afwdist_results.py"
 
@@ -62,7 +62,7 @@ rule allele_freq_tree_data:
     output:
         tree = REPORT_DIR_TABLES/"allele_freq_tree.nwk",
     log:
-        LOGDIR / "allele_freq_tree_data" / "log.txt"
+        "<logs>/<dataset>/allele_freq_tree_data/log.txt"
     script:
         "../scripts/report/allele_freq_tree_data.R"
 
@@ -79,6 +79,6 @@ rule time_signal_data:
         table = report(REPORT_DIR_TABLES/"time_signal.csv"),
         json = REPORT_DIR_TABLES/"time_signal.json",
     log:
-        LOGDIR / "time_signal_data" / "log.txt"
+        "<logs>/<dataset>/time_signal_data/log.txt"
     script:
         "../scripts/report/time_signal_data.R"

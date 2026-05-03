@@ -12,7 +12,7 @@ rule reconstruct_ancestral_sequence:
         folder = directory("<results>/<dataset>/tree"),
         state_file = "<results>/<dataset>/tree/asr.state"
     log:
-        LOGDIR / "reconstruct_ancestral_sequence" / "log.txt"
+        "<logs>/<dataset>/reconstruct_ancestral_sequence/log.txt"
     shell:
         "mkdir -p {output.folder} && "
         "iqtree2 -seed {params.seed} "
@@ -33,6 +33,6 @@ rule ancestor_fasta:
     output:
         fasta = report("<results>/<dataset>/ancestor.fasta")
     log:
-        LOGDIR / "ancestor_fasta" / "log.txt"
+        "<logs>/<dataset>/ancestor_fasta/log.txt"
     script:
         "../scripts/ancestor_fasta.py"

@@ -19,7 +19,7 @@ rule snps_to_ancestor:
         tsv=temp("<results>/<dataset>/vaf/vc/{sample}.tsv"),
         reference_fasta_renamed=temp("<results>/<dataset>/vaf/{sample}.reference.fasta"),
     log:
-        LOGDIR / "snps_to_ancestor" / "{sample}.log.txt",
+        "<logs>/<dataset>/snps_to_ancestor/{sample}.log.txt",
     shell:
         """
         set -e
@@ -67,7 +67,7 @@ rule mask_tsv:
     output:
         masked_tsv=temp("<results>/<dataset>/vaf/masked/{sample}.tsv"),
     log:
-        LOGDIR / "mask_tsv" / "{sample}.log.txt",
+        "<logs>/<dataset>/mask_tsv/{sample}.log.txt",
     script:
         "../scripts/mask_tsv.py"
 
@@ -85,7 +85,7 @@ rule filter_tsv:
     output:
         filtered_tsv=temp("<results>/<dataset>/vaf/filtered/{sample}.tsv"),
     log:
-        LOGDIR / "filter_tsv" / "{sample}.log.txt",
+        "<logs>/<dataset>/filter_tsv/{sample}.log.txt",
     script:
         "../scripts/filter_tsv.R"
 
@@ -101,7 +101,7 @@ rule tsv_to_vcf:
     output:
         vcf=temp("<results>/<dataset>/vaf/vcf/{sample}.vcf"),
     log:
-        LOGDIR / "tsv_to_vcf" / "{sample}.log.txt",
+        "<logs>/<dataset>/tsv_to_vcf/{sample}.log.txt",
     script:
         "../scripts/tsv_to_vcf.py"
 
@@ -114,13 +114,13 @@ rule variants_effect:
         "../envs/snpeff.yaml"
     params:
         ref_name=config["ALIGNMENT_REFERENCE"],
-        snpeff_data_dir=(BASE_PATH / "config" / "snpeff").resolve(),
+        snpeff_data_dir=(Path(workflow.basedir).parent / "config/snpeff").resolve(),
     input:
         vcf="<results>/<dataset>/vaf/vcf/{sample}.vcf",
     output:
         ann_vcf="<results>/<dataset>/vaf/annotated/{sample}.vcf",
     log:
-        LOGDIR / "variants_effect" / "{sample}.log.txt",
+        "<logs>/<dataset>/variants_effect/{sample}.log.txt",
     retries: 2
     shell:
         """
@@ -152,7 +152,7 @@ rule extract_vcf_fields:
     output:
         tsv="<results>/<dataset>/vaf/fields/{sample}.tsv",
     log:
-        LOGDIR / "tsv_to_vcf" / "{sample}.log.txt",
+        "<logs>/<dataset>/tsv_to_vcf/{sample}.log.txt",
     shell:
         "SnpSift extractFields -e 'NA' -s {params.sep:q} {input.vcf:q} {params.extract_columns} >{output.tsv:q} 2>{log:q}"
 
@@ -175,7 +175,7 @@ rule format_vcf_fields_longer:
     output:
         tsv="<results>/<dataset>/vaf/fields_longer/{sample}.tsv",
     log:
-        LOGDIR / "format_vcf_fields_longer" / "{sample}.log.txt",
+        "<logs>/<dataset>/format_vcf_fields_longer/{sample}.log.txt",
     script:
         "../scripts/format_vcf_fields_longer.R"
 
@@ -209,7 +209,7 @@ rule merge_annotation:
     output:
         tsv="<results>/<dataset>/vaf/variants/{sample}.tsv",
     log:
-        LOGDIR / "merge_annotation" / "{sample}.log.txt",
+        "<logs>/<dataset>/merge_annotation/{sample}.log.txt",
     script:
         "../scripts/merge_annotation.R"
 
@@ -236,7 +236,7 @@ rule window_data:
         window_df=REPORT_DIR_TABLES / "window.csv",
         json=temp(REPORT_DIR_TABLES / "window.json"),
     log:
-        LOGDIR / "window_data" / "log.txt",
+        "<logs>/<dataset>/window_data/log.txt",
     script:
         "../scripts/report/window_data.py"
 
@@ -251,7 +251,7 @@ rule nv_panel_data:
         table=REPORT_DIR_TABLES / "nv_panel.csv",
         json=temp(REPORT_DIR_TABLES / "nv_panel.json"),
     log:
-        LOGDIR / "nv_panel_data" / "log.txt",
+        "<logs>/<dataset>/nv_panel_data/log.txt",
     script:
         "../scripts/report/nv_panel_data.R"
 
@@ -263,7 +263,7 @@ rule nv_panel_zoom_on_feature_data:
     output:
         table=temp(REPORT_DIR_TABLES / "nv_panel.{region_name}.csv"),
     log:
-        LOGDIR / "nv_panel_zoom_on_feature_data" / "{region_name}.log.txt",
+        "<logs>/<dataset>/nv_panel_zoom_on_feature_data/{region_name}.log.txt",
     script:
         "../scripts/report/nv_panel_zoom_on_feature_data.py"
 
@@ -275,7 +275,7 @@ rule window_zoom_on_feature_data:
     output:
         table=temp(REPORT_DIR_TABLES / "window.{region_name}.csv"),
     log:
-        LOGDIR / "window_zoom_on_feature_data" / "{region_name}.log.txt",
+        "<logs>/<dataset>/window_zoom_on_feature_data/{region_name}.log.txt",
     script:
         "../scripts/report/window_zoom_on_feature_data.py"
 
@@ -297,7 +297,7 @@ rule af_time_correlation_data:
         correlations=report(REPORT_DIR_TABLES / "af_time_correlation.csv"),
         subset=REPORT_DIR_TABLES / "af_time_correlation.subset.txt",
     log:
-        LOGDIR / "af_time_correlation_data" / "log.txt",
+        "<logs>/<dataset>/af_time_correlation_data/log.txt",
     script:
         "../scripts/report/af_time_correlation_data.R"
 
@@ -315,7 +315,7 @@ rule pairwise_trajectory_correlation_data:
         table=REPORT_DIR_TABLES / "pairwise_trajectory_frequency_data.csv",
         matrix=report(REPORT_DIR_TABLES / "pairwise_trajectory_correlation_matrix.csv"),
     log:
-        LOGDIR / "pairwise_trajectory_correlation_data" / "log.txt",
+        "<logs>/<dataset>/pairwise_trajectory_correlation_data/log.txt",
     script:
         "../scripts/report/pairwise_trajectory_correlation_data.R"
 
@@ -332,6 +332,6 @@ rule polymorphic_sites_over_time_data:
         table=REPORT_DIR_PLOTS / "polymorphic_sites_over_time.csv",
         json=temp(REPORT_DIR_TABLES / "polymorphic_sites_over_time.json"),
     log:
-        LOGDIR / "polymorphic_sites_over_time_data" / "log.txt",
+        "<logs>/<dataset>/polymorphic_sites_over_time_data/log.txt",
     script:
         "../scripts/report/polymorphic_sites_over_time_data.R"

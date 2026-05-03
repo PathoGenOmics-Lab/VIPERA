@@ -6,7 +6,7 @@ rule fetch_alignment_reference:
     output:
         fasta = "<results>/<dataset>/reference.fasta"
     log:
-        LOGDIR / "fetch_alignment_reference" / "log.txt"
+        "<logs>/<dataset>/fetch_alignment_reference/log.txt"
     shell:
         "esearch -db nucleotide -query {params.ref} | efetch -format fasta > {output.fasta} 2> {log}"
 
@@ -21,7 +21,7 @@ rule fetch_reference_gb:
     output:
         fasta = "<results>/<dataset>/reference.gb"
     log:
-        LOGDIR / "fetch_reference_gb" / "log.txt"
+        "<logs>/<dataset>/fetch_reference_gb/log.txt"
     shell:
         "esearch -db {params.database} -query {params.ref} | efetch -format {params.format} > {output.fasta} 2> {log}"
 
@@ -35,7 +35,7 @@ rule fetch_mapping_references:
     output:
         fasta = select_mapping_references_fasta()
     log:
-        LOGDIR / "fetch_mapping_references" / "log.txt"
+        "<logs>/<dataset>/fetch_mapping_references/log.txt"
     shell:
         """
         cat {input} | while read ref_id || [[ -n $ref_id ]]; do
@@ -51,7 +51,7 @@ rule fetch_alignment_annotation:
     output:
         temp("<results>/<dataset>/reference.gff3")
     log:
-        LOGDIR / "fetch_alignment_annotation" / "log.txt"
+        "<logs>/<dataset>/fetch_alignment_annotation/log.txt"
     shell:
         "curl 'https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?db=nuccore&report=gff3&id={params.ref}' -o {output} -s 2>{log}"
 
@@ -61,7 +61,7 @@ rule fetch_problematic_vcf:
     params:
         url = config["PROBLEMATIC_VCF"]
     log:
-        LOGDIR / "fetch_problematic_vcf" / "log.txt"
+        "<logs>/<dataset>/fetch_problematic_vcf/log.txt"
     output:
         select_problematic_vcf()
     shell:

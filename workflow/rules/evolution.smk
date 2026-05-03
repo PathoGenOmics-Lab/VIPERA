@@ -9,7 +9,7 @@ rule filter_genbank_features:
     output:
         gb = "<results>/<dataset>/reference.cds.gb",
     log:
-        LOGDIR / "filter_genbank_features" / "log.txt"
+        "<logs>/<dataset>/filter_genbank_features/log.txt"
     script:
         "../scripts/filter_genbank_features.py"
 
@@ -27,7 +27,7 @@ rule n_s_sites:
     output:
         csv = temp("<results>/<dataset>/ancestor.n_s.sites.csv"),
     log:
-        LOGDIR / "n_s_sites" / "log.txt"
+        "<logs>/<dataset>/n_s_sites/log.txt"
     script:
         "../scripts/n_s_sites_from_fasta.py"
 
@@ -42,6 +42,6 @@ rule calculate_dnds:
     output:
         table = "<results>/<dataset>/dnds.csv",
     log:
-        LOGDIR / "calculate_dnds" / "log.txt"
+        "<logs>/<dataset>/calculate_dnds/log.txt"
     script:
         "../scripts/calculate_dnds.R"

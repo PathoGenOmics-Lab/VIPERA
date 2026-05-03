@@ -7,7 +7,7 @@ rule read_bam_refs:
     output:
         temp("<results>/<dataset>/bam_ids.txt")
     log:
-        LOGDIR / "read_bam_refs" / "log.txt"
+        "<logs>/<dataset>/read_bam_refs/log.txt"
     shell:
         """
         for bam_file in {input:q}; do
@@ -23,7 +23,7 @@ rule rename_fastas:
     output:
         renamed = temp("<results>/<dataset>/renamed/{sample}.fasta")
     log:
-        LOGDIR / "rename_fastas" / "{sample}.log.txt"
+        "<logs>/<dataset>/rename_fastas/{sample}.log.txt"
     shell:
         "sed 's/>.*/>'{wildcards.sample}'/g' {input.fasta} > {output.renamed} 2> {log}"
 
@@ -36,7 +36,7 @@ rule concat_fasta:
     output:
         fasta = "<results>/<dataset>/sequences.fasta"
     log:
-        LOGDIR / "concat_fasta" / "log.txt"
+        "<logs>/<dataset>/concat_fasta/log.txt"
     shell:
         "cat {input} > {output.fasta} 2> {log}"
 
@@ -52,7 +52,7 @@ rule align_fasta:
         folder = directory("<results>/<dataset>/nextalign"),
         fasta = "<results>/<dataset>/nextalign/sequences.aligned.fasta"
     log:
-        LOGDIR / "align_fasta" / "log.txt"
+        "<logs>/<dataset>/align_fasta/log.txt"
     shell:
         "nextalign run -j {threads} -O {output.folder} -o {output.fasta} -n sequences --include-reference -r {input.ref_fasta} {input.fasta} >{log} 2>&1"
 
@@ -71,6 +71,6 @@ rule mask_alignment:
     output:
         fasta = "<results>/<dataset>/aligned.masked.fasta"
     log:
-        LOGDIR / "mask_alignment" / "log.txt"
+        "<logs>/<dataset>/mask_alignment/log.txt"
     script:
         "../scripts/mask_aln.py"

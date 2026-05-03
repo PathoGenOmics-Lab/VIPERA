@@ -27,7 +27,7 @@ rule download_context:
         metadata = temp("<results>/<dataset>/context/metadata.csv"),
         duplicate_accids = "<results>/<dataset>/context/duplicate_accession_ids.txt",
     log:
-        LOGDIR / "download_context" / "log.txt"
+        "<logs>/<dataset>/download_context/log.txt"
     retries: 2
     script:
         "../scripts/download_context.R"
@@ -46,7 +46,7 @@ rule align_context:
         folder = directory("<results>/<dataset>/context/nextalign"),
         fasta = "<results>/<dataset>/context/nextalign/context_sequences.aligned.fasta"
     log:
-        LOGDIR / "align_context" / "log.txt"
+        "<logs>/<dataset>/align_context/log.txt"
     shell:
         "nextalign run -j {threads} -O {output.folder} -o {output.fasta} -n {params.name} --include-reference -r {input.ref_fasta} {input.fasta} >{log} 2>&1"
 
@@ -65,7 +65,7 @@ rule mask_context:
     output:
         fasta = "<results>/<dataset>/context/nextalign/context_sequences.aligned.masked.fasta"
     log:
-        LOGDIR / "mask_context" / "log.txt"
+        "<logs>/<dataset>/mask_context/log.txt"
     script:
         "../scripts/mask_aln.py"
 
@@ -89,7 +89,7 @@ rule ml_context_tree:
         folder = directory("<results>/<dataset>/tree_context"),
         ml = "<results>/<dataset>/tree_context/context.treefile"
     log:
-        LOGDIR / "ml_context_tree" / "log.txt"
+        "<logs>/<dataset>/ml_context_tree/log.txt"
     shell:
         "exec >{log} && exec 2>&1; "
         "awk '/^>/{{p=seen[$0]++}}!p' {input.fasta} {input.outgroup_aln} >aln.fasta && "

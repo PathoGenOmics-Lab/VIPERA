@@ -6,7 +6,7 @@ rule demix_plot_data:
     output:
         data = REPORT_DIR_TABLES/"demix.csv"
     log:
-        LOGDIR / "demix_plot_data" / "log.txt"
+        "<logs>/<dataset>/demix_plot_data/log.txt"
     script:
         "../scripts/report/demix_plot_data.R"
 
@@ -22,7 +22,7 @@ rule demix_plot:
     output:
         plot = report(REPORT_DIR_PLOTS/"demix.png")
     log:
-        LOGDIR / "demix_plot" / "log.txt"
+        "<logs>/<dataset>/demix_plot/log.txt"
     script:
         "../scripts/report/demix_plot.R"
 
@@ -41,7 +41,7 @@ rule diversity_data:
         divs = REPORT_DIR_TABLES/"diversity.txt",
         json = REPORT_DIR_TABLES/"diversity.json",
     log:
-        LOGDIR / "diversity_data" / "log.txt"
+        "<logs>/<dataset>/diversity_data/log.txt"
     script:
         "../scripts/report/diversity_data.R"
 
@@ -59,7 +59,7 @@ rule diversity_plot:
     output:
         plot = report(REPORT_DIR_PLOTS/"diversity.png"),
     log:
-        LOGDIR / "diversity_plot" / "log.txt"
+        "<logs>/<dataset>/diversity_plot/log.txt"
     script:
         "../scripts/report/diversity_plot.R"
 
@@ -73,7 +73,7 @@ rule extract_genbank_regions:
     output:
         regions = temp(REPORT_DIR_TABLES/"genbank_regions.json"),
     log:
-        LOGDIR / "extract_genbank_regions" / "log.txt"
+        "<logs>/<dataset>/extract_genbank_regions/log.txt"
     script:
         "../scripts/report/extract_genbank_regions.py"
 
@@ -89,7 +89,7 @@ rule polymorphic_sites_over_time_plot:
     output:
         plot = report(REPORT_DIR_PLOTS/"polymorphic_sites_over_time.png"),
     log:
-        LOGDIR / "polymorphic_sites_over_time_plot" / "log.txt"
+        "<logs>/<dataset>/polymorphic_sites_over_time_plot/log.txt"
     script:
         "../scripts/report/polymorphic_sites_over_time_plot.R"
 
@@ -109,7 +109,7 @@ rule nv_panel_plot:
     output:
         plot = report(REPORT_DIR_PLOTS/"nv_panel.png"),
     log:
-        LOGDIR / "nv_panel_plot" / "log.txt"
+        "<logs>/<dataset>/nv_panel_plot/log.txt"
     script:
         "../scripts/report/nv_panel_plot.R"
 
@@ -123,7 +123,7 @@ use rule nv_panel_plot as nv_panel_plot_S with:
     output:
         plot = report(REPORT_DIR_PLOTS/"nv_panel.S.png"),
     log:
-        LOGDIR / "nv_panel_plot_S" / "log.txt"
+        "<logs>/<dataset>/nv_panel_plot_S/log.txt"
 
 
 rule merge_json_files:
@@ -158,7 +158,7 @@ rule context_phylogeny_data:
         json = REPORT_DIR_TABLES/"context_phylogeny.json",
         annotation = REPORT_DIR_TABLES/"context_phylogeny.csv",
     log:
-        LOGDIR / "context_phylogeny_data" / "log.txt"
+        "<logs>/<dataset>/context_phylogeny_data/log.txt"
     script:
         "../scripts/report/context_phylogeny_data.R"
 
@@ -178,7 +178,7 @@ rule context_phylogeny_plot:
     output:
         plot = report(REPORT_DIR_PLOTS/"context_phylogeny.png"),
     log:
-        LOGDIR / "context_phylogeny_plot" / "log.txt"
+        "<logs>/<dataset>/context_phylogeny_plot/log.txt"
     script:
         "../scripts/report/context_phylogeny_plot.R"
 
@@ -197,7 +197,7 @@ rule allele_freq_tree_plot:
     output:
         plot = report(REPORT_DIR_PLOTS/"allele_freq_tree.png"),
     log:
-        LOGDIR / "allele_freq_tree_plot" / "log.txt"
+        "<logs>/<dataset>/allele_freq_tree_plot/log.txt"
     script:
         "../scripts/report/allele_freq_tree_plot.R"
 
@@ -213,7 +213,7 @@ rule time_signal_plot:
     output:
         plot = report(REPORT_DIR_PLOTS/"time_signal.png"),
     log:
-        LOGDIR / "time_signal_plot" / "log.txt"
+        "<logs>/<dataset>/time_signal_plot/log.txt"
     script:
         "../scripts/report/time_signal_plot.R"
 
@@ -230,7 +230,7 @@ rule dnds_plots:
         plot_dn_ds = report(REPORT_DIR_PLOTS/"dn_and_ds.png"),
         plot_omega = report(REPORT_DIR_PLOTS/"dnds.png"),
     log:
-        LOGDIR / "evo_plots" / "log.txt"
+        "<logs>/<dataset>/evo_plots/log.txt"
     script:
         "../scripts/report/dnds_plots.R"
 
@@ -246,7 +246,7 @@ rule af_time_correlation_plot:
     output:
         plot = report(REPORT_DIR_PLOTS/"af_time_correlation.png"),
     log:
-        LOGDIR / "af_time_correlation_plot" / "log.txt"
+        "<logs>/<dataset>/af_time_correlation_plot/log.txt"
     script:
         "../scripts/report/af_time_correlation_plot.R"
 
@@ -265,7 +265,7 @@ rule af_trajectory_panel_plot:
     output:
         plot = report(REPORT_DIR_PLOTS/"af_trajectory_panel.png"),
     log:
-        LOGDIR / "af_trajectory_panel_plot" / "log.txt"
+        "<logs>/<dataset>/af_trajectory_panel_plot/log.txt"
     script:
         "../scripts/report/af_trajectory_panel_plot.R"
 
@@ -278,7 +278,7 @@ rule summary_table:
     output:
         table = REPORT_DIR_TABLES/"summary_table.csv"
     log:
-        LOGDIR / "summary_table" / "log.txt"
+        "<logs>/<dataset>/summary_table/log.txt"
     script:
         "../scripts/report/summary_table.R"
 
@@ -309,7 +309,7 @@ rule report:
         table      = REPORT_DIR_TABLES/"summary_table.csv",
         sum_nv     = REPORT_DIR_TABLES/"nv_panel_summary.json",
     params:
-        workflow_version = get_repo_version(BASE_PATH.as_posix(), __version__),
+        workflow_version = get_repo_version(Path(workflow.basedir).parent, __version__),
         min_ivar_freq = config["VC"]["MIN_FREQ"],
         ufboot_reps = config["UFBOOT"]["REPS"],
         shalrt_reps = config["SHALRT"]["REPS"],
@@ -319,7 +319,7 @@ rule report:
     output:
         html = report("<results>/<dataset>/report.html")
     log:
-        LOGDIR / "report" / "log.txt"
+        "<logs>/<dataset>/report/log.txt"
     shell:
         """
         set +o pipefail

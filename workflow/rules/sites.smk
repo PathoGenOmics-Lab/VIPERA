@@ -9,7 +9,7 @@ rule problematic_vcf_to_bed:
         vcf = temp("<results>/<dataset>/sites_masked.vcf"),
         bed = temp("<results>/<dataset>/sites_masked.bed"),
     log:
-        LOGDIR / "problematic_vcf_to_bed" / "log.txt",
+        "<logs>/<dataset>/problematic_vcf_to_bed/log.txt",
     shell:
         "FILTER_STR=$(echo \"{params.filters}\" | tr ' ' ',') && "
         "bcftools view -f \"$FILTER_STR\" {input.vcf} >{output.vcf} 2>{log} && "
@@ -30,8 +30,8 @@ rule bcftools_mpileup_all_sites:
         mpileup = temp("<results>/<dataset>/all_sites/{sample}.mpileup.vcf"),
         query = temp("<results>/<dataset>/all_sites/{sample}.query.tsv"),
     log:
-        mpileup = LOGDIR / "bcftools_mpileup_all_sites" / "{sample}.mpileup.txt",
-        query = LOGDIR / "bcftools_mpileup_all_sites" / "{sample}.query.txt",
+        mpileup = "<logs>/<dataset>/bcftools_mpileup_all_sites/{sample}.mpileup.txt",
+        query = "<logs>/<dataset>/bcftools_mpileup_all_sites/{sample}.query.txt",
     shell:
         "bcftools mpileup {params.mpileup_extra} -a AD,ADF,ADR --fasta-ref {input.reference:q} --threads {threads} -Q {params.min_bq} -q {params.min_mq} -Ov -o {output.mpileup:q} {input.bam:q} >{log.mpileup:q} 2>&1 && "
         "echo 'CHROM\tPOS\tREF\tALT\tDP\tAD\tADF\tADR' >{output.query:q} && "
@@ -88,7 +88,7 @@ rule fill_all_sites:
     output:
         variants = "<results>/<dataset>/variants.all_sites.tsv",
     log:
-        LOGDIR / "fill_all_sites" / "log.txt"
+        "<logs>/<dataset>/fill_all_sites/log.txt"
     script:
         "../scripts/fill_all_sites.R"
 

@@ -1,9 +1,4 @@
-BASE_PATH = Path(workflow.basedir).parent.resolve()
-
 include: "rules/common.smk"
-
-# Logging
-LOGDIR = Path("<results>/<logs>")
 
 # Report
 REPORT_DIR_PLOTS = Path("<results>/<dataset>/report/plots")

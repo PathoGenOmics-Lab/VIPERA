@@ -6,7 +6,7 @@ rule pangolin_report:
     output:
         report = report("<results>/<dataset>/lineage_report.csv")
     log:
-        LOGDIR / "pangolin_report" / "log.txt"
+        "<logs>/<dataset>/pangolin_report/log.txt"
     shell:
         """
         pangolin {input.fastas} --outfile {output.report} -t {threads} >{log} 2>&1

@@ -14,7 +14,7 @@ rule demix_barcode_update:
         pathogens = "<results>/<dataset>/demixing/freyja_data/pathogen_config.yml",
         usher_barcodes = "<results>/<dataset>/demixing/freyja_data/usher_barcodes.feather"
     log:
-        LOGDIR / "demix_barcode_update" / "log.txt"
+        "<logs>/<dataset>/demix_barcode_update/log.txt"
     shell:
         "mkdir -p {output.folder:q} && "
         "freyja update --outdir {output.folder:q} --pathogen {params.pathogen:q} >{log} 2>&1"
@@ -34,8 +34,8 @@ rule demix_preprocessing:
         depth_file = "<results>/<dataset>/demixing/{sample}/{sample}_depth.txt",
         variants_file = "<results>/<dataset>/demixing/{sample}/{sample}_variants.tsv",
     log:
-        pileup = LOGDIR / "demix_preprocessing" / "{sample}_pileup.log.txt",
-        ivar = LOGDIR / "demix_preprocessing" / "{sample}_ivar.log.txt",
+        pileup = "<logs>/<dataset>/demix_preprocessing/{sample}_pileup.log.txt",
+        ivar = "<logs>/<dataset>/demix_preprocessing/{sample}_ivar.log.txt",
     shell:
         "set -euo pipefail && "
         "samtools mpileup -aa -A -d {params.max_depth} -Q {params.minq} -q 0 -B -f {input.ref_fasta:q} {input.bam:q} >sample.pileup 2>{log.pileup:q} && "
@@ -66,7 +66,7 @@ rule demix:
     output:
         demix_file = "<results>/<dataset>/demixing/samples/{sample}/{sample}_demixed.tsv"
     log:
-        LOGDIR / "demix" / "{sample}.log.txt"
+        "<logs>/<dataset>/demix/{sample}.log.txt"
     shell:
         "freyja demix "
         "{input.variants_file:q} "
@@ -96,6 +96,6 @@ rule summarise_demix:
     output:
         summary_df = report("<results>/<dataset>/demixing/summary.csv")
     log:
-        LOGDIR / "summarise_demix" / "log.txt"
+        "<logs>/<dataset>/summarise_demix/log.txt"
     script: 
         "../scripts/summarise_demix.R"
