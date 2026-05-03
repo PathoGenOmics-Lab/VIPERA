@@ -233,8 +233,8 @@ rule window_data:
         variants="<results>/<dataset>/variants.tsv",
         gb="<results>/<dataset>/reference.gb",
     output:
-        window_df=REPORT_DIR_TABLES / "window.csv",
-        json=temp(REPORT_DIR_TABLES / "window.json"),
+        window_df="<results>/<dataset>/report/tables/window.csv",
+        json=temp("<results>/<dataset>/report/tables/window.json"),
     log:
         "<logs>/<dataset>/window_data/log.txt",
     script:
@@ -248,8 +248,8 @@ rule nv_panel_data:
         variants="<results>/<dataset>/variants.tsv",
         metadata=config["METADATA"],
     output:
-        table=REPORT_DIR_TABLES / "nv_panel.csv",
-        json=temp(REPORT_DIR_TABLES / "nv_panel.json"),
+        table="<results>/<dataset>/report/tables/nv_panel.csv",
+        json=temp("<results>/<dataset>/report/tables/nv_panel.json"),
     log:
         "<logs>/<dataset>/nv_panel_data/log.txt",
     script:
@@ -258,10 +258,10 @@ rule nv_panel_data:
 
 rule nv_panel_zoom_on_feature_data:
     input:
-        table=REPORT_DIR_TABLES / "nv_panel.csv",
-        regions=REPORT_DIR_TABLES / "genbank_regions.json",
+        table="<results>/<dataset>/report/tables/nv_panel.csv",
+        regions="<results>/<dataset>/report/tables/genbank_regions.json",
     output:
-        table=temp(REPORT_DIR_TABLES / "nv_panel.{region_name}.csv"),
+        table=temp("<results>/<dataset>/report/tables/nv_panel.{region_name}.csv"),
     log:
         "<logs>/<dataset>/nv_panel_zoom_on_feature_data/{region_name}.log.txt",
     script:
@@ -270,10 +270,10 @@ rule nv_panel_zoom_on_feature_data:
 
 rule window_zoom_on_feature_data:
     input:
-        table=REPORT_DIR_TABLES / "window.csv",
-        regions=REPORT_DIR_TABLES / "genbank_regions.json",
+        table="<results>/<dataset>/report/tables/window.csv",
+        regions="<results>/<dataset>/report/tables/genbank_regions.json",
     output:
-        table=temp(REPORT_DIR_TABLES / "window.{region_name}.csv"),
+        table=temp("<results>/<dataset>/report/tables/window.{region_name}.csv"),
     log:
         "<logs>/<dataset>/window_zoom_on_feature_data/{region_name}.log.txt",
     script:
@@ -293,9 +293,9 @@ rule af_time_correlation_data:
         variants="<results>/<dataset>/variants.all_sites.tsv",
         metadata=config["METADATA"],
     output:
-        fmt_variants=temp(REPORT_DIR_TABLES / "variants.filled.dated.tsv"),
-        correlations=report(REPORT_DIR_TABLES / "af_time_correlation.csv"),
-        subset=REPORT_DIR_TABLES / "af_time_correlation.subset.txt",
+        fmt_variants=temp("<results>/<dataset>/report/tables/variants.filled.dated.tsv"),
+        correlations=report("<results>/<dataset>/report/tables/af_time_correlation.csv"),
+        subset="<results>/<dataset>/report/tables/af_time_correlation.subset.txt",
     log:
         "<logs>/<dataset>/af_time_correlation_data/log.txt",
     script:
@@ -312,8 +312,8 @@ rule pairwise_trajectory_correlation_data:
         variants="<results>/<dataset>/variants.all_sites.tsv",
         metadata=config["METADATA"],
     output:
-        table=REPORT_DIR_TABLES / "pairwise_trajectory_frequency_data.csv",
-        matrix=report(REPORT_DIR_TABLES / "pairwise_trajectory_correlation_matrix.csv"),
+        table="<results>/<dataset>/report/tables/pairwise_trajectory_frequency_data.csv",
+        matrix=report("<results>/<dataset>/report/tables/pairwise_trajectory_correlation_matrix.csv"),
     log:
         "<logs>/<dataset>/pairwise_trajectory_correlation_data/log.txt",
     script:
@@ -329,8 +329,8 @@ rule polymorphic_sites_over_time_data:
         variants="<results>/<dataset>/variants.tsv",
         metadata=config["METADATA"],
     output:
-        table=REPORT_DIR_PLOTS / "polymorphic_sites_over_time.csv",
-        json=temp(REPORT_DIR_TABLES / "polymorphic_sites_over_time.json"),
+        table="<results>/<dataset>/report/tables/polymorphic_sites_over_time.csv",
+        json=temp("<results>/<dataset>/report/tables/polymorphic_sites_over_time.json"),
     log:
         "<logs>/<dataset>/polymorphic_sites_over_time_data/log.txt",
     script:

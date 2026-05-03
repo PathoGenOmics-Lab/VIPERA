@@ -60,7 +60,7 @@ rule allele_freq_tree_data:
     input:
         dist = "<results>/<dataset>/distances.csv",
     output:
-        tree = REPORT_DIR_TABLES/"allele_freq_tree.nwk",
+        tree = "<results>/<dataset>/report/tables/allele_freq_tree.nwk",
     log:
         "<logs>/<dataset>/allele_freq_tree_data/log.txt"
     script:
@@ -73,11 +73,11 @@ rule time_signal_data:
         outgroup_id = config["ALIGNMENT_REFERENCE"],
         confidence_interval = 0.95,
     input:
-        tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
+        tree = report("<results>/<dataset>/report/tables/allele_freq_tree.nwk"),
         metadata = config["METADATA"],
     output:
-        table = report(REPORT_DIR_TABLES/"time_signal.csv"),
-        json = REPORT_DIR_TABLES/"time_signal.json",
+        table = report("<results>/<dataset>/report/tables/time_signal.csv"),
+        json = "<results>/<dataset>/report/tables/time_signal.json",
     log:
         "<logs>/<dataset>/time_signal_data/log.txt"
     script:
