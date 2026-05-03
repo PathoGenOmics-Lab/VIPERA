@@ -40,6 +40,6 @@ METADATA:
 OUTPUT_NAME:
   "case_study"
 CONTEXT_FASTA:
-  data/context.fasta
+  null
 MAPPING_REFERENCES_FASTA:
   null
