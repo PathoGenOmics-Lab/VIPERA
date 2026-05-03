@@ -255,11 +255,10 @@ should be modified to fit your needs. Read more about Snakemake profiles
 [here](https://snakemake.readthedocs.io/en/stable/executing/cli.html#executing-profiles).
 To use the profile, install the
 [Snakemake executor plugin for SLURM](https://snakemake.github.io/snakemake-plugin-catalog/plugins/executor/slurm.html)
-and run one of the following commands:
+and run the following command:
 
 ```shell
-snakemake --slurm --profile profile/slurm  # Snakemake v7
-snakemake --profile profile/slurm          # Snakemake v8+
+snakemake --profile profile/slurm
 ```
 
 Additionally, we offer the option of running the workflow within a containerized
