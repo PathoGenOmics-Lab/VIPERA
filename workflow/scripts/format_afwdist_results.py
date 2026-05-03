@@ -10,6 +10,10 @@ if __name__ == "__main__":
 
     logging.info("Read pairwise distances")
     df = pd.read_csv(snakemake.input.distances)
+    df = df[
+        df.sample_n.isin(snakemake.params.samples) |
+        df.sample_m.isin(snakemake.params.samples)
+    ]
 
     logging.info("Initializing formatted output")
     output = pd.DataFrame(
