@@ -71,5 +71,5 @@ list(
   "ci_high" = ci_models[2, 2] * 365,
   "pvalue" = ifelse(p.value < 0.001, "< 0.001", p.value)
 ) %>%
-  toJSON() %>%
+  toJSON(digits = NA) %>%
   write(snakemake@output$json)
