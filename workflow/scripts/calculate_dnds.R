@@ -59,20 +59,17 @@ variants <- left_join(variants, metadata)
 log_info("Reading N/S sites")
 n_s_position <- read_delim(snakemake@input[["n_s_sites"]])
 
-log_info("Computing dN/dS over time (NG86)")
+log_info("Computing dN/dS analog over time")
+total_n <- sum(n_s_position$N)
+total_s <- sum(n_s_position$S)
 dn.ds <- variants %>%
   group_by(SAMPLE, SYNONYMOUS) %>%
-  summarise(
-    Freq = sum(ALT_FREQ, na.rm = TRUE)
-  ) %>%
-  pivot_wider(
-    names_from = SYNONYMOUS,
-    values_from = Freq,
-    values_fill = 0
-  ) %>%
+  summarise(Freq = sum(ALT_FREQ, na.rm = TRUE), .groups = "drop") %>%
+  complete(SAMPLE, SYNONYMOUS = c("No", "Yes"), fill = list(Freq = 0)) %>%
+  pivot_wider(names_from = SYNONYMOUS, values_from = Freq) %>%
   transmute(
-    dn = No / sum(n_s_position$N),
-    ds = Yes / sum(n_s_position$S)
+    dn = No / total_n,
+    ds = Yes / total_s
   ) %>%
   ungroup() %>%
   left_join(unique(select(variants, SAMPLE, interval))) %>%
