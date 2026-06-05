@@ -67,12 +67,11 @@ dn.ds <- variants %>%
   summarise(Freq = sum(ALT_FREQ, na.rm = TRUE), .groups = "drop") %>%
   complete(SAMPLE, SYNONYMOUS = c("No", "Yes"), fill = list(Freq = 0)) %>%
   pivot_wider(names_from = SYNONYMOUS, values_from = Freq) %>%
-  transmute(
+  mutate(
     dn = No / total_n,
     ds = Yes / total_s
   ) %>%
-  ungroup() %>%
-  left_join(unique(select(variants, SAMPLE, interval))) %>%
+  left_join(unique(select(variants, SAMPLE, interval)), by = "SAMPLE") %>%
   transmute(
     sample = SAMPLE,
     day = interval,
