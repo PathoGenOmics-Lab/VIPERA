@@ -59,13 +59,14 @@ rule fetch_alignment_annotation:
 rule fetch_problematic_vcf:
     threads: 1
     params:
-        url = config["PROBLEMATIC_VCF"]
+        url = config["PROBLEMATIC_VCF"],
+        extra = "",
     log:
         "<logs>/<dataset>/fetch_problematic_vcf/log.txt"
     output:
         select_problematic_vcf()
     shell:
-        "curl {params.url} -o {output} -s 2> {log}"
+        "curl {params.extra} {params.url} -o {output} -s 2> {log}"
 
 
 rule create_empty_file:
