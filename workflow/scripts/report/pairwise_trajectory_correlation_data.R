@@ -45,9 +45,27 @@ all_variants_wider <- variants %>%
 log_info("Saving table of frequencies")
 write.csv(all_variants_wider, snakemake@output[["table"]])
 
+log_info("Filtering variant columns by unique values and amplitude thresholds")
+filtered <- all_variants_wider %>%
+  select(
+    where(
+      function(col) {
+        clean_col <- na.omit(col)
+        # Drop empty
+        if (length(clean_col) == 0) return(FALSE)
+        # Unique values check
+        pass_unique <- length(unique(clean_col)) > snakemake@params$n_threshold
+        # Amplitude check
+        amplitude <- max(clean_col) - min(clean_col)
+        pass_amp <- amplitude >= snakemake@params$freq_amplitude_threshold
+        return(pass_unique && pass_amp)
+      }
+    )
+  )
+
 log_info("Calculating correlations")
 cor.mat <- cor(
-  all_variants_wider,
+  filtered,
   method = snakemake@params$cor_method,
   use = snakemake@params$cor_use
 )
