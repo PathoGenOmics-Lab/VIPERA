@@ -54,10 +54,10 @@ filtered <- all_variants_wider %>%
         # Drop empty
         if (length(clean_col) == 0) return(FALSE)
         # Unique values check
-        pass_unique <- length(unique(clean_col)) > snakemake@params$n_threshold
+        pass_unique <- length(unique(clean_col)) >= snakemake@params$min_unique_n
         # Amplitude check
         amplitude <- max(clean_col) - min(clean_col)
-        pass_amp <- amplitude >= snakemake@params$freq_amplitude_threshold
+        pass_amp <- amplitude >= snakemake@params$min_freq_amplitude
         return(pass_unique && pass_amp)
       }
     )

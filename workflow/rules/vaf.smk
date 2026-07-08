@@ -308,8 +308,8 @@ rule pairwise_trajectory_correlation_data:
     params:
         cor_method=config["COR"]["METHOD"],
         cor_use="pairwise.complete.obs",
-        freq_amplitude_threshold=0.0,
-        n_threshold=0,
+        min_freq_amplitude=0.0,
+        min_unique_n=0,
     input:
         variants="<results>/<dataset>/variants.all_sites.tsv",
         metadata=config["METADATA"],
