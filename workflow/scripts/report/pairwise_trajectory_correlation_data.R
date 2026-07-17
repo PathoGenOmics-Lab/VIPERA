@@ -12,6 +12,11 @@ library(logger)
 
 log_threshold(INFO)
 
+if (!snakemake@params$filter_combine %in% c("all", "any")) {
+  log_error("Param filter_combine has an invalid value; only 'any' or 'all' are allowed.")
+  quit("no", 1)
+}
+
 log_info("Reading variants")
 variants <- read_tsv(snakemake@input[["variants"]])
 
@@ -46,6 +51,7 @@ log_info("Saving table of frequencies")
 write.csv(all_variants_wider, snakemake@output[["table"]])
 
 log_info("Filtering variant columns by unique values and amplitude thresholds")
+combine_f <- ifelse(snakemake@params$filter_combine == "all", all, any)
 filtered <- all_variants_wider %>%
   select(
     where(
@@ -58,7 +64,7 @@ filtered <- all_variants_wider %>%
         # Amplitude check
         amplitude <- max(clean_col) - min(clean_col)
         pass_amp <- amplitude >= snakemake@params$min_freq_amplitude
-        return(pass_unique && pass_amp)
+        return(combine_f(pass_unique, pass_amp))
       }
     )
   )
