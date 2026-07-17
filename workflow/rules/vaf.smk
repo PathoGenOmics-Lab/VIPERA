@@ -310,7 +310,7 @@ rule pairwise_trajectory_correlation_data:
         cor_use="pairwise.complete.obs",
         min_freq_amplitude=0.0,
         min_unique_n=0,
-        filter_combine="any",  # any | or
+        filter_combine="any",  # any | all
     input:
         variants="<results>/<dataset>/variants.all_sites.tsv",
         metadata=config["METADATA"],
