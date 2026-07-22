@@ -60,7 +60,7 @@ rule fetch_problematic_vcf:
     threads: 1
     params:
         url = config["PROBLEMATIC_VCF"],
-        extra = "-L",
+        extra = "--fail -L",
     log:
         "<logs>/<dataset>/fetch_problematic_vcf/log.txt"
     output:
