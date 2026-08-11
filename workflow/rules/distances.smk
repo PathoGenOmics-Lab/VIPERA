@@ -56,7 +56,7 @@ rule allele_freq_tree_data:
     conda: "../envs/renv.yaml"
     params:
         use_bionj = config["USE_BIONJ"],
-        outgroup_id = config["ALIGNMENT_REFERENCE"],
+        outgroup_id = "case_ancestor",
     input:
         dist = "<results>/<dataset>/distances.csv",
     output:
@@ -70,7 +70,7 @@ rule allele_freq_tree_data:
 rule time_signal_data:
     conda: "../envs/renv.yaml"
     params:
-        outgroup_id = config["ALIGNMENT_REFERENCE"],
+        outgroup_id = "case_ancestor",
         confidence_interval = 0.95,
     input:
         tree = report("<results>/<dataset>/report/tables/allele_freq_tree.nwk"),
