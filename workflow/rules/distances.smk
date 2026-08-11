@@ -41,7 +41,7 @@ rule afwdist_weighted_distances:
 rule format_afwdist_results:
     conda: "../envs/biopython.yaml"
     params:
-        samples = sorted(iter_samples()) + [config["ALIGNMENT_REFERENCE"]],
+        samples = sorted(iter_samples()) + ["case_ancestor"],
     input:
         distances = "<results>/<dataset>/distances.raw.csv",
     output:
