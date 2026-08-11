@@ -68,7 +68,11 @@ if __name__ == "__main__":
 
     logging.info("Reading input tables")
     # Variants
-    variants = pd.read_table(snakemake.input.variants, sep="\t")
+    variants = pd.read_table(
+        snakemake.input.variants,
+        sep="\t",
+        usecols=list(colnames.keys())
+    ).drop_duplicates(keep="first")
     logging.info(f"Read {len(variants)} variant records")
     # VCF with sites to mask
     masked_sites = read_masked_sites(snakemake.input.mask_vcf, snakemake.params.mask_class)
