@@ -22,7 +22,7 @@ rule extract_afwdist_variants:
 rule afwdist_weighted_distances:
     conda: "../envs/afwdist.yaml"
     params:
-        extra_args = "",
+        extra_args = "-s",
     input:
         variants = "<results>/<dataset>/variants.afwdist.csv",
         reference = "<results>/<dataset>/ancestor.fasta",

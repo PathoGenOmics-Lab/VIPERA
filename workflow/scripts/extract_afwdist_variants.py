@@ -33,19 +33,6 @@ def read_masked_sites(vcf_path: str, mask_classes: list[str]) -> set[int]:
     return set(vcf.loc[vcf.FILTER.isin(mask_classes), "POS"].unique())
 
 
-def build_ancestor_variant_table(ancestor: Seq, reference: Seq, reference_name: str, masked_positions: set[int]) -> pd.DataFrame:
-    pos = []
-    alt = []
-    for i in range(1, len(ancestor) + 1):
-        if i not in masked_positions and ancestor[i-1] != reference[i-1]:
-            pos.append(i)
-            alt.append(reference[i-1])
-    df = pd.DataFrame({snakemake.params.position_col: pos, snakemake.params.sequence_col: alt})
-    df[snakemake.params.frequency_col] = 1  # As a reference genome, we assume all positions have fixed alleles
-    df[snakemake.params.sample_col] = reference_name
-    return df
-
-
 def remove_ref_matching_variants(variants: pd.DataFrame, reference: Seq, position_col: str, sequence_col: str) -> pd.DataFrame:
     """Filters out variants whose ALT matches the base at the reference sequence (i.e. REF[1] == ALT)."""
     reference_bases = variants[position_col].map(lambda p: reference[p - 1]).astype(str)
@@ -93,6 +80,7 @@ if __name__ == "__main__":
     logging.info(f"Ancestor: '{ancestor.description}', length={len(ancestor)}")
     
     # Alignment reference
+    # TODO: clean unused variables
     reference = read_monofasta(snakemake.input.reference)
     logging.info(f"Reference: '{reference.description}', length={len(reference)}")
     assert len(ancestor) == len(reference)
@@ -105,15 +93,9 @@ if __name__ == "__main__":
         snakemake.params.sequence_col
     ).drop_duplicates(keep="first")
 
-    logging.info("Processing ancestor variants")
-    ancestor_table = build_ancestor_variant_table(ancestor.seq, reference.seq, reference.id, masked_sites)
-    logging.info(f"Ancestor has {len(ancestor_table)} variants")
-    all_variants = pd.concat([variants, ancestor_table], ignore_index=True)
-    logging.info(f"Combined table has {len(all_variants)} variants")
-
     logging.info("Renaming and selecting columns")
     output = (
-        all_variants
+        variants
         .rename(columns=colnames)
         [list(colnames.values())]
         .astype(DTYPES)
