@@ -187,7 +187,7 @@ rule allele_freq_tree_plot:
     conda: "../envs/renv.yaml"
     params:
         design = config["PLOTS"],
-        outgroup_id = config["ALIGNMENT_REFERENCE"],
+        outgroup_id = "case_ancestor",
         plot_height_mm = 119.4,
         plot_width_mm = 159.2,
     input:
