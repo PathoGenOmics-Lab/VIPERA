@@ -37,8 +37,7 @@ The path to these input files is set in two configuration files in YAML format:
 [config.yaml](/config/config.yaml) (for general workflow settings) and
 [targets.yaml](/config/targets.yaml) (for specific dataset-related settings).
 The latter must be modified by the user to point the `SAMPLES` and `METADATA`
-parameters to your data. The `OUTPUT_DIRECTORY` parameter should point to your
-desired results directory.
+parameters to your data.
 
 The script [`build_targets.py`](/build_targets.py) simplifies the process of creating
 the targets configuration file. To run this script, you need to have PyYAML installed. It
@@ -62,8 +61,6 @@ SAMPLES:
   ...
 METADATA:
   "path/to/metadata.csv"
-OUTPUT_DIRECTORY:
-  "output"
 CONTEXT_FASTA:
   null
 MAPPING_REFERENCES_FASTA:
@@ -258,11 +255,10 @@ should be modified to fit your needs. Read more about Snakemake profiles
 [here](https://snakemake.readthedocs.io/en/stable/executing/cli.html#executing-profiles).
 To use the profile, install the
 [Snakemake executor plugin for SLURM](https://snakemake.github.io/snakemake-plugin-catalog/plugins/executor/slurm.html)
-and run one of the following commands:
+and run the following command:
 
 ```shell
-snakemake --slurm --profile profile/slurm  # Snakemake v7
-snakemake --profile profile/slurm          # Snakemake v8+
+snakemake --profile profile/slurm
 ```
 
 Additionally, we offer the option of running the workflow within a containerized

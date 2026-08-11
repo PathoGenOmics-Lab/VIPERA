@@ -39,8 +39,6 @@ METADATA:
   "data/metadata.csv"
 OUTPUT_NAME:
   "case_study"
-OUTPUT_DIRECTORY:
-  "output"
 CONTEXT_FASTA:
   null
 MAPPING_REFERENCES_FASTA:

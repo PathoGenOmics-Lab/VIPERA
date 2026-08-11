@@ -14,7 +14,7 @@ jobs:
         with:
           channel-priority: strict
           activate-environment: snakemake
-          environment-file: .test/environment_v7.yaml
+          environment-file: .test/environment_v9.yaml
       - name: Create environments
         shell: bash -el {0}
         run: snakemake --snakefile .test/Snakefile --configfile config/config.yaml .test/targets.yaml --conda-create-envs-only --use-conda -c1 --conda-frontend conda
@@ -29,7 +29,7 @@ jobs:
         with:
           channel-priority: strict
           activate-environment: snakemake
-          environment-file: .test/environment_v7.yaml
+          environment-file: .test/environment_v9.yaml
       - name: Dry run
         shell: bash -el {0}
         run: snakemake --snakefile .test/Snakefile --configfile config/config.yaml .test/targets.yaml --dry-run
