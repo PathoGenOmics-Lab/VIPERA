@@ -42,7 +42,8 @@ rule bcftools_mpileup_all_sites:
 rule filter_mpileup_all_sites:
     threads: 1
     params:
-        min_total_AD = config["VC"]["MIN_DEPTH"],
+        min_DP = config["VC"]["MIN_DEPTH"],
+        min_total_AD = 0,
         min_total_ADF = 0,
         min_total_ADR = 0,
     input:
@@ -59,6 +60,7 @@ rule filter_mpileup_all_sites:
         df["TOTAL_ADF"] = df.ADF.str.split(",").apply(lambda values: sum(int(n) for n in values))
         df["TOTAL_ADR"] = df.ADR.str.split(",").apply(lambda values: sum(int(n) for n in values))
         mask = (
+            (df.DP >= params.min_DP) &
             (df.TOTAL_AD >= params.min_total_AD) &
             (df.TOTAL_ADF >= params.min_total_ADF) &
             (df.TOTAL_ADR >= params.min_total_ADR)
