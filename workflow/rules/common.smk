@@ -49,7 +49,7 @@ def get_repo_version(base_dir: str, default: str, warn=False) -> str:
 def select_context_fasta():
     """Set context to be fetched automatically if CONTEXT_FASTA=null"""
     if "CONTEXT_FASTA" not in config.keys() or config["CONTEXT_FASTA"] is None:
-        return OUTDIR/"context"/"sequences.fasta"
+        return "<results>/<dataset>/context/sequences.fasta"
         if not Path(config["GISAID"]["CREDENTIALS"]).is_file():
             raise FileNotFoundError(f"Tried to download a context dataset, but no GISAID credentials were found at '{config['GISAID']['CREDENTIALS']}' (see README.md).")
     elif Path(config["CONTEXT_FASTA"]).is_file():
@@ -61,7 +61,7 @@ def select_context_fasta():
 def select_mapping_references_fasta():
     """Set mapping references to be fetched automatically if MAPPING_REFERENCES_FASTA=null"""
     if "MAPPING_REFERENCES_FASTA" not in config.keys() or config["MAPPING_REFERENCES_FASTA"] is None:
-        return OUTDIR/"mapping_references.fasta"
+        return "<results>/<dataset>/mapping_references.fasta"
     elif Path(config["MAPPING_REFERENCES_FASTA"]).is_file():
         return config["MAPPING_REFERENCES_FASTA"]
     else:
@@ -74,7 +74,7 @@ def is_url(string: str) -> bool:
 
 def select_problematic_vcf():
     if is_url(config["PROBLEMATIC_VCF"]):
-        return OUTDIR/"problematic_sites.vcf"
+        return "<results>/<dataset>/problematic_sites.vcf"
     elif Path(config["PROBLEMATIC_VCF"]).is_file():
         return config["PROBLEMATIC_VCF"]
     else:

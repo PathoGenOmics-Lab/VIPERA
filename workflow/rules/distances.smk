@@ -7,14 +7,14 @@ rule extract_afwdist_variants:
         frequency_col = "ALT_FREQ",
         mask_class = ["mask"],
     input:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        mask_vcf = OUTDIR / "all_mask_sites.vcf",
-        ancestor = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
-        reference = OUTDIR/"reference.fasta",
+        variants = "<results>/<dataset>/variants.tsv",
+        mask_vcf = "<results>/<dataset>/all_mask_sites.vcf",
+        ancestor = "<results>/<dataset>/ancestor.fasta",
+        reference = "<results>/<dataset>/reference.fasta",
     output:
-        variants = temp(OUTDIR/f"{OUTPUT_NAME}.variants.afwdist.csv"),
+        variants = temp("<results>/<dataset>/variants.afwdist.csv"),
     log:
-        LOGDIR/"extract_afwdist_variants"/"log.txt"
+        "<logs>/<dataset>/extract_afwdist_variants/log.txt"
     script:
         "../scripts/extract_afwdist_variants.py"
 
@@ -24,12 +24,12 @@ rule afwdist_weighted_distances:
     params:
         extra_args = "",
     input:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.afwdist.csv",
-        reference = OUTDIR/f"{OUTPUT_NAME}.ancestor.fasta",
+        variants = "<results>/<dataset>/variants.afwdist.csv",
+        reference = "<results>/<dataset>/ancestor.fasta",
     output:
-        distances = temp(OUTDIR/f"{OUTPUT_NAME}.distances.raw.csv"),
+        distances = temp("<results>/<dataset>/distances.raw.csv"),
     log:
-        LOGDIR/"afwdist_weighted_distances"/"log.txt"
+        "<logs>/<dataset>/afwdist_weighted_distances/log.txt"
     shell:
         "afwdist "
         "-i {input.variants:q} "
@@ -43,11 +43,11 @@ rule format_afwdist_results:
     params:
         samples = sorted(iter_samples()) + [config["ALIGNMENT_REFERENCE"]],
     input:
-        distances = OUTDIR/f"{OUTPUT_NAME}.distances.raw.csv",
+        distances = "<results>/<dataset>/distances.raw.csv",
     output:
-        distances = OUTDIR/f"{OUTPUT_NAME}.distances.csv",
+        distances = "<results>/<dataset>/distances.csv",
     log:
-        LOGDIR/"format_afwdist_results"/"log.txt"
+        "<logs>/<dataset>/format_afwdist_results/log.txt"
     script:
         "../scripts/format_afwdist_results.py"
 
@@ -58,11 +58,11 @@ rule allele_freq_tree_data:
         use_bionj = config["USE_BIONJ"],
         outgroup_id = config["ALIGNMENT_REFERENCE"],
     input:
-        dist = OUTDIR/f"{OUTPUT_NAME}.distances.csv",
+        dist = "<results>/<dataset>/distances.csv",
     output:
-        tree = REPORT_DIR_TABLES/"allele_freq_tree.nwk",
+        tree = "<results>/<dataset>/report/tables/allele_freq_tree.nwk",
     log:
-        LOGDIR / "allele_freq_tree_data" / "log.txt"
+        "<logs>/<dataset>/allele_freq_tree_data/log.txt"
     script:
         "../scripts/report/allele_freq_tree_data.R"
 
@@ -73,12 +73,12 @@ rule time_signal_data:
         outgroup_id = config["ALIGNMENT_REFERENCE"],
         confidence_interval = 0.95,
     input:
-        tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
+        tree = report("<results>/<dataset>/report/tables/allele_freq_tree.nwk"),
         metadata = config["METADATA"],
     output:
-        table = report(REPORT_DIR_TABLES/"time_signal.csv"),
-        json = REPORT_DIR_TABLES/"time_signal.json",
+        table = report("<results>/<dataset>/report/tables/time_signal.csv"),
+        json = "<results>/<dataset>/report/tables/time_signal.json",
     log:
-        LOGDIR / "time_signal_data" / "log.txt"
+        "<logs>/<dataset>/time_signal_data/log.txt"
     script:
         "../scripts/report/time_signal_data.R"

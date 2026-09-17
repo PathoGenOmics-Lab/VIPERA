@@ -47,7 +47,12 @@ df <- read_tsv(
 
 if (nrow(df) == 0) {
   log_info("Writing empty file")
-  write_tsv(df, snakemake@output$tsv)
+  df %>%
+    mutate(
+      VARIANT_NAME = character(),
+      SAMPLE = character()
+    ) %>%
+    write_tsv(snakemake@output$tsv)
 } else {
   log_info("Processing variants")
   df %>%

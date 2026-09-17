@@ -1,12 +1,12 @@
 rule demix_plot_data:
     conda: "../envs/renv.yaml"
     input:
-        summary_demixing = OUTDIR/"demixing"/"summary.csv",
+        summary_demixing = "<results>/<dataset>/demixing/summary.csv",
         metadata = config["METADATA"]
     output:
-        data = REPORT_DIR_TABLES/"demix.csv"
+        data = "<results>/<dataset>/report/tables/demix.csv"
     log:
-        LOGDIR / "demix_plot_data" / "log.txt"
+        "<logs>/<dataset>/demix_plot_data/log.txt"
     script:
         "../scripts/report/demix_plot_data.R"
 
@@ -18,11 +18,11 @@ rule demix_plot:
         plot_width_mm = 159.2,
         plot_height_mm = 119.4,
     input:
-        data = REPORT_DIR_TABLES/"demix.csv"
+        data = "<results>/<dataset>/report/tables/demix.csv"
     output:
-        plot = report(REPORT_DIR_PLOTS/"demix.png")
+        plot = report("<results>/<dataset>/report/plots/demix.png")
     log:
-        LOGDIR / "demix_plot" / "log.txt"
+        "<logs>/<dataset>/demix_plot/log.txt"
     script:
         "../scripts/report/demix_plot.R"
 
@@ -35,13 +35,13 @@ rule diversity_data:
         aln_reference = config["ALIGNMENT_REFERENCE"],
         seed = 7291,
     input:
-        study_fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta",
-        context_fasta = OUTDIR/"context"/"nextalign"/"context_sequences.aligned.masked.fasta",
+        study_fasta = "<results>/<dataset>/aligned.masked.fasta",
+        context_fasta = "<results>/<dataset>/context/nextalign/context_sequences.aligned.masked.fasta",
     output:
-        divs = REPORT_DIR_TABLES/"diversity.txt",
-        json = REPORT_DIR_TABLES/"diversity.json",
+        divs = "<results>/<dataset>/report/tables/diversity.txt",
+        json = "<results>/<dataset>/report/tables/diversity.json",
     log:
-        LOGDIR / "diversity_data" / "log.txt"
+        "<logs>/<dataset>/diversity_data/log.txt"
     script:
         "../scripts/report/diversity_data.R"
 
@@ -54,12 +54,12 @@ rule diversity_plot:
         plot_width_mm = 159.2,
         plot_height_mm = 119.4,
     input:
-        divs = REPORT_DIR_TABLES/"diversity.txt",
-        json = REPORT_DIR_TABLES/"diversity.json",
+        divs = "<results>/<dataset>/report/tables/diversity.txt",
+        json = "<results>/<dataset>/report/tables/diversity.json",
     output:
-        plot = report(REPORT_DIR_PLOTS/"diversity.png"),
+        plot = report("<results>/<dataset>/report/plots/diversity.png"),
     log:
-        LOGDIR / "diversity_plot" / "log.txt"
+        "<logs>/<dataset>/diversity_plot/log.txt"
     script:
         "../scripts/report/diversity_plot.R"
 
@@ -69,11 +69,11 @@ rule extract_genbank_regions:
     params:
         gb_qualifier = "gene",
     input:
-        gb = OUTDIR/"reference.cds.gb",
+        gb = "<results>/<dataset>/reference.cds.gb",
     output:
-        regions = temp(REPORT_DIR_TABLES/"genbank_regions.json"),
+        regions = temp("<results>/<dataset>/report/tables/genbank_regions.json"),
     log:
-        LOGDIR / "extract_genbank_regions" / "log.txt"
+        "<logs>/<dataset>/extract_genbank_regions/log.txt"
     script:
         "../scripts/report/extract_genbank_regions.py"
 
@@ -85,11 +85,11 @@ rule polymorphic_sites_over_time_plot:
         plot_width_mm = 159.2,
         plot_height_mm = 119.4,
     input:
-        table = REPORT_DIR_PLOTS/"polymorphic_sites_over_time.csv",
+        table = "<results>/<dataset>/report/tables/polymorphic_sites_over_time.csv",
     output:
-        plot = report(REPORT_DIR_PLOTS/"polymorphic_sites_over_time.png"),
+        plot = report("<results>/<dataset>/report/plots/polymorphic_sites_over_time.png"),
     log:
-        LOGDIR / "polymorphic_sites_over_time_plot" / "log.txt"
+        "<logs>/<dataset>/polymorphic_sites_over_time_plot/log.txt"
     script:
         "../scripts/report/polymorphic_sites_over_time_plot.R"
 
@@ -102,37 +102,37 @@ rule nv_panel_plot:
         plot_height_mm = 250.0,
         plot_width_mm = 240.0,
     input:
-        panel = REPORT_DIR_TABLES/"nv_panel.csv",
-        window = REPORT_DIR_TABLES/"window.csv",
-        regions = REPORT_DIR_TABLES/"genbank_regions.json",
+        panel = "<results>/<dataset>/report/tables/nv_panel.csv",
+        window = "<results>/<dataset>/report/tables/window.csv",
+        regions = "<results>/<dataset>/report/tables/genbank_regions.json",
         highlight_window_regions = config["PLOT_GENOME_REGIONS"],
     output:
-        plot = report(REPORT_DIR_PLOTS/"nv_panel.png"),
+        plot = report("<results>/<dataset>/report/plots/nv_panel.png"),
     log:
-        LOGDIR / "nv_panel_plot" / "log.txt"
+        "<logs>/<dataset>/nv_panel_plot/log.txt"
     script:
         "../scripts/report/nv_panel_plot.R"
 
 
 use rule nv_panel_plot as nv_panel_plot_S with:
     input:
-        panel = REPORT_DIR_TABLES/"nv_panel.S.csv",
-        window = REPORT_DIR_TABLES/"window.S.csv",
-        regions = REPORT_DIR_TABLES/"genbank_regions.json",
-        highlight_window_regions = OUTDIR/"empty.txt",
+        panel = "<results>/<dataset>/report/tables/nv_panel.S.csv",
+        window = "<results>/<dataset>/report/tables/window.S.csv",
+        regions = "<results>/<dataset>/report/tables/genbank_regions.json",
+        highlight_window_regions = "<results>/<dataset>/empty.txt",
     output:
-        plot = report(REPORT_DIR_PLOTS/"nv_panel.S.png"),
+        plot = report("<results>/<dataset>/report/plots/nv_panel.S.png"),
     log:
-        LOGDIR / "nv_panel_plot_S" / "log.txt"
+        "<logs>/<dataset>/nv_panel_plot_S/log.txt"
 
 
 rule merge_json_files:
     input:
-        REPORT_DIR_TABLES/"nv_panel.json",
-        REPORT_DIR_TABLES/"polymorphic_sites_over_time.json",
-        REPORT_DIR_TABLES/"window.json",
+        "<results>/<dataset>/report/tables/nv_panel.json",
+        "<results>/<dataset>/report/tables/polymorphic_sites_over_time.json",
+        "<results>/<dataset>/report/tables/window.json",
     output:
-        json = REPORT_DIR_TABLES/"nv_panel_summary.json",
+        json = "<results>/<dataset>/report/tables/nv_panel_summary.json",
     run:
         import json
         result = {}
@@ -152,13 +152,13 @@ rule context_phylogeny_data:
         boot_th = config["UFBOOT"]["THRESHOLD"],
         alrt_th = config["SHALRT"]["THRESHOLD"],
     input:
-        target_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
-        tree = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
+        target_fasta = "<results>/<dataset>/sequences.fasta",
+        tree = "<results>/<dataset>/tree_context/context.treefile",
     output:
-        json = REPORT_DIR_TABLES/"context_phylogeny.json",
-        annotation = REPORT_DIR_TABLES/"context_phylogeny.csv",
+        json = "<results>/<dataset>/report/tables/context_phylogeny.json",
+        annotation = "<results>/<dataset>/report/tables/context_phylogeny.csv",
     log:
-        LOGDIR / "context_phylogeny_data" / "log.txt"
+        "<logs>/<dataset>/context_phylogeny_data/log.txt"
     script:
         "../scripts/report/context_phylogeny_data.R"
 
@@ -172,13 +172,13 @@ rule context_phylogeny_plot:
         boot_th = config["UFBOOT"]["THRESHOLD"],
         alrt_th = config["SHALRT"]["THRESHOLD"],
     input:
-        tree = OUTDIR/f"tree_context/{OUTPUT_NAME}.treefile",
-        json = REPORT_DIR_TABLES/"context_phylogeny.json",
-        annotation = REPORT_DIR_TABLES/"context_phylogeny.csv"
+        tree = "<results>/<dataset>/tree_context/context.treefile",
+        json = "<results>/<dataset>/report/tables/context_phylogeny.json",
+        annotation = "<results>/<dataset>/report/tables/context_phylogeny.csv"
     output:
-        plot = report(REPORT_DIR_PLOTS/"context_phylogeny.png"),
+        plot = report("<results>/<dataset>/report/plots/context_phylogeny.png"),
     log:
-        LOGDIR / "context_phylogeny_plot" / "log.txt"
+        "<logs>/<dataset>/context_phylogeny_plot/log.txt"
     script:
         "../scripts/report/context_phylogeny_plot.R"
 
@@ -191,13 +191,13 @@ rule allele_freq_tree_plot:
         plot_height_mm = 119.4,
         plot_width_mm = 159.2,
     input:
-        tree = report(REPORT_DIR_TABLES/"allele_freq_tree.nwk"),
-        study_fasta = OUTDIR/f"{OUTPUT_NAME}.fasta",
+        tree = report("<results>/<dataset>/report/tables/allele_freq_tree.nwk"),
+        study_fasta = "<results>/<dataset>/sequences.fasta",
         metadata = config["METADATA"],
     output:
-        plot = report(REPORT_DIR_PLOTS/"allele_freq_tree.png"),
+        plot = report("<results>/<dataset>/report/plots/allele_freq_tree.png"),
     log:
-        LOGDIR / "allele_freq_tree_plot" / "log.txt"
+        "<logs>/<dataset>/allele_freq_tree_plot/log.txt"
     script:
         "../scripts/report/allele_freq_tree_plot.R"
 
@@ -209,11 +209,11 @@ rule time_signal_plot:
         plot_height_mm = 119.4,
         plot_width_mm = 159.2,
     input:
-        table = report(REPORT_DIR_TABLES/"time_signal.csv"),
+        table = report("<results>/<dataset>/report/tables/time_signal.csv"),
     output:
-        plot = report(REPORT_DIR_PLOTS/"time_signal.png"),
+        plot = report("<results>/<dataset>/report/plots/time_signal.png"),
     log:
-        LOGDIR / "time_signal_plot" / "log.txt"
+        "<logs>/<dataset>/time_signal_plot/log.txt"
     script:
         "../scripts/report/time_signal_plot.R"
 
@@ -225,12 +225,12 @@ rule dnds_plots:
         plot_height_mm = 119.4,
         plot_width_mm = 159.2,
     input: 
-        table = OUTDIR/f"{OUTPUT_NAME}.dnds.csv",
+        table = "<results>/<dataset>/dnds.csv",
     output:
-        plot_dn_ds = report(REPORT_DIR_PLOTS/"dn_and_ds.png"),
-        plot_omega = report(REPORT_DIR_PLOTS/"dnds.png"),
+        plot_dn_ds = report("<results>/<dataset>/report/plots/dn_and_ds.png"),
+        plot_omega = report("<results>/<dataset>/report/plots/dnds.png"),
     log:
-        LOGDIR / "evo_plots" / "log.txt"
+        "<logs>/<dataset>/evo_plots/log.txt"
     script:
         "../scripts/report/dnds_plots.R"
 
@@ -242,11 +242,11 @@ rule af_time_correlation_plot:
         plot_height_mm = 119.4,
         plot_width_mm = 159.2,
     input:
-        correlations = REPORT_DIR_TABLES/"af_time_correlation.csv",
+        correlations = "<results>/<dataset>/report/tables/af_time_correlation.csv",
     output:
-        plot = report(REPORT_DIR_PLOTS/"af_time_correlation.png"),
+        plot = report("<results>/<dataset>/report/plots/af_time_correlation.png"),
     log:
-        LOGDIR / "af_time_correlation_plot" / "log.txt"
+        "<logs>/<dataset>/af_time_correlation_plot/log.txt"
     script:
         "../scripts/report/af_time_correlation_plot.R"
 
@@ -260,12 +260,12 @@ rule af_trajectory_panel_plot:
         plot_width_mm = 159.2,
         random_color_seed = 7291,
     input:
-        fmt_variants = REPORT_DIR_TABLES/"variants.filled.dated.tsv",
-        subset = REPORT_DIR_TABLES/"af_time_correlation.subset.txt"
+        fmt_variants = "<results>/<dataset>/report/tables/variants.filled.dated.tsv",
+        subset = "<results>/<dataset>/report/tables/af_time_correlation.subset.txt"
     output:
-        plot = report(REPORT_DIR_PLOTS/"af_trajectory_panel.png"),
+        plot = report("<results>/<dataset>/report/plots/af_trajectory_panel.png"),
     log:
-        LOGDIR / "af_trajectory_panel_plot" / "log.txt"
+        "<logs>/<dataset>/af_trajectory_panel_plot/log.txt"
     script:
         "../scripts/report/af_trajectory_panel_plot.R"
 
@@ -273,12 +273,12 @@ rule af_trajectory_panel_plot:
 rule summary_table:
     conda: "../envs/renv.yaml"
     input:
-        report = report(OUTDIR/f"{OUTPUT_NAME}.lineage_report.csv"),
+        report = report("<results>/<dataset>/lineage_report.csv"),
         metadata = config["METADATA"]
     output:
-        table = REPORT_DIR_TABLES/"summary_table.csv"
+        table = "<results>/<dataset>/report/tables/summary_table.csv"
     log:
-        LOGDIR / "summary_table" / "log.txt"
+        "<logs>/<dataset>/summary_table/log.txt"
     script:
         "../scripts/report/summary_table.R"
 
@@ -289,27 +289,27 @@ rule report:
     input:
         qmd        = Path(config["REPORT_QMD"]).resolve(),
         css        = Path(config["REPORT_CSS"]).resolve(),
-        demix      = report(REPORT_DIR_PLOTS/"demix.png"),
-        tree_ml    = report(REPORT_DIR_PLOTS/"context_phylogeny.png"),
-        diversity  = report(REPORT_DIR_PLOTS/"diversity.png"),
-        fig_cor    = report(REPORT_DIR_PLOTS/"polymorphic_sites_over_time.png"),
-        SNV        = report(REPORT_DIR_PLOTS/"nv_panel.png"),
-        SNV_spike  = report(REPORT_DIR_PLOTS/"nv_panel.S.png"),
-        volcano    = report(REPORT_DIR_PLOTS/"af_time_correlation.png"),
-        panel      = report(REPORT_DIR_PLOTS/"af_trajectory_panel.png"),
-        tree       = report(REPORT_DIR_PLOTS/"allele_freq_tree.png"),
-        temest     = report(REPORT_DIR_PLOTS/"time_signal.png"),
-        evo        = report(REPORT_DIR_PLOTS/"dn_and_ds.png"),
-        omega_plot = report(REPORT_DIR_PLOTS/"dnds.png"),
-        heat_table = report(REPORT_DIR_TABLES/"pairwise_trajectory_correlation_matrix.csv"),
-        freyja_ts  = OUTDIR/"demixing"/"freyja_data"/"last_barcode_update.txt",
-        value      = REPORT_DIR_TABLES/"diversity.json",
-        stats_lm   = REPORT_DIR_TABLES/"time_signal.json",
-        stats_ml   = REPORT_DIR_TABLES/"context_phylogeny.json",
-        table      = REPORT_DIR_TABLES/"summary_table.csv",
-        sum_nv     = REPORT_DIR_TABLES/"nv_panel_summary.json",
+        demix      = report("<results>/<dataset>/report/plots/demix.png"),
+        tree_ml    = report("<results>/<dataset>/report/plots/context_phylogeny.png"),
+        diversity  = report("<results>/<dataset>/report/plots/diversity.png"),
+        fig_cor    = report("<results>/<dataset>/report/plots/polymorphic_sites_over_time.png"),
+        SNV        = report("<results>/<dataset>/report/plots/nv_panel.png"),
+        SNV_spike  = report("<results>/<dataset>/report/plots/nv_panel.S.png"),
+        volcano    = report("<results>/<dataset>/report/plots/af_time_correlation.png"),
+        panel      = report("<results>/<dataset>/report/plots/af_trajectory_panel.png"),
+        tree       = report("<results>/<dataset>/report/plots/allele_freq_tree.png"),
+        temest     = report("<results>/<dataset>/report/plots/time_signal.png"),
+        evo        = report("<results>/<dataset>/report/plots/dn_and_ds.png"),
+        omega_plot = report("<results>/<dataset>/report/plots/dnds.png"),
+        heat_table = report("<results>/<dataset>/report/tables/pairwise_trajectory_correlation_matrix.csv"),
+        freyja_ts  = "<results>/<dataset>/demixing/freyja_data/last_barcode_update.txt",
+        value      = "<results>/<dataset>/report/tables/diversity.json",
+        stats_lm   = "<results>/<dataset>/report/tables/time_signal.json",
+        stats_ml   = "<results>/<dataset>/report/tables/context_phylogeny.json",
+        table      = "<results>/<dataset>/report/tables/summary_table.csv",
+        sum_nv     = "<results>/<dataset>/report/tables/nv_panel_summary.json",
     params:
-        workflow_version = get_repo_version(BASE_PATH.as_posix(), __version__),
+        workflow_version = get_repo_version(Path(workflow.basedir).parent, __version__),
         min_ivar_freq = config["VC"]["MIN_FREQ"],
         ufboot_reps = config["UFBOOT"]["REPS"],
         shalrt_reps = config["SHALRT"]["REPS"],
@@ -317,9 +317,9 @@ rule report:
         use_bionj = config["USE_BIONJ"],
         cor_method = config["COR"]["METHOD"],
     output:
-        html = report(OUTDIR/f"{OUTPUT_NAME}.report.html")
+        html = report("<results>/<dataset>/report.html")
     log:
-        LOGDIR / "report" / "log.txt"
+        "<logs>/<dataset>/report/log.txt"
     shell:
         """
         set +o pipefail

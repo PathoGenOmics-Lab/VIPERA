@@ -10,8 +10,6 @@ SAMPLES:
     fasta: ".test/data/fasta/sample3.fasta"
 METADATA:
   ".test/data/metadata.csv"
-OUTPUT_DIRECTORY:
-  ".test/output"
 CONTEXT_FASTA:
   ".test/data/context.fasta"
 OUTPUT_NAME:

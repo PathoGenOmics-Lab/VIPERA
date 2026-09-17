@@ -5,10 +5,13 @@ from snakemake.utils import min_version
 import subprocess
 
 
-min_version("7.19")
+min_version("9.12")
 
 # Workflow version
 __version__ = "test"
+
+pathvars:
+    dataset = config["OUTPUT_NAME"]
 
 # Rules
 include: "../workflow/core.smk"
@@ -19,4 +22,4 @@ include: "../workflow/rules/report.smk"
 
 rule all:
     input:
-        OUTDIR/f"{OUTPUT_NAME}.report.html"
+        "<results>/<dataset>/report.html"

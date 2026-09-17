@@ -68,7 +68,7 @@ def read_problematic_positions(path: str, mask_classes: list) -> tuple:
     """
     vcf = pd.read_csv(
         path,
-        sep="\s+",
+        sep="\\s+",
         comment="#",
         names=("CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO")
     )

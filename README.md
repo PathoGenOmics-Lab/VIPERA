@@ -10,7 +10,6 @@
 [![Zenodo DOI](https://zenodo.org/badge/627797162.svg)](https://doi.org/10.5281/zenodo.15771867)
 
 ![Install workflow](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/install.yml/badge.svg)
-![Test workflow with Snakemake v7](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/test_v7.yml/badge.svg)
 ![Test workflow with Snakemake v9](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/test_v9.yml/badge.svg)
 ![Test workflow with Snakemake v9 and Apptainer](https://github.com/PathoGenOmics-Lab/VIPERA/actions/workflows/test_apptainer.yml/badge.svg)
 
@@ -24,7 +23,7 @@ configuring [the inputs and outputs](config/README.md#inputs-and-outputs) and
 [the context dataset](config/README.md#automated-construction-of-a-context-dataset):
 
 ```shell
-snakemake --use-conda --cores 4  # command for Snakemake v7
+snakemake --sdm conda --cores 4
 ```
 
 We provide a simple script that downloads the [data](https://doi.org/10.20350/digitalCSIC/15648) from [our study](https://doi.org/10.1093/ve/veae018)
@@ -40,8 +39,9 @@ It supports dependency management through either conda or Apptainer/Singularity,
 [run modes documentation](config/README.md#run-modes).
 
 We use continuous integration (CI) to automatically verify that all dependencies install correctly
-with Snakemake v7.32.4 (see GitHub Action `Install`), and to test that VIPERA runs
-successfully with Snakemake v7.32.4 and v9.15.0 using conda (Actions `Test Sm v(7|9)`).
+(see GitHub Action `Install`), and to test that VIPERA runs
+successfully using conda (Actions `Test Sm v(7|9)`).
+We run Snakemake v9.15.0 for these.
 We also test a containerized workflow with Snakemake v9.15.0 and Apptainer using a
 [remote image](https://hub.docker.com/r/ahmig/vipera) (Action `Test Sm v9 Apptainer`).
 This image is automatically updated in every version (Action `Deploy`).

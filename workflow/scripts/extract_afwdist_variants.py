@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import logging
-from typing import List, Set
 
 import pandas as pd
 from Bio import SeqIO
@@ -17,7 +16,7 @@ def read_monofasta(path: str) -> SeqRecord:
     return record
 
 
-def read_masked_sites(vcf_path: str, mask_classes: List[str]) -> Set[int]:
+def read_masked_sites(vcf_path: str, mask_classes: list[str]) -> set[int]:
     """
     Parse a VCF containing positions for masking. Assumes the VCF file is
     formatted as in:
@@ -27,14 +26,14 @@ def read_masked_sites(vcf_path: str, mask_classes: List[str]) -> Set[int]:
     """
     vcf = pd.read_csv(
         vcf_path,
-        sep="\s+",
+        sep="\\s+",
         comment="#",
         names=("CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO")
     )
     return set(vcf.loc[vcf.FILTER.isin(mask_classes), "POS"].unique())
 
 
-def build_ancestor_variant_table(ancestor: Seq, reference: Seq, reference_name: str, masked_positions: Set[int]) -> pd.DataFrame:
+def build_ancestor_variant_table(ancestor: Seq, reference: Seq, reference_name: str, masked_positions: set[int]) -> pd.DataFrame:
     pos = []
     alt = []
     for i in range(1, len(ancestor) + 1):
@@ -45,6 +44,15 @@ def build_ancestor_variant_table(ancestor: Seq, reference: Seq, reference_name: 
     df[snakemake.params.frequency_col] = 1  # As a reference genome, we assume all positions have fixed alleles
     df[snakemake.params.sample_col] = reference_name
     return df
+
+
+def remove_ref_matching_variants(variants: pd.DataFrame, reference: Seq, position_col: str, sequence_col: str) -> pd.DataFrame:
+    """Filters out variants whose ALT matches the base at the reference sequence (i.e. REF[1] == ALT)."""
+    reference_bases = variants[position_col].map(lambda p: reference[p - 1]).astype(str)
+    mask = reference_bases.str.upper() == variants[sequence_col].str.upper()
+    if (n_dropped := mask.sum()) > 0:
+        logging.warning(f"Dropping {n_dropped} rows where REF[1] equals ALT")
+    return variants[~mask]
 
 
 DTYPES = {
@@ -68,20 +76,34 @@ if __name__ == "__main__":
 
     logging.info("Reading input tables")
     # Variants
-    variants = pd.read_table(snakemake.input.variants, sep="\t")
+    variants = pd.read_table(
+        snakemake.input.variants,
+        sep="\t",
+        usecols=list(colnames.keys())
+    )
+
     logging.info(f"Read {len(variants)} variant records")
     # VCF with sites to mask
     masked_sites = read_masked_sites(snakemake.input.mask_vcf, snakemake.params.mask_class)
     logging.info(f"Read {len(masked_sites)} masked positions")
 
     logging.info("Reading input FASTA files")
-    # Case ancestor
+    # Case ancestor (variant calling reference)
     ancestor = read_monofasta(snakemake.input.ancestor)
     logging.info(f"Ancestor: '{ancestor.description}', length={len(ancestor)}")
+    
     # Alignment reference
     reference = read_monofasta(snakemake.input.reference)
     logging.info(f"Reference: '{reference.description}', length={len(reference)}")
     assert len(ancestor) == len(reference)
+
+    logging.info("Removing ancestor-matching variants")
+    variants = remove_ref_matching_variants(
+        variants,
+        ancestor.seq,
+        snakemake.params.position_col,
+        snakemake.params.sequence_col
+    ).drop_duplicates(keep="first")
 
     logging.info("Processing ancestor variants")
     ancestor_table = build_ancestor_variant_table(ancestor.seq, reference.seq, reference.id, masked_sites)

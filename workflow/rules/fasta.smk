@@ -5,9 +5,9 @@ rule read_bam_refs:
     input:
         iter_files("bam")
     output:
-        temp(OUTDIR / "bam_ids.txt")
+        temp("<results>/<dataset>/bam_ids.txt")
     log:
-        LOGDIR / "read_bam_refs" / "log.txt"
+        "<logs>/<dataset>/read_bam_refs/log.txt"
     shell:
         """
         for bam_file in {input:q}; do
@@ -21,9 +21,9 @@ rule rename_fastas:
     input:
         fasta = get_input_fasta
     output:
-        renamed = temp(OUTDIR/"renamed.{sample}.fasta")
+        renamed = temp("<results>/<dataset>/renamed/{sample}.fasta")
     log:
-        LOGDIR / "rename_fastas" / "{sample}.log.txt"
+        "<logs>/<dataset>/rename_fastas/{sample}.log.txt"
     shell:
         "sed 's/>.*/>'{wildcards.sample}'/g' {input.fasta} > {output.renamed} 2> {log}"
 
@@ -32,11 +32,11 @@ rule concat_fasta:
     threads: 1
     shadow: "shallow"
     input:
-        expand(OUTDIR/"renamed.{sample}.fasta", sample = iter_samples())
+        expand("<results>/<dataset>/renamed/{sample}.fasta", sample = iter_samples())
     output:
-        fasta = OUTDIR/f"{OUTPUT_NAME}.fasta"
+        fasta = "<results>/<dataset>/sequences.fasta"
     log:
-        LOGDIR / "concat_fasta" / "log.txt"
+        "<logs>/<dataset>/concat_fasta/log.txt"
     shell:
         "cat {input} > {output.fasta} 2> {log}"
 
@@ -45,18 +45,16 @@ rule align_fasta:
     threads: 32
     shadow: "shallow"
     conda: "../envs/nextalign.yaml"
-    params:
-        name = OUTPUT_NAME
     input:
-        ref_fasta = OUTDIR/"reference.fasta",
-        fasta = OUTDIR/f"{OUTPUT_NAME}.fasta"
+        ref_fasta = "<results>/<dataset>/reference.fasta",
+        fasta = "<results>/<dataset>/sequences.fasta"
     output:
-        folder = directory(OUTDIR/"nextalign"),
-        fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.fasta"
+        folder = directory("<results>/<dataset>/nextalign"),
+        fasta = "<results>/<dataset>/nextalign/sequences.aligned.fasta"
     log:
-        LOGDIR / "align_fasta" / "log.txt"
+        "<logs>/<dataset>/align_fasta/log.txt"
     shell:
-        "nextalign run -j {threads} -O {output.folder} -o {output.fasta} -n {params.name} --include-reference -r {input.ref_fasta} {input.fasta} >{log} 2>&1"
+        "nextalign run -j {threads} -O {output.folder} -o {output.fasta} -n sequences --include-reference -r {input.ref_fasta} {input.fasta} >{log} 2>&1"
 
 
 rule mask_alignment:
@@ -67,12 +65,12 @@ rule mask_alignment:
         mask_character = "N",
         mask_class = ["mask"]
     input:
-        fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.fasta",
-        ref_fasta = OUTDIR/"reference.fasta",
+        fasta = "<results>/<dataset>/nextalign/sequences.aligned.fasta",
+        ref_fasta = "<results>/<dataset>/reference.fasta",
         vcf = lambda wildcards: select_problematic_vcf()
     output:
-        fasta = OUTDIR/"nextalign"/f"{OUTPUT_NAME}.aligned.masked.fasta"
+        fasta = "<results>/<dataset>/aligned.masked.fasta"
     log:
-        LOGDIR / "mask_alignment" / "log.txt"
+        "<logs>/<dataset>/mask_alignment/log.txt"
     script:
         "../scripts/mask_aln.py"

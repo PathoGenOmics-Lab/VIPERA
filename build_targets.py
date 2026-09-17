@@ -91,7 +91,6 @@ if __name__ == "__main__":
     else:
         sys.exit(f"ERROR: metadata file '{args.metadata_csv}' does not exist")
     targets["OUTPUT_NAME"] = args.output_name
-    targets["OUTPUT_DIRECTORY"] = "output"
     targets["CONTEXT_FASTA"] = None
     targets["MAPPING_REFERENCES_FASTA"] = None
 

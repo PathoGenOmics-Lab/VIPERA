@@ -6,10 +6,10 @@ rule problematic_vcf_to_bed:
     input:
         vcf = lambda wildcards: select_problematic_vcf(),
     output:
-        vcf = temp(OUTDIR / "sites_masked.vcf"),
-        bed = temp(OUTDIR / "sites_masked.bed"),
+        vcf = temp("<results>/<dataset>/sites_masked.vcf"),
+        bed = temp("<results>/<dataset>/sites_masked.bed"),
     log:
-        LOGDIR / "problematic_vcf_to_bed" / "log.txt",
+        "<logs>/<dataset>/problematic_vcf_to_bed/log.txt",
     shell:
         "FILTER_STR=$(echo \"{params.filters}\" | tr ' ' ',') && "
         "bcftools view -f \"$FILTER_STR\" {input.vcf} >{output.vcf} 2>{log} && "
@@ -22,18 +22,19 @@ rule bcftools_mpileup_all_sites:
     params:
         min_mq = 0,
         min_bq = config["VC"]["MIN_QUALITY"],
+        max_depth = config["VC"]["MAX_DEPTH"],
         mpileup_extra = "--no-BAQ"
     input:
         bam = get_input_bam,
-        reference = OUTDIR/"vaf"/"{sample}.reference.fasta",
+        reference = "<results>/<dataset>/vaf/{sample}.reference.fasta",
     output:
-        mpileup = temp(OUTDIR / "all_sites" / "{sample}.mpileup.vcf"),
-        query = temp(OUTDIR / "all_sites" / "{sample}.query.tsv"),
+        mpileup = temp("<results>/<dataset>/all_sites/{sample}.mpileup.vcf"),
+        query = temp("<results>/<dataset>/all_sites/{sample}.query.tsv"),
     log:
-        mpileup = LOGDIR / "bcftools_mpileup_all_sites" / "{sample}.mpileup.txt",
-        query = LOGDIR / "bcftools_mpileup_all_sites" / "{sample}.query.txt",
+        mpileup = "<logs>/<dataset>/bcftools_mpileup_all_sites/{sample}.mpileup.txt",
+        query = "<logs>/<dataset>/bcftools_mpileup_all_sites/{sample}.query.txt",
     shell:
-        "bcftools mpileup {params.mpileup_extra} -a AD,ADF,ADR --fasta-ref {input.reference:q} --threads {threads} -Q {params.min_bq} -q {params.min_mq} -Ov -o {output.mpileup:q} {input.bam:q} >{log.mpileup:q} 2>&1 && "
+        "bcftools mpileup {params.mpileup_extra} --max-depth {params.max_depth} -a AD,ADF,ADR --fasta-ref {input.reference:q} --threads {threads} -Q {params.min_bq} -q {params.min_mq} -Ov -o {output.mpileup:q} {input.bam:q} >{log.mpileup:q} 2>&1 && "
         "echo 'CHROM\tPOS\tREF\tALT\tDP\tAD\tADF\tADR' >{output.query:q} && "
         "bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t%DP\t[ %AD]\t[ %ADF]\t[ %ADR]\n' {output.mpileup:q} >>{output.query:q} 2>{log.query:q}"
 
@@ -45,10 +46,10 @@ rule filter_mpileup_all_sites:
         min_total_ADF = 0,
         min_total_ADR = 0,
     input:
-        OUTDIR / "all_sites" / "{sample}.query.tsv",
+        "<results>/<dataset>/all_sites/{sample}.query.tsv",
     output:
-        sites_pass = temp(OUTDIR / "all_sites" / "{sample}.filtered_sites.tsv"),
-        sites_fail = temp(OUTDIR / "all_sites" / "{sample}.fail_sites.tsv"),
+        sites_pass = temp("<results>/<dataset>/all_sites/{sample}.filtered_sites.tsv"),
+        sites_fail = temp("<results>/<dataset>/all_sites/{sample}.fail_sites.tsv"),
     run:
         import pandas as pd
         df = pd.read_csv(input[0], sep="\t")
@@ -68,27 +69,27 @@ rule filter_mpileup_all_sites:
 
 use rule concat_vcf_fields as merge_filtered_mpileup_all_sites with:
     input:
-        expand(OUTDIR / "all_sites" / "{sample}.filtered_sites.tsv", sample=iter_samples()),
+        expand("<results>/<dataset>/all_sites/{sample}.filtered_sites.tsv", sample=iter_samples()),
     output:
-        OUTDIR / f"{OUTPUT_NAME}.filtered_sites.tsv",
+        "<results>/<dataset>/filtered_sites.tsv",
 
 
 use rule concat_vcf_fields as merge_fail_mpileup_all_sites with:
     input:
-        expand(OUTDIR / "all_sites" / "{sample}.fail_sites.tsv", sample=iter_samples()),
+        expand("<results>/<dataset>/all_sites/{sample}.fail_sites.tsv", sample=iter_samples()),
     output:
-        OUTDIR / f"{OUTPUT_NAME}.fail_sites.tsv",
+        "<results>/<dataset>/fail_sites.tsv",
 
 
 rule fill_all_sites:
     conda: "../envs/renv.yaml"
     input:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.tsv",
-        sites = OUTDIR / f"{OUTPUT_NAME}.filtered_sites.tsv",
+        variants = "<results>/<dataset>/variants.tsv",
+        sites = "<results>/<dataset>/filtered_sites.tsv",
     output:
-        variants = OUTDIR/f"{OUTPUT_NAME}.variants.all_sites.tsv",
+        variants = "<results>/<dataset>/variants.all_sites.tsv",
     log:
-        LOGDIR / "fill_all_sites" / "log.txt"
+        "<logs>/<dataset>/fill_all_sites/log.txt"
     script:
         "../scripts/fill_all_sites.R"
 
@@ -99,9 +100,9 @@ rule compile_fail_sites_vcf:
         sub_text = "NA",
         exc_text = "site_qual",
     input:
-        sites = OUTDIR / f"{OUTPUT_NAME}.fail_sites.tsv",
+        sites = "<results>/<dataset>/fail_sites.tsv",
     output:
-        sites = temp(OUTDIR / f"{OUTPUT_NAME}.fail_sites.vcf"),
+        sites = temp("<results>/<dataset>/fail_sites.vcf"),
     run:
         import pandas as pd
         HEADER = ["#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO"]
@@ -121,9 +122,9 @@ rule compile_fail_sites_vcf:
 rule merge_mask_sites_vcf:
     input:
         lambda wildcards: select_problematic_vcf(),
-        OUTDIR / f"{OUTPUT_NAME}.fail_sites.vcf",
+        "<results>/<dataset>/fail_sites.vcf",
     output:
-        sites = temp(OUTDIR / "all_mask_sites.vcf"),
+        sites = temp("<results>/<dataset>/all_mask_sites.vcf"),
     run:
         import pandas as pd
         HEADER = ["#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO"]
