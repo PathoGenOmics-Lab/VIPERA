@@ -53,9 +53,6 @@ log_info("Filtering variants on masked sites")
 variants <- variants %>%
   filter(!POS %in% masked, !is.na(SYNONYMOUS))
 
-log_debug("Adding metadata to variants table")
-variants <- left_join(variants, metadata)
-
 log_info("Reading N/S sites")
 n_s_position <- read_delim(snakemake@input[["n_s_sites"]])
 
@@ -67,11 +64,13 @@ dn.ds <- variants %>%
   summarise(Freq = sum(ALT_FREQ, na.rm = TRUE), .groups = "drop") %>%
   complete(SAMPLE, SYNONYMOUS = c("No", "Yes"), fill = list(Freq = 0)) %>%
   pivot_wider(names_from = SYNONYMOUS, values_from = Freq) %>%
+  right_join(metadata, by = "SAMPLE") %>%
   mutate(
+    No = coalesce(No, 0),
+    Yes = coalesce(Yes, 0),
     dn = No / total_n,
     ds = Yes / total_s
   ) %>%
-  left_join(unique(select(variants, SAMPLE, interval)), by = "SAMPLE") %>%
   transmute(
     sample = SAMPLE,
     day = interval,
